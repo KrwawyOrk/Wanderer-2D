@@ -605,8 +605,7 @@ void GSMapEditor::Draw( void )
 	if( m_mapEditorState == MAPPING )
 	{
 		m_map->Draw();
-		m_selectedSprite.Draw( Globals::screen, m_brushPosition );
-		m_brushSprite.Draw( Globals::screen, m_brushPosition );
+		DrawBrush();
 		m_textInput->Draw();
 		m_selectedSprite.Draw( Globals::screen, 5, 50 );
 		DrawMousePositionInfo();
@@ -836,4 +835,20 @@ void GSMapEditor::DrawMousePositionInfo( void )
 	ss << "x: " << mouse_x << "  y: " << mouse_y;
 
 	m_mousePositionInfo->show_text( 900, 10, ss.str(), Globals::screen );
+}
+
+void GSMapEditor::DrawBrush( void )
+{
+	SDL_Rect dst;
+	dst.x = m_brushPosition.x * Globals::tilesize - Globals::camera->GetCameraX();
+	dst.y = m_brushPosition.y * Globals::tilesize - Globals::camera->GetCameraY() - m_selectedSprite.GetSDLSurface()->h + Globals::tilesize;
+
+	SDL_Rect src;
+	src.x = Globals::tilesize * int(((SDL_GetTicks() / Globals::spriteAnimationSpeed) % ( m_selectedSprite.GetSDLSurface()->w / Globals::tilesize ) ));
+	src.y = 0;
+	src.w = Globals::tilesize;
+	src.h = m_selectedSprite.GetSDLSurface()->h;
+
+	m_selectedSprite.Draw( Globals::screen, dst.x, dst.y, &src );
+	m_brushSprite.Draw( Globals::screen, m_brushPosition );
 }
