@@ -2,12 +2,15 @@
 
 #include "BitmapFont.h"
 #include "Camera.h"
+#include "Container.h"
 #include "Factory.h"
 #include "Globals.h"
+#include "Item.h"
 #include "Map.h"
 #include "Player.h"
 #include "SpriteManager.h"
 #include "Tools.h"
+#include "LootGenerator.h"
 
 #include <iostream>
 #include <sstream>
@@ -74,7 +77,7 @@ void Monster::RandomMovement( void )
 			break;
 		};
 
-		m_nextMove = Globals::currentTime + 0;
+		m_nextMove = Globals::currentTime + 0.0f;
 	}
 }
 
@@ -88,7 +91,7 @@ void Monster::AttackPlayer( void )
 		if( Globals::currentTime >= m_nextAttack )
 		{
 			player->SetHealthPoints( player->GetHealthPoints() - m_baseDamage );
-			m_nextAttack = Globals::currentTime + 3;
+			m_nextAttack = Globals::currentTime + MONSTER_ATTACK_DELAY;
 		}
 	}
 
@@ -98,15 +101,28 @@ void Monster::AttackPlayer( void )
 	}
 }
 
-void Monster::CreateCorpse( void )
+void Monster::CreateCorpseWithLootItems( void )
 {
 	StaticMapItem* item = Globals::factory->CreateStaticMapItem( GetPosition(), "deadspider", true, "spiderdeadbody" );
 
+	Container* container = new Container;
+	//container->AddItem( new Item( Position( 5, 5 ), HEALTH_REGENERATION ) );
+	LootGenerator lootGenerator;
+	lootGenerator.FillContainerWithRandomLoot( container );
+
+	item->SetContainer( container );
+	
 	Map* map = Globals::currentMap;
 	map->GetStaticMapItemVector().push_back( item );
 }
 
 void Monster::DrawHealthBar( void )
+{
+	DrawHealthBarWhenAttackedByPlayer( GetSDLRectangleForMonsterHealthBar() );
+	DrawHealthBarOnMouseOver( GetSDLRectangleForMonsterHealthBar() );
+}
+
+SDL_Rect* Monster::GetSDLRectangleForMonsterHealthBar( void )
 {
 	SDL_Rect rect[2];
 	rect[0].x = 0;
@@ -119,24 +135,32 @@ void Monster::DrawHealthBar( void )
 	rect[1].w = 50;
 	rect[1].h = 5;
 
+	return rect;
+}
+
+void Monster::DrawHealthBarWhenAttackedByPlayer( SDL_Rect *rect )
+{
 	if( m_attackedByPlayer )
 	{
-		m_healthBarSprite.Draw( Globals::screen, static_cast<int>( flposition_x - Globals::camera->GetCameraX() ), static_cast<int>( flposition_y - 10 - Globals::camera->GetCameraY() ), rect[1] );
-		m_healthBarSprite.Draw( Globals::screen, static_cast<int>( flposition_x - Globals::camera->GetCameraX() ), static_cast<int>( flposition_y - 10 - Globals::camera->GetCameraY() ), rect[0] );
+		m_healthBarSprite.Draw( Globals::screen, static_cast<int>( flposition_x - Globals::camera->GetCameraX() ), static_cast<int>( flposition_y - 10 - Globals::camera->GetCameraY() ), &rect[1] );
+		m_healthBarSprite.Draw( Globals::screen, static_cast<int>( flposition_x - Globals::camera->GetCameraX() ), static_cast<int>( flposition_y - 10 - Globals::camera->GetCameraY() ), &rect[0] );
 	}
+}
 
+void Monster::DrawHealthBarOnMouseOver( SDL_Rect* rect )
+{
 	Position mouse;
 	mouse.x = ( Globals::event.motion.x + Globals::camera->GetCameraX() ) / Globals::tilesize;
 	mouse.y = ( Globals::event.motion.y + Globals::camera->GetCameraY() ) / Globals::tilesize;
 
-	if(mouse.x == GetPosition().x && mouse.y == GetPosition().y )
+	if( mouse.x == GetPosition().x && mouse.y == GetPosition().y )
 	{
 		if( !m_attackedByPlayer )
 		{
 			m_attackingPlayerSprite.Draw( Globals::screen, static_cast<int>( flposition_x - Globals::camera->GetCameraX() ), static_cast<int>( flposition_y - Globals::camera->GetCameraY() ) );
 		}
 
-		m_healthBarSprite.Draw( Globals::screen, static_cast<int>( flposition_x - Globals::camera->GetCameraX() ), static_cast<int>( flposition_y - 10 - Globals::camera->GetCameraY() ), rect[1] );
-		m_healthBarSprite.Draw( Globals::screen, static_cast<int>( flposition_x - Globals::camera->GetCameraX() ), static_cast<int>( flposition_y - 10 - Globals::camera->GetCameraY() ), rect[0] );
+		m_healthBarSprite.Draw( Globals::screen, static_cast<int>( flposition_x - Globals::camera->GetCameraX() ), static_cast<int>( flposition_y - 10 - Globals::camera->GetCameraY() ), &rect[1] );
+		m_healthBarSprite.Draw( Globals::screen, static_cast<int>( flposition_x - Globals::camera->GetCameraX() ), static_cast<int>( flposition_y - 10 - Globals::camera->GetCameraY() ), &rect[0] );
 	}
 }

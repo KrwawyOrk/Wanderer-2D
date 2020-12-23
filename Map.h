@@ -4,6 +4,7 @@
 #include "ActionMapChange.h"
 #include "Box.h"
 #include "Monster.h"
+#include "NPC.h"
 #include "Position.h"
 #include "Sprite.h"
 #include "StaticMapItem.h"
@@ -14,6 +15,8 @@
 #include <list>
 #include <string>
 #include <vector>
+
+const int DISTANCE_FROM_PLAYER_TO_RENDER = 3;
 
 class CollisionTile
 {
@@ -114,6 +117,7 @@ private:
 	std::vector<Item*> m_Items;
 	std::vector<FoodGenerator*> m_foodGenerators;
 	std::list<ActionMapChange*> m_actionMapChangeList;
+	std::vector<NPC*> m_npcs;
 
 	Sprite m_questionMark;
 	std::string m_mapName;

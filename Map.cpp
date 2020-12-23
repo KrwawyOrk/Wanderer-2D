@@ -5,6 +5,7 @@
 #include "Game.h"
 #include "Globals.h"
 #include "SpriteManager.h"
+#include "Tools.h"
 
 #include <iostream>
 #include <fstream>
@@ -59,7 +60,7 @@ void Map::Think( void )
 		if( (*cit)->GetHealthPoints() <= 0 )
 		{
 			( *cit )->SetDeathTime( Globals::currentTime );
-			( *cit )->CreateCorpse();
+			( *cit )->CreateCorpseWithLootItems();
 
 			MonsterRespawnInfo* respawn = new MonsterRespawnInfo;
 			respawn->m_monsterName = ( *cit )->GetName();
@@ -88,7 +89,7 @@ void Map::Think( void )
 			delete ( *it );
 			it = m_monstersWaitingForRespawn.erase( it );
 		}
-	
+
 
 		else
 			++it;
@@ -105,15 +106,15 @@ void Map::Think( void )
 
 	/*for( std::vector<Item*>::iterator it = m_Items.begin() ; it != m_Items.end() ; )
 	{
-		Item* Item = ( *it );
-		if( Item->IsPicked() )
-		{
-			delete ( *it );
-			it = m_Items.erase( it );
-		}
+	Item* Item = ( *it );
+	if( Item->IsPicked() )
+	{
+	delete ( *it );
+	it = m_Items.erase( it );
+	}
 
-		else
-			++it;
+	else
+	++it;
 	}*/
 }
 
@@ -132,10 +133,35 @@ void Map::Draw( void )
 		Tile* tile = ( *it );
 		if( Globals::camera->InCameraView( tile ) && Globals::game->GetGameStateEnum() == PLAYING )
 		{
-			if( tile->GetFogOfWar().IsExplored() )
+			/*if( tile->GetFogOfWar().IsExplored() )
+			{
+			tile->Draw();
+			}*/
+
+			Player* player = Globals::player;
+			int distance = static_cast<int>( Tools::CalculateDistance( tile->GetPosition().x, tile->GetPosition().y, player->GetPosition().x, player->GetPosition().y ) );
+
+			/*if( distance < DISTANCE_FROM_PLAYER_TO_RENDER )
 			{
 				tile->Draw();
-			}
+			}*/
+
+			if( player->GetSkillOfType( skillTypes::INCREASED_VISIBILITY ).SkillIsLearned() )
+				{
+					if( distance < DISTANCE_FROM_PLAYER_TO_RENDER + 2 ) 
+					{
+						tile->Draw();
+					}
+				}
+
+				else
+				{
+					if( distance < DISTANCE_FROM_PLAYER_TO_RENDER ) 
+					{
+						tile->Draw();
+					}
+				}
+
 		}
 
 		else if( Globals::camera->InCameraView( tile ) && Globals::game->GetGameStateEnum() == MAPEDITOR )
@@ -158,16 +184,39 @@ void Map::Draw( void )
 
 			else if( Globals::game->GetGameStateEnum() == PLAYING )
 			{
+				Player* player = Globals::player;
+				int distance = static_cast<int>( Tools::CalculateDistance( staticMapItem->GetPosition().x, staticMapItem->GetPosition().y, player->GetPosition().x, player->GetPosition().y ) );
 
-				for( std::vector<Tile*>::iterator it = m_tiles.begin() ; it != m_tiles.end() ; ++it )
+				/*if( distance < DISTANCE_FROM_PLAYER_TO_RENDER )
 				{
-					Tile* tile = ( *it );
+				staticMapItem->Draw();
+				}*/
 
-					if( tile->GetPosition().x == staticMapItem->GetPosition().x && tile->GetPosition().y == staticMapItem->GetPosition().y && tile->GetFogOfWar().IsExplored() )
+				if( player->GetSkillOfType( skillTypes::INCREASED_VISIBILITY ).SkillIsLearned() )
+				{
+					if( distance < DISTANCE_FROM_PLAYER_TO_RENDER + 2 ) 
 					{
 						staticMapItem->Draw();
 					}
 				}
+
+				else
+				{
+					if( distance < DISTANCE_FROM_PLAYER_TO_RENDER ) 
+					{
+						staticMapItem->Draw();
+					}
+				}
+
+				/*for( std::vector<Tile*>::iterator it = m_tiles.begin() ; it != m_tiles.end() ; ++it )
+				{
+				Tile* tile = ( *it );
+
+				if( tile->GetPosition().x == staticMapItem->GetPosition().x && tile->GetPosition().y == staticMapItem->GetPosition().y && tile->GetFogOfWar().IsExplored() )
+				{
+				staticMapItem->Draw();
+				}
+				}*/
 			}
 		}
 	}
@@ -190,16 +239,34 @@ void Map::Draw( void )
 	for( std::vector<Monster*>::iterator it = m_monsters.begin() ; it != m_monsters.end() ; ++it )
 	{
 		Monster* monster = ( *it );
+		Player* player = Globals::player;
+		int distance = static_cast<int>( Tools::CalculateDistance( monster->GetPosition().x, monster->GetPosition().y, player->GetPosition().x, player->GetPosition().y ) );
 
-		if( !FogOfWarExistsAtPosition( monster->GetPosition().x, monster->GetPosition().y ) && Globals::camera->InCameraView( monster ) )
+		if( player->GetSkillOfType( skillTypes::INCREASED_VISIBILITY ).SkillIsLearned() )
 		{
-			monster->Draw();
+			if( distance < DISTANCE_FROM_PLAYER_TO_RENDER + 2 ) 
+			{
+				monster->Draw();
+			}
+		}
+
+		else
+		{
+			if( distance < DISTANCE_FROM_PLAYER_TO_RENDER ) 
+			{
+				monster->Draw();
+			}
+		}
+
+		/*if( !FogOfWarExistsAtPosition( monster->GetPosition().x, monster->GetPosition().y ) && Globals::camera->InCameraView( monster ) )
+		{
+		monster->Draw();
 		}
 
 		else if( FogOfWarExistsAtPosition( monster->GetPosition().x, monster->GetPosition().y ) && Globals::camera->InCameraView( monster ) )
 		{
-			m_questionMark.Draw( Globals::screen, monster->GetPosition() );
-		}	
+		m_questionMark.Draw( Globals::screen, monster->GetPosition() );
+		}	*/
 	}
 
 	for( std::vector<FoodGenerator*>::iterator it = m_foodGenerators.begin() ; it != m_foodGenerators.end() ; ++it )
@@ -441,21 +508,21 @@ void Map::GenerateRandomObjectsOnMap( void )
 		/*int monsterRandom = ( std::rand() % 70 ) + 1; //losowa liczba dla potworków
 		if( monsterRandom == 1 )
 		{
-			std::cout << "GenerateRandomMonsters: " << monsterRandom << std::endl;
-			if( !tile->IsProtectionZone() && !ItemExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) &&!StaticItemExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && !MonsterExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && !FoodGeneratorExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && player->GetPosition().x != tile->GetPosition().x && player->GetPosition().y != tile->GetPosition().y )
-			{
-				m_monsters.push_back( Globals::factory->CreateMonster( "Spider", Position( tile->GetPosition().x, tile->GetPosition().y ), 20, 20, 5, "monsterinfo" ) );
-			}
+		std::cout << "GenerateRandomMonsters: " << monsterRandom << std::endl;
+		if( !tile->IsProtectionZone() && !ItemExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) &&!StaticItemExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && !MonsterExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && !FoodGeneratorExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && player->GetPosition().x != tile->GetPosition().x && player->GetPosition().y != tile->GetPosition().y )
+		{
+		m_monsters.push_back( Globals::factory->CreateMonster( "Spider", Position( tile->GetPosition().x, tile->GetPosition().y ), 20, 20, 5, "monsterinfo" ) );
+		}
 		}*/
 
 		int toolboxRandom = ( std::rand() % 450 ) + 1; //losowa liczba dla skrzyn z narzedziami
-	/*	if( toolboxRandom == 1 )
+		/*	if( toolboxRandom == 1 )
 		{
-			std::cout << "GenerateRandomToolBox: " << toolboxRandom << std::endl;
-			if( !tile->IsProtectionZone() && !ItemExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && !StaticItemExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && !MonsterExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && !FoodGeneratorExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && player->GetPosition().x != tile->GetPosition().x && player->GetPosition().y != tile->GetPosition().y )
-			{
-				m_Items.push_back( Globals::factory->CreateItem( tile->GetPosition(), TOOL_BOX ) );
-			}
+		std::cout << "GenerateRandomToolBox: " << toolboxRandom << std::endl;
+		if( !tile->IsProtectionZone() && !ItemExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && !StaticItemExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && !MonsterExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && !FoodGeneratorExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && player->GetPosition().x != tile->GetPosition().x && player->GetPosition().y != tile->GetPosition().y )
+		{
+		m_Items.push_back( Globals::factory->CreateItem( tile->GetPosition(), TOOL_BOX ) );
+		}
 		}*/
 
 		int healthkitRandom = ( std::rand() % 450 ) + 1;

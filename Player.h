@@ -2,6 +2,23 @@
 #define PLAYER_H
 
 #include "Monster.h"
+#include "Skill.h"
+
+#include "SDL.h"
+#include <vector>
+
+const int CROWBAR_DAMAGE = 2;
+const int PISTOL_DAMAGE = 5;
+const int PISTOL_ATTACK_RANGE = 4;
+const float ATTACK_DELAY_MALEE = 0.5f;
+const float ATTACK_DELAY_GUN = 3.0f;
+const int MAX_ATTACK_DISTANCE = PISTOL_ATTACK_RANGE;
+const int SLEEPING_TIME = 2;
+const float BASE_VELOCITY = 100.0f;
+const int INVENTORY_LIMIT = 40;
+
+class Item;
+class Monster;
 
 enum weaponType_t
 {
@@ -9,17 +26,26 @@ enum weaponType_t
 	PISTOL
 };
 
-const int CROWBAR_DAMAGE = 2;
-const int PISTOL_DAMAGE = 5;
-const int PISTOL_ATTACK_RANGE = 4;
-const int ATTACK_DELAY = 1;
-const int MAX_ATTACK_DISTANCE = PISTOL_ATTACK_RANGE;
-const int SLEEPING_TIME = 2;
-const float BASE_VELOCITY = 160.0f;
-const int INVENTORY_LIMIT = 20;
+class Skills
+{
+public:
+	int m_battle;
+	int m_medicine;
+	bool m_lockpicking;
+	bool m_looting;
+	bool m_cooking;
+};
 
-class Item;
-class Monster;
+
+//animation
+const int FOO_WIDTH = 100;
+const int FOO_HEIGHT = 100;
+
+const int FOO_RIGHT = 0;
+const int FOO_LEFT = 1;
+const int FOO_UP = 2;
+const int FOO_DOWN = 3;
+//end animation
 
 class Player : public Creature
 {
@@ -51,6 +77,8 @@ public:
 	int GetExperiencePoints( void ) const { return m_experiencePoints; }
 	void SetExperiencePoints( int experiencePoints ) { m_experiencePoints = experiencePoints; }
 
+	int GetMonstersKilled( void ) const { return m_monstersKilled; }
+
 	void SetMorphicHammer( bool b ) { m_morphicHammer = b; }
 	bool GetMorphicHammer( void ) { return m_morphicHammer; }
 
@@ -66,13 +94,25 @@ public:
 	int GetBaseDamage( void ) { return m_damage; }
 	void SetBaseDamage( int damage ) { m_damage = damage; }
 
+	Skills& GetSkills( void ) { return m_skills; }
+
 	int GetWeaponDamage( void ) const;
 
 	void AttackMonster( Monster* monster );
 
+	void StopAttackingMonster( void )
+	{
+		m_attackedMonster = NULL;
+	}
+
 	void SetAttackedMonster( Monster* monster );
 	void AttackingMonster( void );
 	void CheckMonsterAttackDistance( void );
+
+	Monster* GetAttackedMonster( void )
+	{
+		return m_attackedMonster;
+	}
 
 	virtual void Move( direction_t direction );
 	void PickBox( void );
@@ -94,6 +134,13 @@ public:
 	void GiveItem( Item* item );
 	bool HasSpaceInInventory( void ) const;
 
+	Skill& GetSkillOfType( skillTypes::skillType_t skillType );
+	void SetTimeToNextAttack( float time );
+
+	//animation
+	void set_clips();
+	//endanimation
+
 private:
 	bool m_selected;
 	Sprite m_spriteSelected;
@@ -106,6 +153,7 @@ private:
 	int m_toolbox;
 	int m_junk;
 	int m_experiencePoints;
+	int m_monstersKilled;
 
 	bool m_morphicHammer;
 	int m_miningHammerDurability;
@@ -113,17 +161,31 @@ private:
 	bool m_miningMode;
 
 	Monster* m_attackedMonster;
-	int m_nextAttack;
-	int m_attackSpeed; //tylko liczby int
+	float m_nextAttack;
+	float m_attackSpeed; //tylko liczby int
 
 	weaponType_t m_weaponType;
 	int m_pistolAmmunition;
 
 	bool m_sleeping;
-	int m_sleepingTime;
+	float m_sleepingTime;
 
 	Sprite m_sleepingPlayerSprite;
 	std::vector<Item*> m_itemsVector;
+
+	Skills m_skills;
+	std::vector<Skill> m_skillsVector;
+
+	//animation
+	int frame;
+	int status;
+	int offSet;
+	SDL_Rect clipsRight[3];
+	SDL_Rect clipsLeft[3];
+	SDL_Rect clipsUp[3];
+	SDL_Rect clipsDown[3];
+
+	Sprite m_animationSprite;
 };
 
 #endif

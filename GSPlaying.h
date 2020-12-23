@@ -17,8 +17,10 @@ enum playingState_t
 	BUILDING
 };
 
+class Container;
 class FoodGenerator;
 class Item;
+class NPC;
 
 class GSPlaying : public GameState
 {
@@ -47,6 +49,8 @@ public:
 	void PlayerLeaveMap( void );
 	void DrawExitLocationMessage( void );
 
+	void LevelUpDamage( void );
+
 private:
 	bool m_keysHeld[323];
     playingState_t m_playingState;
@@ -63,6 +67,9 @@ private:
 
 	int m_day;
 	BitmapFont* m_exitLocationMessage;
+
+	Container* m_openedContainer;
+	NPC* m_npc;
 };
 
 #endif

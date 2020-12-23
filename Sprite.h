@@ -14,7 +14,7 @@ public:
 
 	virtual void Draw( SDL_Surface* screen, int x, int y );
 	virtual void Draw( SDL_Surface* screen, Position& position );
-	virtual void Draw( SDL_Surface* screen, int x, int y, SDL_Rect& healthPercent );
+	virtual void Draw( SDL_Surface* screen, int x, int y, SDL_Rect* clip );
 
 	SDL_Surface* GetSDLSurface( void ) const { return m_surface; }
 	void SetSDLSurface( SDL_Surface* surface ) { m_surface = surface; }

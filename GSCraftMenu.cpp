@@ -85,7 +85,7 @@ void GSCraftMenu::Think( void )
 
 void GSCraftMenu::Draw( void )
 {
-	m_background.Draw( Globals::screen, 0, 0 );
+	m_background.Draw( Globals::screen, 50, 50 );
 
 	std::vector<Item*> &items = Globals::player->GetItems();
 

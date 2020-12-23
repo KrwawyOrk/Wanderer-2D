@@ -6,6 +6,7 @@
 #include "Globals.h"
 #include "Player.h"
 #include "SpriteManager.h"
+#include "Tools.h"
 
 FogOfWar::FogOfWar()
 {
@@ -17,17 +18,22 @@ void FogOfWar::Think( void )
 	if( Globals::game->GetGameStateEnum() == MAPEDITOR )
 		return;
 
-	if( !IsExplored() )
+	Player* player = Globals::player;
+	int distance = static_cast<int>( Tools::CalculateDistance( m_position.x, m_position.y, player->GetPosition().x, player->GetPosition().y ) );
+
+	if( distance <= FOGOFWAR_DISTANCE )
 	{
-	    Player* player = Globals::player;
-		if( player->GetPosition().x >= m_position.x - FOGOFWAR_DISTANCE && player->GetPosition().x <= m_position.x + FOGOFWAR_DISTANCE && player->GetPosition().y >= m_position.y - FOGOFWAR_DISTANCE && player->GetPosition().y <= m_position.y + FOGOFWAR_DISTANCE )
-		{
-			m_explored = true;
-		}
+		m_explored = true;
+	}
+
+	else
+	{
+		m_explored = false;
 	}
 }
 
-void FogOfWar::Draw( void )
+
+void FogOfWar::Draw( void ) //Nie uzywana funkcja. Poniewaz zamula gre.
 {
 	if( Globals::game->GetGameStateEnum() == MAPEDITOR )
 		return;

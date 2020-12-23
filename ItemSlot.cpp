@@ -5,28 +5,16 @@
 #include "Sprite.h"
 #include "SpriteManager.h"
 
-ItemSlot::ItemSlot( int x, int y ) : Button( x, y, "itemslot" )
+ItemSlot::ItemSlot( int x, int y, itemSlotType::itemSlotType_t itemSlotType ) : Button( x, y, "itemslot" )
 {
 	m_item = NULL;
 	m_selected = false;
+	m_itemSlotType = itemSlotType;
 	Globals::spriteManager->GetSprite( m_selectedSprite, "itemslotselected" );
 }
 
 void ItemSlot::SetItem( Item* item )
 {
-	/*if( item )
-	{
-		if( GetItemSlot() )
-		{
-			return;
-		}
-
-		else
-		{
-			m_item = item;
-		}
-	}*/
-
 	m_item = item;
 }
 
@@ -53,23 +41,35 @@ void ItemSlot::Think( void )
 		if( m_item )
 		{
 			Player* player = Globals::player;
-			m_item->OnUse( player );
-
 			std::vector<Item*> &items = player->GetItems();
-
-			for( std::vector<Item*>::iterator it = items.begin() ; it != items.end() ; )
+			
+			if( m_itemSlotType == itemSlotType::INVENTORY_SLOT )
 			{
-				Item* item = ( *it );
-				if( item == GetItemSlot() )
+				m_item->OnUse( player );
+
+				for( std::vector<Item*>::iterator it = items.begin() ; it != items.end() ; )
 				{
-					it = items.erase( it );
-					
-					delete m_item;
+					Item* item = ( *it );
+					if( item == GetItemSlot() )
+					{
+						it = items.erase( it );
+
+						delete m_item;
+						m_item = NULL;
+					}
+
+					else
+						++it;
+				}
+			}
+
+			else if( m_itemSlotType == itemSlotType::CONTAINER_SLOT )
+			{
+				if( player->HasSpaceInInventory() )
+				{
+					player->GiveItem( m_item );
 					m_item = NULL;
 				}
-
-				else
-					++it;
 			}
 		}
 	}

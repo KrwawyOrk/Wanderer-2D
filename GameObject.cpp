@@ -3,6 +3,8 @@
 #include "Globals.h"
 #include "SpriteManager.h"
 
+#include <math.h>
+
 GameObject::GameObject()
 {
 	flposition_x = static_cast<float>( m_position.x * Globals::tilesize );
@@ -64,4 +66,44 @@ bool GameObject::IsMoving( void )
 {
 	return !( flposition_x == Globals::tilesize * m_position.x && flposition_y == Globals::tilesize * m_position.y );
 }
-	
+
+bool GameObject::IsMovingLeft( void )
+{
+	if( flposition_x > m_position.x * Globals::tilesize )
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool GameObject::IsMovingRight( void )
+{
+	if( flposition_x < m_position.x * Globals::tilesize )
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool GameObject::IsMovingUp( void )
+{
+	if( flposition_y > m_position.y * Globals::tilesize )
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool GameObject::IsMovingDown( void )
+{
+	if( flposition_y < m_position.y * Globals::tilesize )
+	{
+		return true;
+	}
+
+	return false;
+}
+

@@ -1,11 +1,13 @@
 #include "GSPlaying.h"
 
 #include "Camera.h"
+#include "Container.h"
 #include "Factory.h"
 #include "Game.h"
 #include "Globals.h"
 #include "GSMapEditor.h"
 #include "ItemSlot.h"
+#include "NPC.h"
 #include "SpriteManager.h"
 #include "StaticMapItem.h"
 #include "Tile.h"
@@ -15,7 +17,6 @@
 #include <iostream>
 #include <sstream>
 #include <math.h>
-
 
 #include "Sprite.h"
 
@@ -46,6 +47,11 @@ GSPlaying::GSPlaying( void )
 	m_day = 1;
 
 	m_exitLocationMessage = new BitmapFont( FontStyle::FONT_WHITE_SMALL_OLD );
+
+	Globals::playerBelt = &m_playerBelt;
+
+	m_openedContainer = NULL;
+	m_npc = NULL;
 }
 
 GSPlaying::~GSPlaying( void )
@@ -55,6 +61,11 @@ GSPlaying::~GSPlaying( void )
 
 void GSPlaying::InputEvents( void )
 {
+	if( m_openedContainer )
+	{
+		m_openedContainer->InputEvents();
+	}
+
 	if( Globals::event.type == SDL_MOUSEBUTTONDOWN )
 	{
 		if( Globals::event.button.button == SDL_BUTTON_LEFT )
@@ -78,24 +89,12 @@ void GSPlaying::InputEvents( void )
 			for( it = items.begin() ; it != items.end() ; )
 			{
 				Item* item = ( *it );
-				int distanceToPick = Tools::CalculateDistance( m_player->GetPosition().x, m_player->GetPosition().y, item->GetPosition().x, item->GetPosition().y );
+				int distanceToPick = static_cast<int>(Tools::CalculateDistance( m_player->GetPosition().x, m_player->GetPosition().y, item->GetPosition().x, item->GetPosition().y ));
 
 				if( m_player->HasSpaceInInventory() && item->GetPosition().x == position.x && item->GetPosition().y == position.y && distanceToPick <= 1 )
 				{
 					it = items.erase( it );
 					m_player->GiveItem( item );
-
-					for( std::vector<ItemSlot*>::iterator iter = m_playerBelt.GetItemSlots().begin() ; iter != m_playerBelt.GetItemSlots().end() ; ++iter )
-					{
-						ItemSlot* slot = ( *iter );
-						if( slot->HasItem() == false )
-						{
-							slot->SetItem( item );
-							break;
-						}
-
-					}
-
 				}
 
 				else
@@ -103,6 +102,7 @@ void GSPlaying::InputEvents( void )
 					++it;
 				}
 			}
+
 
 			std::cout << "Pozycja myszka-button-left: x: " << Globals::event.button.x << " y: " << Globals::event.button.y << std::endl;
 			std::cout << "Pozycja po konwersji: x: " << position.x  << " y: " << position.y  << std::endl;
@@ -114,10 +114,13 @@ void GSPlaying::InputEvents( void )
 			position.x = ( Globals::event.button.x + Globals::camera->GetCameraX() ) / Globals::tilesize;
 			position.y = ( Globals::event.button.y + Globals::camera->GetCameraY() ) / Globals::tilesize;
 
+			m_player->StopAttackingMonster();
+
 			std::vector<Monster*>&monsters = Globals::currentMap->GetMonstersVector();
 
 			for( std::vector<Monster*>::const_iterator cit = monsters.begin() ; cit != monsters.end() ; ++cit )
 			{
+				Monster* monster = ( *cit );
 				( *cit )->SetAttackedByPlayer( false );
 
 				if( ( *cit )->GetPosition().x == position.x && ( *cit )->GetPosition().y == position.y )
@@ -126,6 +129,32 @@ void GSPlaying::InputEvents( void )
 					{
 						m_player->SetAttackedMonster( (*cit) );
 					}
+				}
+			}
+
+			std::vector<StaticMapItem*> &staticMapItems = Globals::currentMap->GetStaticMapItemVector();
+
+			for( std::vector<StaticMapItem*>::const_iterator cit = staticMapItems.begin() ; cit != staticMapItems.end() ; ++cit )
+			{
+				StaticMapItem* staticMapItem = ( *cit );
+				if( staticMapItem->GetPosition().x == position.x && staticMapItem->GetPosition().y == position.y )
+				{
+					int distance = static_cast<int>( Tools::CalculateDistance( staticMapItem->GetPosition().x, staticMapItem->GetPosition().y, m_player->GetPosition().x, m_player->GetPosition().y ) );
+
+					if( staticMapItem->HasContainer() && distance <= 1 )
+					{
+						if( staticMapItem->GetContainer()->IsLocked() )
+						{
+							std::cout << "Potrzebujesz wytrychu." << std::endl;
+						}
+
+						else
+						{
+							m_openedContainer = staticMapItem->GetContainer();
+						}
+					}
+
+					std::cout << "Wcisnales PPM na StaticMapItem." << std::endl;
 				}
 			}
 		}
@@ -212,6 +241,14 @@ void GSPlaying::InputEvents( void )
 			std::cout << "Pozycja kamery: x: " << Globals::camera->GetCameraX() << " y: " << Globals::camera->GetCameraY() << std::endl;
 			break;
 
+		case SDLK_u:
+			LevelUpDamage();
+			break;
+
+		case SDLK_y:
+			Globals::showCursor = !Globals::showCursor;
+			break;
+
 		case SDLK_SPACE:
 			NextTurn();
 			break;
@@ -221,7 +258,10 @@ void GSPlaying::InputEvents( void )
 			break;
 
 		case SDLK_p:
-			//PlaceProtectionZone( m_player->GetPosition() );
+			{
+				bool b = m_player->GetSkillOfType( skillTypes::INCREASED_VISIBILITY ).SkillIsLearned();
+				m_player->GetSkillOfType( skillTypes::INCREASED_VISIBILITY ).SetLearnedSkill( !b );
+			}
 			break;
 
 		case SDLK_f:
@@ -291,28 +331,40 @@ void GSPlaying::Think( void )
 	m_player->Think();
 	m_playerBelt.Think();
 
-	if( m_keysHeld[SDLK_UP] )
+	if( m_openedContainer )
+	{
+		m_openedContainer->Think();
+	}
+
+	if( m_openedContainer && m_player->IsMoving() )
+	{
+		m_openedContainer = NULL;
+	}
+
+	if( m_player->IsMoving() )
+	{
+		m_npc = NULL;
+	}
+
+	if( m_keysHeld[SDLK_UP] || m_keysHeld[SDLK_w] )
 	{
 		m_player->Move( NORTH );
 	}
 
-	else if( m_keysHeld[SDLK_DOWN] )
+	else if( m_keysHeld[SDLK_DOWN] || m_keysHeld[SDLK_s] )
 	{
 		m_player->Move( SOUTH );
 	}
 
-	else if( m_keysHeld[SDLK_RIGHT] )
+	else if( m_keysHeld[SDLK_RIGHT] || m_keysHeld[SDLK_d] )
 	{
 		m_player->Move( EAST );
 	}
 
-	else if( m_keysHeld[SDLK_LEFT] )
+	else if( m_keysHeld[SDLK_LEFT] || m_keysHeld[SDLK_a] )
 	{
 		m_player->Move( WEST );
 	}
-
-	int mouse_x = Globals::event.motion.x;
-	int mouse_y = Globals::event.motion.y;
 }
 
 void GSPlaying::Update( float deltaTime )
@@ -327,7 +379,16 @@ void GSPlaying::Draw( void )
 	m_map->Draw();
 	m_player->Draw();
 	m_playerBelt.Draw();
-	DrawExitLocationMessage();
+
+	if( m_player->GetPosition().x == m_map->GetExitPosition().x && m_player->GetPosition().y == m_map->GetExitPosition().y )
+	{
+		m_exitLocationMessage->show_text( 1280 / 2, 720 / 2, "Press ENTER to exit.", Globals::screen );
+	}
+
+	if( m_openedContainer )
+	{
+		m_openedContainer->Draw();
+	}
 }
 
 Map* GSPlaying::GetMapByName( std::string mapName )
@@ -427,6 +488,9 @@ void GSPlaying::PlayerLeaveMap( void )
 	Map* map = Globals::currentMap;
 	if( m_player->GetPosition().x == map->GetExitPosition().x && m_player->GetPosition().y == map->GetExitPosition().y )
 	{
+		m_player->StopAttackingMonster();
+
+
 		std::cout << "Opuszczamy mape" << std::endl;
 		Globals::game->SetGameState( "Craft menu" );
 
@@ -447,6 +511,24 @@ void GSPlaying::DrawExitLocationMessage( void )
 {
 	if( m_player->GetPosition().x == m_map->GetExitPosition().x && m_player->GetPosition().y == m_map->GetExitPosition().y )
 	{
-		m_exitLocationMessage->show_text( 360, 400, "Press ENTER to exit.", Globals::screen );
+		m_exitLocationMessage->show_text( 1280 / 2, 720 / 2, "Press ENTER to exit.", Globals::screen );
+	}
+}
+
+void GSPlaying::LevelUpDamage( void )
+{
+	int experienceRequiredToLevelUp = m_player->GetSkills().m_battle * 2;
+	if( m_player->GetExperiencePoints() >= experienceRequiredToLevelUp )
+	{
+		//m_player->SetBaseDamage( m_player->GetBaseDamage() + 1 );
+		m_player->GetSkills().m_battle += 1;
+		m_player->SetExperiencePoints( m_player->GetExperiencePoints() - experienceRequiredToLevelUp );
+
+		std::cout << "Podniosles swoje zdolnosci bojowe. Obrazenia +1." << std::endl;
+	}
+
+	else
+	{
+		std::cout << "Potrzebujesz " << experienceRequiredToLevelUp << " aby podniesc zwoje zdolnosci bojowe." << std::endl;
 	}
 }

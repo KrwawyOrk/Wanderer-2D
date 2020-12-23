@@ -37,14 +37,15 @@ void Sprite::Draw( SDL_Surface* screen, Position& position )
 	}
 }
 
-void Sprite::Draw( SDL_Surface* screen, int x, int y, SDL_Rect& healthPercent )
+void Sprite::Draw( SDL_Surface* screen, int x, int y, SDL_Rect* clip = NULL )
 {
 	if( m_surface )
 	{
 		SDL_Rect rect;
+
 		rect.x = x;
 		rect.y = y;
 
-		SDL_BlitSurface( m_surface, &healthPercent, screen, &rect );
+		SDL_BlitSurface( m_surface, clip, screen, &rect );
 	}
 }

@@ -8,10 +8,19 @@
 class Item;
 class Sprite;
 
+namespace itemSlotType
+{
+	enum itemSlotType_t
+	{
+		INVENTORY_SLOT,
+		CONTAINER_SLOT
+	};
+}
+
 class ItemSlot : public Button
 {
 public:
-	ItemSlot( int x, int y );
+	ItemSlot( int x, int y, itemSlotType::itemSlotType_t itemSlotType );
 
 	void SetItem( Item* item );
 	void RemoveItem( void );
@@ -50,7 +59,8 @@ public:
 private:
 	Item* m_item;
 	bool m_selected;
-	Sprite m_selectedSprite;
+	itemSlotType::itemSlotType_t m_itemSlotType;
+	Sprite m_selectedSprite;	
 };
 
 #endif

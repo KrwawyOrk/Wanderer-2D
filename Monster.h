@@ -7,6 +7,8 @@
 class BitmapFont;
 class Player;
 
+const float MONSTER_ATTACK_DELAY = 1.0f;
+
 class Monster : public Creature
 {
 public:
@@ -33,12 +35,12 @@ public:
 		return m_nextMove;
 	}
 
-	void SetNextAttack( int nextAttack )
+	void SetNextAttack( float nextAttack )
 	{
 		m_nextAttack = nextAttack;
 	}
 
-	int GetNextAttack( void ) 
+	float GetNextAttack( void ) 
 	{
 		return m_nextAttack;
 	}
@@ -109,13 +111,17 @@ public:
 
 	void RandomMovement( void );
 	void AttackPlayer();
-	void CreateCorpse( void );
+	void CreateCorpseWithLootItems( void );
+
 	void DrawHealthBar( void );
+	/*---*/void DrawHealthBarWhenAttackedByPlayer( SDL_Rect *rect );
+	/*---*/void DrawHealthBarOnMouseOver( SDL_Rect* rect );
+		   SDL_Rect* GetSDLRectangleForMonsterHealthBar( void );
 
 private:
 	int m_baseDamage;
 	int m_nextMove;
-	int m_nextAttack;
+	float m_nextAttack;
 
 	Position m_respawnPosition;
 	int m_respawnTime;

@@ -42,7 +42,7 @@ Monster* Factory::CreateMonsterRespawn( std::string name, Position position, int
 	m->SetVelocity( 50.0f );
 	m->SetHealthPoints( 20 );
 	m->SetMaxHealthPoints( 20 );
-	m->SetBaseDamage( 5 );
+	m->SetBaseDamage( 10 );
 	m->SetNextMove( 0 );
 	m->SetNextAttack( 0 );
 	m->SetAttackingPlayer( false );

@@ -8,6 +8,8 @@
 #include <vector>
 
 class Button;
+class Container;
+class Item;
 class ItemSlot;
 class Player;
 
@@ -29,6 +31,9 @@ public:
 		}
 	}
 
+	void InsertItemToInventory( Item* item );
+	void DrawPlayerHealthBar( int position_x, int position_y );
+
 	std::vector<ItemSlot*>& GetItemSlots( void ) { return m_itemSlots; }
 
 private:
@@ -47,6 +52,9 @@ private:
 	Sprite m_pistol;
 	Sprite m_crowbar;
 
+	Sprite m_playerHealthBar;
+	Sprite m_gui_background;
+
 	Text* m_food;
 	Text* m_day;
 
@@ -58,12 +66,16 @@ private:
 	BitmapFont* m_pistolAmmunition;
 	BitmapFont* m_experiencePoints;
 	BitmapFont* m_damage;
+	BitmapFont* m_monstersKilled;
 
 	Button* m_inventoryButton;
 	Button* m_quitButton;
 
 	std::vector<ItemSlot*> m_itemSlots;
 	Sprite m_inventoryBelt;
+
+	ItemSlot* m_containerSlotTest;
+	Container* m_container;
 };
 
 #endif

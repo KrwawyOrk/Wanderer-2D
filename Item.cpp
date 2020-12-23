@@ -1,5 +1,6 @@
 #include "Item.h"
 
+#include "Camera.h"
 #include "Globals.h"
 #include "Player.h"
 #include "SpriteManager.h"
@@ -17,6 +18,11 @@ Item::Item( Position position, itemType_t itemType )
 		m_itemType = HEALTH_REGENERATION;
 		Globals::spriteManager->GetSprite( m_sprite, "health_info" );
 		break;
+
+	case EXPERIENCE_BOOK:
+		m_itemType = EXPERIENCE_BOOK;
+		Globals::spriteManager->GetSprite( m_sprite, "experience_book" );
+		break;
 	}	
 }
 
@@ -24,13 +30,18 @@ Item::~Item()
 {
 	std::cout << "delete item" << std::endl;
 }
-	
+
+
 void Item::OnUse( Player* player )
 {
 	switch( m_itemType )
 	{
 	case HEALTH_REGENERATION:
-		player->Heal( 10 );
+		player->Heal( player->GetSkills().m_medicine * 10 );
+		break;
+
+	case EXPERIENCE_BOOK:
+		player->SetExperiencePoints( player->GetExperiencePoints() + 5 );
 		break;
 	}
 }

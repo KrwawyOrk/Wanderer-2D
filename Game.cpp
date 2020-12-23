@@ -8,6 +8,7 @@
 #include "Globals.h"
 #include "Map.h"
 #include "SpriteManager.h"
+#include "Timer.h"
 
 #include "GSBattleFight.h"
 #include "GSPlaying.h"
@@ -22,6 +23,8 @@
 
 #include "SDL_ttf.h"
 #include "Timer.h"
+
+const int FRAMES_PER_SECOND = 30;
 
 Game::Game()
 {
@@ -75,7 +78,7 @@ void Game::InputEvents( void )
 
 void Game::Think( void )
 {
-		Globals::currentTime = SDL_GetTicks() / 1000;
+	Globals::currentTime = static_cast<float>(SDL_GetTicks() / 1000.0f);
 
 	if( m_gameState )
 	{
@@ -115,6 +118,16 @@ bool Game::SetGameState( std::string gameStateTitle )
 
 		else if( gameStateTitle == "Craft menu" )
 			m_gamestateEnum = CRAFTMENU;
+
+
+		Player* player = Globals::currentPlayer;
+		player->StopAttackingMonster();
+
+		if( player->GetAttackedMonster() )
+		{
+			player->GetAttackedMonster()->SetAttackedByPlayer( false );
+			player->GetAttackedMonster()->SetAttackingPlayer( false );
+		}
 
 		return true;
 	}
@@ -169,21 +182,27 @@ int main( int argc, char* argv[] )
 	Globals::game = game;
 
 	// Timing variables
-	Uint32 old_time, current_time;
+	float old_time, current_time;
 	float ftime;
 	//-----------------
 
 	// Need to initialize this here for event loop to work
-	current_time = SDL_GetTicks();
+	current_time = static_cast<float>(SDL_GetTicks() );
 	//----------------------------------------------------
+
+	//The frame rate regulator
+    Timer fps;
 
 	if( Globals::spriteManager->SpritesLoadedSuccessfully() )	// Glowna petla gry rozpocznie prace tylko wtedy jezeli nie bylo problemow z zaladowaniem spritow.
 	{
 		while( Globals::game->GameIsRunning() )
 		{
+			//Start the frame timer
+			fps.start();
+
 			// Update the timing information
 			old_time = current_time;
-			current_time = SDL_GetTicks();
+			current_time = static_cast<float>(SDL_GetTicks() );
 			ftime = (current_time - old_time) / 1000.0f;
 			Globals::deltaTime = ftime;
 
@@ -194,10 +213,10 @@ int main( int argc, char* argv[] )
 			SDL_FillRect( Globals::screen, &Globals::screen->clip_rect, SDL_MapRGB( Globals::screen->format, 0, 0, 0 ) );
 			Globals::game->Draw();
 
-			SDL_Flip( Globals::screen );
-
-			SDL_Delay( 1 );
+			SDL_Flip( Globals::screen );	
 		}
+
+		SDL_Delay( 1 );
 	}
 
 	delete game;

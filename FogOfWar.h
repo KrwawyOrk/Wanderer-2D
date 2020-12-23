@@ -4,7 +4,7 @@
 #include "GameObject.h"
 #include "Player.h"
 
-const int FOGOFWAR_DISTANCE = 3;
+const int FOGOFWAR_DISTANCE = 4;
 
 class FogOfWar : public GameObject
 {

@@ -67,6 +67,10 @@ public:
 
 	Sprite& GetSprite( void ) { return m_sprite; }
 	bool IsMoving( void );
+	bool IsMovingUp( void );
+	bool IsMovingDown( void );
+	bool IsMovingLeft( void );
+	bool IsMovingRight( void );
 
 protected:
 	std::string m_name;
