@@ -87,6 +87,7 @@ GSMapEditor::GSMapEditor()
 	mapeditorSprites.push_back( "labtestwalldirt" );
 	mapeditorSprites.push_back( "labwallbase" );
 	mapeditorSprites.push_back( "szafkatest" );
+	mapeditorSprites.push_back( "health_info" );
 
 	int draw_x = 10;
 	int draw_y = 30;
