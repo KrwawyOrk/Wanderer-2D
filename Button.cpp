@@ -27,11 +27,11 @@ void Button::DrawButton( void )
 {
 	if( ButtonHover() && m_hoverEffect )
 	{
+
 		SDL_Rect rect;
 		rect.x = 0;
 		rect.y = m_sprite.GetSDLSurface()->h / 2;
-		rect.w = Globals::tilesize;
-		//rect.w = m_sprite.GetSDLSurface()->w;
+		rect.w = m_sprite.GetSDLSurface()->w;
 		rect.h = m_sprite.GetSDLSurface()->h / 2;
 
 		m_sprite.Draw( Globals::screen, position_x, position_y, &rect );
@@ -42,8 +42,7 @@ void Button::DrawButton( void )
 		SDL_Rect rect;
 		rect.x = 0;
 		rect.y = 0;
-		rect.w = Globals::tilesize;
-		//rect.w = m_sprite.GetSDLSurface()->w;
+		rect.w = m_sprite.GetSDLSurface()->w;
 		rect.h = m_sprite.GetSDLSurface()->h / 2;
 
 		m_sprite.Draw( Globals::screen, position_x, position_y, &rect );
@@ -51,18 +50,7 @@ void Button::DrawButton( void )
 
 	if( !m_hoverEffect )
 	{
-		//m_sprite.Draw( Globals::screen, position_x, position_y );
-
-		int spriteWidth = m_sprite.GetSDLSurface()->w;
-		int spriteHeigh = m_sprite.GetSDLSurface()->h;
-		
-		SDL_Rect src;
-		src.x = 0;
-		src.y = 0;
-		src.w = Globals::tilesize;
-		src.h = spriteHeigh;
-
-		m_sprite.Draw( Globals::screen, position_x, position_y, &src );
+		m_sprite.Draw( Globals::screen, position_x, position_y );
 	}
 }
 
@@ -108,7 +96,7 @@ bool Button::ButtonHover( void )
 	{
 		if( mouse_x >= position_x && mouse_x <= position_x + rect.w && mouse_y >= position_y && mouse_y <= position_y + rect.h )
 		{
-			buttonHover = true;	
+			buttonHover = true;
 		}
 	}
 
