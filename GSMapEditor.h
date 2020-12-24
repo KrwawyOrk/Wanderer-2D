@@ -85,6 +85,7 @@ public:
 	}
 
 	void DrawMousePositionInfo( void );
+	void DrawBrush( void );
 
 private:
 	Position m_brushPosition;

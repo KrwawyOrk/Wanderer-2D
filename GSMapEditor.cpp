@@ -26,46 +26,6 @@ nie zostaly wykorzystane w programie. No coz pozwole zarzucic cytatem, ktory zna
 
 GSMapEditor::GSMapEditor()
 {
-	for( int i = 0 ; i < 323 ; i++ )
-	{
-		m_keysHeld[i] = false;
-	}
-
-	m_mouseHeld = false;
-	m_mouseHeldRight = false;
-
-	m_brushSize = 1;
-	m_brushPosition.x = 0;
-	m_brushPosition.y = 0;
-
-	SDL_GetMouseState( &m_brushPosition.x, &m_brushPosition.y );
-	Globals::spriteManager->GetSprite( m_selectedSprite, m_selectedSpriteName );
-
-	m_textInput = new GUITextInput( Position( 5, 5) );
-	m_mapNameInput = new GUITextInput( Position( 100, 100 ) );
-
-	m_mapEditorState = MENU;
-	m_mode = TILE;
-	m_walkableStaticMapItem = false;
-	m_showModeInfo = false;
-	m_mousePositionInfo = new BitmapFont( FontStyle::FONT_WHITE_SMALL );
-	m_spriteName = new BitmapFont( FontStyle::FONT_WHITE_SMALL );
-	m_mapEditorNotifications = false;
-
-	m_selectedSpriteName = "trawa";
-	Globals::spriteManager->GetSprite( m_selectedSprite, "trawa" );
-
-	m_map = NULL;
-
-	Globals::spriteManager->GetSprite( m_mapEditorGraphics[TILE_YES], "tile_yes" );
-	Globals::spriteManager->GetSprite( m_mapEditorGraphics[TILE_NO], "tile_no" );
-	Globals::spriteManager->GetSprite( m_mapEditorGraphics[STATICMAPITEM_YES], "staticmapitem_yes" );
-	Globals::spriteManager->GetSprite( m_mapEditorGraphics[STATICMAPITEM_NO], "staticmapitem_no" );
-	Globals::spriteManager->GetSprite( m_mapEditorGraphics[WALKABLE_YES], "walkable_yes" );
-	Globals::spriteManager->GetSprite( m_mapEditorGraphics[WALKABLE_NO], "walkable_no" );
-	Globals::spriteManager->GetSprite( m_brushSprite, "brush" );
-	Globals::spriteManager->GetSprite( m_backgroundPaper, "paperbackground" );
-
 	std::vector<std::string> mapeditorSprites;
 	mapeditorSprites.push_back( "trawa" );
 	mapeditorSprites.push_back( "trawa2" );
@@ -88,6 +48,48 @@ GSMapEditor::GSMapEditor()
 	mapeditorSprites.push_back( "labwallbase" );
 	mapeditorSprites.push_back( "szafkatest" );
 	mapeditorSprites.push_back( "health_info" );
+
+	m_selectedSpriteName = "trawa";
+	Globals::spriteManager->GetSprite( m_selectedSprite, m_selectedSpriteName );
+
+	for( int i = 0 ; i < 323 ; i++ )
+	{
+		m_keysHeld[i] = false;
+	}
+
+	m_mouseHeld = false;
+	m_mouseHeldRight = false;
+
+	m_brushSize = 1;
+	m_brushPosition.x = 0;
+	m_brushPosition.y = 0;
+
+	SDL_GetMouseState( &m_brushPosition.x, &m_brushPosition.y );
+
+	m_textInput = new GUITextInput( Position( 5, 5) );
+	m_mapNameInput = new GUITextInput( Position( 100, 100 ) );
+
+	m_mapEditorState = MENU;
+	m_mode = TILE;
+	m_walkableStaticMapItem = false;
+	m_showModeInfo = false;
+	m_mousePositionInfo = new BitmapFont( FontStyle::FONT_WHITE_SMALL );
+	m_spriteName = new BitmapFont( FontStyle::FONT_WHITE_SMALL );
+	m_mapEditorNotifications = false;
+
+	m_map = NULL;
+
+	Globals::spriteManager->GetSprite( m_mapEditorGraphics[TILE_YES], "tile_yes" );
+	Globals::spriteManager->GetSprite( m_mapEditorGraphics[TILE_NO], "tile_no" );
+	Globals::spriteManager->GetSprite( m_mapEditorGraphics[STATICMAPITEM_YES], "staticmapitem_yes" );
+	Globals::spriteManager->GetSprite( m_mapEditorGraphics[STATICMAPITEM_NO], "staticmapitem_no" );
+	Globals::spriteManager->GetSprite( m_mapEditorGraphics[WALKABLE_YES], "walkable_yes" );
+	Globals::spriteManager->GetSprite( m_mapEditorGraphics[WALKABLE_NO], "walkable_no" );
+	Globals::spriteManager->GetSprite( m_brushSprite, "brush" );
+	Globals::spriteManager->GetSprite( m_backgroundPaper, "paperbackground" );
+
+
+
 
 	int draw_x = 10;
 	int draw_y = 30;
@@ -218,7 +220,7 @@ void GSMapEditor::InputEvents( void )
 				{
 					Globals::camera->velocity_x = 0;
 					Globals::camera->velocity_y = 0;
-					
+
 				}
 
 				SetBrushPosition( position );
@@ -240,16 +242,16 @@ void GSMapEditor::InputEvents( void )
 
 			/*if( m_mouseHeldRight && !m_selectedSpriteName.empty() && m_brushPosition.x >= 0 && m_brushPosition.y >= 0 )
 			{
-				switch( m_mode )
-				{
-				case TILE:
-					RemoveTile( m_map, m_brushPosition );
-					break;
+			switch( m_mode )
+			{
+			case TILE:
+			RemoveTile( m_map, m_brushPosition );
+			break;
 
-				case STATIC_ITEM:
-					RemoveTile( m_map, m_brushPosition );
-					break;
-				}
+			case STATIC_ITEM:
+			RemoveTile( m_map, m_brushPosition );
+			break;
+			}
 			}*/
 
 			if( Globals::event.type == SDL_MOUSEBUTTONDOWN )
@@ -346,10 +348,7 @@ void GSMapEditor::InputEvents( void )
 				{
 					Globals::game->SetGameState( "Play" );
 					Globals::camera->Center( Globals::currentPlayer );
-
 					m_textInput->Clear();
-					m_selectedSprite.SetSDLSurface( NULL );
-
 					break;
 				}
 
@@ -522,7 +521,7 @@ void GSMapEditor::InputEvents( void )
 				Globals::camera->FollowPlayer( true );
 			}
 		}
-		
+
 	}
 
 	//---------------------------------------------------- SPRITES ----------------------------------------------------
@@ -555,7 +554,7 @@ void GSMapEditor::Think( void )
 	if( m_mapEditorState == MAPPING )
 	{
 		Globals::camera->Update( Globals::deltaTime );
-		
+
 		Globals::camera->Think();
 		m_map->Think();
 
@@ -605,13 +604,12 @@ void GSMapEditor::Draw( void )
 	if( m_mapEditorState == MAPPING )
 	{
 		m_map->Draw();
-		m_selectedSprite.Draw( Globals::screen, m_brushPosition );
-		m_brushSprite.Draw( Globals::screen, m_brushPosition );
 		m_textInput->Draw();
+		DrawBrush();
 		m_selectedSprite.Draw( Globals::screen, 5, 50 );
 		DrawMousePositionInfo();
 		m_spriteName->show_text( 700, 10, m_selectedSprite.GetSpriteName(), Globals::screen );
-		
+
 		if( m_mode == TILE )
 			m_mapEditorGraphics[TILE_YES].Draw( Globals::screen, 250, 20 );
 
@@ -836,4 +834,22 @@ void GSMapEditor::DrawMousePositionInfo( void )
 	ss << "x: " << mouse_x << "  y: " << mouse_y;
 
 	m_mousePositionInfo->show_text( 900, 10, ss.str(), Globals::screen );
+}
+
+void GSMapEditor::DrawBrush( void )
+{
+	int spriteWidth = m_selectedSprite.GetSDLSurface()->w;
+	int spriteHeight = m_selectedSprite.GetSDLSurface()->h;
+
+	if( spriteWidth == Globals::tilesize )
+	{
+		m_selectedSprite.Draw( Globals::screen, m_brushPosition );
+	}
+
+	else
+	{
+		m_selectedSprite.DrawAnimatedOnMapPosition( Globals::screen, m_brushPosition );
+	}
+
+	m_brushSprite.Draw( Globals::screen, m_brushPosition );
 }

@@ -14,6 +14,11 @@ public:
 
 	virtual void Draw( SDL_Surface* screen, int x, int y );
 	virtual void Draw( SDL_Surface* screen, Position& position );
+
+	//use this function for animations... :-)
+	virtual void DrawAnimatedOnMapPosition( SDL_Surface* screen, Position& position );
+	virtual void DrawAnimatedOnScreenPosition( SDL_Surface* screen, int x, int y );
+
 	virtual void Draw( SDL_Surface* screen, int x, int y, SDL_Rect* clip );
 
 	SDL_Surface* GetSDLSurface( void ) const { return m_surface; }
