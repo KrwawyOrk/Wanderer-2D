@@ -7,6 +7,8 @@
 class Position;
 class SpriteManager;
 
+const int DEFAULT_ANIMATION_SPEED = 400;
+
 class Sprite
 {
 public:
@@ -16,8 +18,8 @@ public:
 	virtual void Draw( SDL_Surface* screen, Position& position );
 
 	//use this function for animations... :-)
-	virtual void DrawAnimatedOnMapPosition( SDL_Surface* screen, Position& position );
-	virtual void DrawAnimatedOnScreenPosition( SDL_Surface* screen, int x, int y );
+	virtual void DrawAnimatedOnMapPosition( SDL_Surface* screen, Position& position, int animationSpeed = DEFAULT_ANIMATION_SPEED );
+	virtual void DrawAnimatedOnScreenPosition( SDL_Surface* screen, int x, int y, int animationSpeed = DEFAULT_ANIMATION_SPEED );
 
 	virtual void Draw( SDL_Surface* screen, int x, int y, SDL_Rect* clip );
 

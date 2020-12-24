@@ -39,7 +39,7 @@ void Monster::Draw( void )
 
 	if( m_attackedByPlayer )
 	{
-		m_attackedByPlayerSprite.Draw( Globals::screen, static_cast<int>( flposition_x - Globals::camera->GetCameraX() ), static_cast<int>( flposition_y - Globals::camera->GetCameraY() ) );
+		m_attackedByPlayerSprite.DrawAnimatedOnScreenPosition( Globals::screen, static_cast<int>( flposition_x - Globals::camera->GetCameraX() ), static_cast<int>( flposition_y - Globals::camera->GetCameraY() ), 100 );
 	}
 
 	/*std::ostringstream sshp;

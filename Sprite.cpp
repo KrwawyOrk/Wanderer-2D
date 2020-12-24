@@ -37,7 +37,7 @@ void Sprite::Draw( SDL_Surface* screen, Position& position )
 	}
 }
 
-void Sprite::DrawAnimatedOnMapPosition( SDL_Surface* screen, Position& position )
+void Sprite::DrawAnimatedOnMapPosition( SDL_Surface* screen, Position& position, int animationSpeed )
 {
 	if( m_surface )
 	{
@@ -46,7 +46,7 @@ void Sprite::DrawAnimatedOnMapPosition( SDL_Surface* screen, Position& position 
 		dst.y = position.y * Globals::tilesize - Globals::camera->GetCameraY() - m_surface->h + Globals::tilesize;
 
 		SDL_Rect src;
-		src.x = Globals::tilesize * int(((SDL_GetTicks() / Globals::spriteAnimationSpeed) % ( m_surface->w / Globals::tilesize ) ));
+		src.x = Globals::tilesize * int(((SDL_GetTicks() / animationSpeed) % ( m_surface->w / Globals::tilesize ) ));
 		src.y = 0;
 		src.w = Globals::tilesize;
 		src.h = m_surface->h;
@@ -55,7 +55,7 @@ void Sprite::DrawAnimatedOnMapPosition( SDL_Surface* screen, Position& position 
 	}
 }
 
-void Sprite::DrawAnimatedOnScreenPosition( SDL_Surface* screen, int x, int y)
+void Sprite::DrawAnimatedOnScreenPosition( SDL_Surface* screen, int x, int y, int animationSpeed )
 {
 	if( m_surface )
 	{
@@ -64,7 +64,7 @@ void Sprite::DrawAnimatedOnScreenPosition( SDL_Surface* screen, int x, int y)
 		dst.y = y;
 
 		SDL_Rect src;
-		src.x = Globals::tilesize * int(((SDL_GetTicks() / Globals::spriteAnimationSpeed) % ( m_surface->w / Globals::tilesize ) ));
+		src.x = Globals::tilesize * int(((SDL_GetTicks() / animationSpeed ) % ( m_surface->w / Globals::tilesize ) ));
 		src.y = 0;
 		src.w = Globals::tilesize;
 		src.h = m_surface->h;
