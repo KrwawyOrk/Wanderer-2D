@@ -81,11 +81,11 @@ void ItemSlot::Draw( void )
 
 	if( m_item )
 	{
-		m_item->GetSprite().Draw( Globals::screen, position_x, position_y );
+		m_item->GetSprite().DrawAnimatedOnScreenPosition( Globals::screen, position_x, position_y );
 	}
 
 	if( m_selected )
 	{
-		m_selectedSprite.Draw( Globals::screen, position_x, position_y );
+		m_selectedSprite.DrawAnimatedOnScreenPosition( Globals::screen, position_x, position_y );
 	}
 }
