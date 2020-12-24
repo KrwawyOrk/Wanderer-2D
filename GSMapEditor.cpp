@@ -606,7 +606,6 @@ void GSMapEditor::Draw( void )
 		m_map->Draw();
 		m_textInput->Draw();
 		DrawBrush();
-		m_selectedSprite.Draw( Globals::screen, 5, 50 );
 		DrawMousePositionInfo();
 		m_spriteName->show_text( 700, 10, m_selectedSprite.GetSpriteName(), Globals::screen );
 
@@ -851,5 +850,5 @@ void GSMapEditor::DrawBrush( void )
 		m_selectedSprite.DrawAnimatedOnMapPosition( Globals::screen, m_brushPosition );
 	}
 
-	m_brushSprite.Draw( Globals::screen, m_brushPosition );
+	m_selectedSprite.DrawAnimatedOnScreenPosition( Globals::screen, 5, 50 );
 }
