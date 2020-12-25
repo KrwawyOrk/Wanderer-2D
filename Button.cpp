@@ -30,6 +30,45 @@ void Button::DrawButton( void )
 		SDL_Rect rect;
 		rect.x = 0;
 		rect.y = m_sprite.GetSDLSurface()->h / 2;
+		rect.w = m_sprite.GetSDLSurface()->w;
+		rect.h = m_sprite.GetSDLSurface()->h / 2;
+
+		m_sprite.Draw( Globals::screen, position_x, position_y, &rect );
+	}
+
+	else if( !ButtonHover() && m_hoverEffect )
+	{
+		SDL_Rect rect;
+		rect.x = 0;
+		rect.y = 0;
+		rect.w = m_sprite.GetSDLSurface()->w;
+		rect.h = m_sprite.GetSDLSurface()->h / 2;
+
+		m_sprite.Draw( Globals::screen, position_x, position_y, &rect );
+	}
+
+	if( !m_hoverEffect )
+	{
+		int spriteWidth = m_sprite.GetSDLSurface()->w;
+		int spriteHeigh = m_sprite.GetSDLSurface()->h;
+
+		SDL_Rect src;
+		src.x = 0;
+		src.y = 0;
+		src.w = m_sprite.GetSDLSurface()->w;
+		src.h = spriteHeigh;
+
+		m_sprite.Draw( Globals::screen, position_x, position_y, &src );
+	}
+}
+
+void Button::DrawButtonInSpriteBrowser( void )
+{
+	if( ButtonHover() && m_hoverEffect )
+	{
+		SDL_Rect rect;
+		rect.x = 0;
+		rect.y = m_sprite.GetSDLSurface()->h / 2;
 		rect.w = Globals::tilesize;
 		rect.h = m_sprite.GetSDLSurface()->h / 2;
 
@@ -51,7 +90,7 @@ void Button::DrawButton( void )
 	{
 		int spriteWidth = m_sprite.GetSDLSurface()->w;
 		int spriteHeigh = m_sprite.GetSDLSurface()->h;
-		
+
 		SDL_Rect src;
 		src.x = 0;
 		src.y = 0;

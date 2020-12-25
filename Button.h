@@ -15,6 +15,9 @@ public:
 	bool ButtonHover( void );
 	void DrawButton( void );
 
+	//Function used only in sprite browser of map editor. Other drawing functions cut the width of the picture to 50 px.
+	void DrawButtonInSpriteBrowser( void );
+
 	Sprite& GetSprite( void )
 	{
 		return m_sprite;
