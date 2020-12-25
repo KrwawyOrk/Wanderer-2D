@@ -129,13 +129,255 @@ GSMapEditor::~GSMapEditor()
 
 void GSMapEditor::InputEvents( void )
 {
-	//---------------------------------------------------- MAPPING ----------------------------------------------------
-	//---------------------------------------------------- MAPPING ----------------------------------------------------
-	//---------------------------------------------------- MAPPING ----------------------------------------------------
+	switch( m_mapEditorState )
+	{
+	case MAPPING:
+		InputMappingState();
+		break;
 
+	case SPRITES:
+		InputSpriteBrowserState();
+		break;
+
+	case MENU:
+		InputMenuState();
+		break;
+	}
+}
+
+void GSMapEditor::Think( void )
+{
+	switch( m_mapEditorState )
+	{
+	case MAPPING:
+		ThinkMappingState();
+		break;
+
+	case SPRITES:
+		ThinkSpriteBrowserState();
+		break;
+
+	case MENU:
+		ThinkMenuState();
+		break;
+	}
+}
+
+void GSMapEditor::Draw( void )
+{
+	switch( m_mapEditorState )
+	{
+	case MAPPING:
+		DrawMappingState();
+		break;
+
+	case SPRITES:
+		DrawSpriteBrowserState();
+		break;
+
+	case MENU:
+		DrawMenuState();
+		break;
+	}
+}
+
+void GSMapEditor::MoveBrush( brushDirection_t brushDirection )
+{
 	if( m_mapEditorState == MAPPING )
 	{
-		if( Globals::event.type == SDL_MOUSEBUTTONDOWN && Globals::event.button.button == SDL_BUTTON_LEFT )
+		switch( brushDirection )
+		{
+		case UP:
+			m_brushPosition.y--;
+			break;
+
+		case DOWN:
+			m_brushPosition.y++;
+			break;
+
+		case LEFT:
+			m_brushPosition.x--;
+			break;
+
+		case RIGHT:
+			m_brushPosition.x++;
+			break;
+		}
+
+		Globals::camera->Center( m_brushPosition );
+	}
+}
+
+void GSMapEditor::SaveMap( Map* map )
+{
+	std::vector<Tile*>& mapTiles = m_map->GetTilesVector();
+	std::vector<Tile*>::const_iterator cit;
+
+	std::string path = "mapeditor/" + m_map->GetMapName() + "_tiles.txt";
+	std::ofstream tiles( "mapeditor/tiles.txt" );
+
+	if( tiles )
+	{
+		for( cit = mapTiles.begin() ; cit != mapTiles.end() ; ++cit )
+		{
+			tiles << ( *cit )->GetPosition().x;
+			tiles << " ";
+			tiles << ( *cit )->GetPosition().y;
+			tiles << " ";
+			tiles << ( *cit )->GetSprite().GetSpriteName();
+			tiles << "\n";
+		}
+
+		std::cout << "Zapisuje TILE do pliku mapeditor/map_tiles.txt, ilosc TILE: " << mapTiles.size() << std::endl;
+
+		tiles.close();
+	}
+
+	std::vector<StaticMapItem*>& mapStaticItems = m_map->GetStaticMapItemVector();
+	std::vector<StaticMapItem*>::const_iterator citt;
+
+	std::ofstream staticItems( "mapeditor/staticmapitems.txt" );
+
+	if( staticItems )
+	{
+		for( citt = mapStaticItems.begin() ; citt != mapStaticItems.end() ; ++citt )
+		{
+			staticItems << ( *citt )->GetPosition().x;
+			staticItems << " ";
+			staticItems << ( *citt )->GetPosition().y;
+			staticItems << " ";
+			staticItems << ( *citt )->GetName();
+			staticItems << " ";
+			staticItems << ( *citt )->IsWalkable();
+			staticItems << " ";
+			staticItems << ( *citt )->GetSprite().GetSpriteName();
+			staticItems << "\n";
+		}
+
+		std::cout << "Zapisuje STATIC MAP ITEMS do pliku mapeditor/map_staticitems.txt.\n ilosc STATIC MAP ITEMS: " << mapStaticItems.size() << std::endl;
+
+		staticItems.close();
+	}
+}
+
+void GSMapEditor::AddTile( Map *map, Position& position, std::string spriteName )
+{
+	bool canAddTile = true;
+
+	std::vector<Tile*>& tiles = map->GetTilesVector();
+	std::vector<Tile*>::const_iterator cit;
+
+	for( cit = tiles.begin() ; cit != tiles.end() ; ++cit )	// Sprawdzamy czy nie ma juz jakiegos TILE na tej pozycji.
+	{
+		if( ( *cit )->GetPosition().x == position.x && ( *cit )->GetPosition().y == position.y )
+			canAddTile = false;
+	}
+
+	if( canAddTile )
+		tiles.push_back( Globals::factory->CreateTile( position, spriteName ) );
+
+	else
+		if( m_mapEditorNotifications )
+		{
+			std::cout << "Nie mozna postawic wiecej niz jeden TILE na pozycji x: " << m_brushPosition.x << " y: " << m_brushPosition.y << std::endl;
+		}
+}
+
+void GSMapEditor::AddStaticMapItem( Map* map, Position& position, bool walkable, std::string spriteName )
+{
+	bool canAddStaticMapItem = true;
+
+	std::vector<StaticMapItem*>& staticMapItems = map->GetStaticMapItemVector();
+	std::vector<StaticMapItem*>::const_iterator cit;
+
+	for( cit = staticMapItems.begin() ; cit != staticMapItems.end() ; ++cit )
+	{
+		if( ( *cit )->GetPosition().x == position.x && ( *cit )->GetPosition().y == position.y )
+			canAddStaticMapItem = false;
+	}
+
+	if( canAddStaticMapItem )
+	{
+		staticMapItems.push_back( Globals::factory->CreateStaticMapItem( position, "unknown", walkable, spriteName ) );
+	}
+
+	else
+	{
+		if( m_mapEditorNotifications )
+		{
+			std::cout << "Nie mozna postawic wiecej niz jeden STATIC MAP ITEM na pozycji x: " << m_brushPosition.x << " y: " << m_brushPosition.y << std::endl;
+		}
+	}
+}
+
+void GSMapEditor::RemoveTile( Map* map, Position& position )
+{
+	std::vector<Tile*>& tiles = map->GetTilesVector();
+	std::vector<Tile*>::iterator cit;
+
+	for( cit = tiles.begin() ; cit != tiles.end() ; )
+	{
+		if( ( *cit )->GetPosition().x == position.x && ( *cit )->GetPosition().y == position.y )
+		{
+			delete ( *cit );
+			cit = tiles.erase( cit );
+		}
+
+		else
+			++cit;
+	}
+}
+
+void GSMapEditor::RemoveStaticMapItem( Map* m_map, Position& position )
+{
+	std::vector<StaticMapItem*>& staticMapItems = m_map->GetStaticMapItemVector();
+	std::vector<StaticMapItem*>::iterator cit;
+
+	for( cit = staticMapItems.begin() ; cit != staticMapItems.end() ; )
+	{
+		if( ( *cit )->GetPosition().x == position.x && ( *cit )->GetPosition().y == position.y )
+		{
+			delete ( *cit );
+			cit = staticMapItems.erase( cit );
+		}
+
+		else
+			++cit;
+	}
+}
+
+void GSMapEditor::DrawMousePositionInfo( void )
+{
+	int mouse_x = ( Globals::event.motion.x + Globals::camera->GetCameraX() ) / Globals::tilesize;
+	int mouse_y = ( Globals::event.motion.y + Globals::camera->GetCameraY() ) / Globals::tilesize;
+
+	std::stringstream ss;
+	ss << "x: " << mouse_x << "  y: " << mouse_y;
+
+	m_mousePositionInfo->show_text( 900, 10, ss.str(), Globals::screen );
+}
+
+void GSMapEditor::DrawBrush( void )
+{
+	int spriteWidth = m_selectedSprite.GetSDLSurface()->w;
+	int spriteHeight = m_selectedSprite.GetSDLSurface()->h;
+
+	if( spriteWidth == Globals::tilesize )
+	{
+		m_selectedSprite.Draw( Globals::screen, m_brushPosition );
+	}
+
+	else
+	{
+		m_selectedSprite.DrawAnimatedOnMapPosition( Globals::screen, m_brushPosition );
+	}
+
+	m_selectedSprite.DrawAnimatedOnScreenPosition( Globals::screen, 5, 50 );
+}
+
+void GSMapEditor::InputMappingState( void )
+{
+	if( Globals::event.type == SDL_MOUSEBUTTONDOWN && Globals::event.button.button == SDL_BUTTON_LEFT )
 		{
 			m_mouseHeld = true;
 		}
@@ -472,15 +714,28 @@ void GSMapEditor::InputEvents( void )
 				Globals::camera->Center( GetBrushPosition() );
 			}
 		}
-	}
+}
 
-	//---------------------------------------------------- MENU ----------------------------------------------------
-	//---------------------------------------------------- MENU ----------------------------------------------------
-	//---------------------------------------------------- MENU ----------------------------------------------------
+void GSMapEditor::InputSpriteBrowserState( void )
+{
+	if( Globals::event.type == SDL_KEYDOWN )
+		{
+			switch( Globals::event.key.keysym.sym )
+			{
+			case SDLK_ESCAPE:
+				m_mapEditorState = MAPPING;
+				break;
 
-	else if( m_mapEditorState == MENU )
-	{
-		m_mapNameInput->InputEvents();
+			case SDLK_i:
+				m_mapEditorState = MAPPING;
+				break;
+			}
+		}
+}
+
+void GSMapEditor::InputMenuState( void )
+{
+	m_mapNameInput->InputEvents();
 
 		if( m_mapNameInput->InputEnabled() )
 		{
@@ -521,334 +776,95 @@ void GSMapEditor::InputEvents( void )
 				Globals::camera->FollowPlayer( true );
 			}
 		}
-
-	}
-
-	//---------------------------------------------------- SPRITES ----------------------------------------------------
-	//---------------------------------------------------- SPRITES ----------------------------------------------------
-	//---------------------------------------------------- SPRITES ----------------------------------------------------
-
-	else if( m_mapEditorState == SPRITES )
-	{
-		if( Globals::event.type == SDL_KEYDOWN )
-		{
-			switch( Globals::event.key.keysym.sym )
-			{
-			case SDLK_ESCAPE:
-				m_mapEditorState = MAPPING;
-				break;
-
-			case SDLK_i:
-				m_mapEditorState = MAPPING;
-				break;
-			}
-		}
-	}
 }
 
-void GSMapEditor::Think( void )
+void GSMapEditor::ThinkMappingState( void )
 {
-	//---------------------------------------------------- MAPPING ----------------------------------------------------
-	//---------------------------------------------------- MAPPING ----------------------------------------------------
-	//---------------------------------------------------- MAPPING ----------------------------------------------------
-	if( m_mapEditorState == MAPPING )
-	{
-		Globals::camera->Update( Globals::deltaTime );
+	Globals::camera->Update( Globals::deltaTime );
 
-		Globals::camera->Think();
-		m_map->Think();
+	Globals::camera->Think();
+	m_map->Think();
 
-		if( m_keysHeld[SDLK_TAB] )
-			m_showModeInfo = true;
+	if( m_keysHeld[SDLK_TAB] )
+		m_showModeInfo = true;
 
-		if( !m_keysHeld[SDLK_TAB] )
-			m_showModeInfo = false;
+	if( !m_keysHeld[SDLK_TAB] )
+		m_showModeInfo = false;
 
-		if( m_showModeInfo )
-			std::cout << "m_showModeInfo = true" << std::endl;
+	if( m_showModeInfo )
+		std::cout << "m_showModeInfo = true" << std::endl;
 
-		if( m_mouseHeld )
-		{
-			if( m_mapEditorNotifications )
-			{
-				std::cout << "Mouse HELD" << std::endl;
-			}
-		}
-	}
-
-	//---------------------------------------------------- SPRITES ----------------------------------------------------
-	//---------------------------------------------------- SPRITES ----------------------------------------------------
-	//---------------------------------------------------- SPRITES ----------------------------------------------------
-
-	else if( m_mapEditorState == SPRITES )
-	{
-		for( std::vector<Button*>::iterator it = m_buttonsVector.begin() ; it != m_buttonsVector.end() ; ++it )
-		{
-			Button* button = (*it);
-			if( button->ButtonClicked() )
-			{
-				m_selectedSpriteName = button->GetSprite().GetSpriteName();
-				Globals::spriteManager->GetSprite( m_selectedSprite, m_selectedSpriteName );
-				m_mapEditorState = MAPPING;
-			}
-		}
-	}
-}
-
-void GSMapEditor::Draw( void )
-{
-	//---------------------------------------------------- MAPPING ----------------------------------------------------
-	//---------------------------------------------------- MAPPING ----------------------------------------------------
-	//---------------------------------------------------- MAPPING ----------------------------------------------------
-
-	if( m_mapEditorState == MAPPING )
-	{
-		m_map->Draw();
-		m_textInput->Draw();
-		DrawBrush();
-		DrawMousePositionInfo();
-		m_spriteName->show_text( 700, 10, m_selectedSprite.GetSpriteName(), Globals::screen );
-
-		if( m_mode == TILE )
-			m_mapEditorGraphics[TILE_YES].Draw( Globals::screen, 250, 20 );
-
-		else
-			m_mapEditorGraphics[TILE_NO].Draw( Globals::screen, 250, 20 );
-
-		if( m_mode == STATIC_ITEM )
-			m_mapEditorGraphics[STATICMAPITEM_YES].Draw( Globals::screen, 360, 20 );
-
-		else
-			m_mapEditorGraphics[STATICMAPITEM_NO].Draw( Globals::screen, 360, 20 );
-
-		if( m_walkableStaticMapItem )
-			m_mapEditorGraphics[WALKABLE_YES].Draw( Globals::screen, 470, 20 );
-
-		else
-			m_mapEditorGraphics[WALKABLE_NO].Draw( Globals::screen, 470, 20 );
-	}
-
-
-	//---------------------------------------------------- MENU ----------------------------------------------------
-	//---------------------------------------------------- MENU ----------------------------------------------------
-	//---------------------------------------------------- MENU ----------------------------------------------------
-
-
-	else if( m_mapEditorState == MENU )
-	{
-		m_backgroundPaper.Draw( Globals::screen, 25, 25 );
-		m_mapNameInput->Draw();
-	}
-
-	//---------------------------------------------------- SPRITES ----------------------------------------------------
-	//---------------------------------------------------- SPRITES ----------------------------------------------------
-	//---------------------------------------------------- SPRITES ----------------------------------------------------
-
-	else if( m_mapEditorState == SPRITES )
-	{
-		for( std::vector<Button*>::iterator it = m_buttonsVector.begin() ; it != m_buttonsVector.end() ; ++it )
-		{
-			Button* button = (*it);
-			button->DrawButton();
-
-			if( button->ButtonHover() )
-			{
-				m_spriteName->show_text( button->position_x, button->position_y - 20, button->GetSprite().GetSpriteName(), Globals::screen );
-			}
-		}
-	}
-}
-
-void GSMapEditor::MoveBrush( brushDirection_t brushDirection )
-{
-	if( m_mapEditorState == MAPPING )
-	{
-		switch( brushDirection )
-		{
-		case UP:
-			m_brushPosition.y--;
-			break;
-
-		case DOWN:
-			m_brushPosition.y++;
-			break;
-
-		case LEFT:
-			m_brushPosition.x--;
-			break;
-
-		case RIGHT:
-			m_brushPosition.x++;
-			break;
-		}
-
-		Globals::camera->Center( m_brushPosition );
-	}
-}
-
-void GSMapEditor::SaveMap( Map* map )
-{
-	std::vector<Tile*>& mapTiles = m_map->GetTilesVector();
-	std::vector<Tile*>::const_iterator cit;
-
-	std::string path = "mapeditor/" + m_map->GetMapName() + "_tiles.txt";
-	std::ofstream tiles( "mapeditor/tiles.txt" );
-
-	if( tiles )
-	{
-		for( cit = mapTiles.begin() ; cit != mapTiles.end() ; ++cit )
-		{
-			tiles << ( *cit )->GetPosition().x;
-			tiles << " ";
-			tiles << ( *cit )->GetPosition().y;
-			tiles << " ";
-			tiles << ( *cit )->GetSprite().GetSpriteName();
-			tiles << "\n";
-		}
-
-		std::cout << "Zapisuje TILE do pliku mapeditor/map_tiles.txt, ilosc TILE: " << mapTiles.size() << std::endl;
-
-		tiles.close();
-	}
-
-	std::vector<StaticMapItem*>& mapStaticItems = m_map->GetStaticMapItemVector();
-	std::vector<StaticMapItem*>::const_iterator citt;
-
-	std::ofstream staticItems( "mapeditor/staticmapitems.txt" );
-
-	if( staticItems )
-	{
-		for( citt = mapStaticItems.begin() ; citt != mapStaticItems.end() ; ++citt )
-		{
-			staticItems << ( *citt )->GetPosition().x;
-			staticItems << " ";
-			staticItems << ( *citt )->GetPosition().y;
-			staticItems << " ";
-			staticItems << ( *citt )->GetName();
-			staticItems << " ";
-			staticItems << ( *citt )->IsWalkable();
-			staticItems << " ";
-			staticItems << ( *citt )->GetSprite().GetSpriteName();
-			staticItems << "\n";
-		}
-
-		std::cout << "Zapisuje STATIC MAP ITEMS do pliku mapeditor/map_staticitems.txt.\n ilosc STATIC MAP ITEMS: " << mapStaticItems.size() << std::endl;
-
-		staticItems.close();
-	}
-}
-
-void GSMapEditor::AddTile( Map *map, Position& position, std::string spriteName )
-{
-	bool canAddTile = true;
-
-	std::vector<Tile*>& tiles = map->GetTilesVector();
-	std::vector<Tile*>::const_iterator cit;
-
-	for( cit = tiles.begin() ; cit != tiles.end() ; ++cit )	// Sprawdzamy czy nie ma juz jakiegos TILE na tej pozycji.
-	{
-		if( ( *cit )->GetPosition().x == position.x && ( *cit )->GetPosition().y == position.y )
-			canAddTile = false;
-	}
-
-	if( canAddTile )
-		tiles.push_back( Globals::factory->CreateTile( position, spriteName ) );
-
-	else
-		if( m_mapEditorNotifications )
-		{
-			std::cout << "Nie mozna postawic wiecej niz jeden TILE na pozycji x: " << m_brushPosition.x << " y: " << m_brushPosition.y << std::endl;
-		}
-}
-
-void GSMapEditor::AddStaticMapItem( Map* map, Position& position, bool walkable, std::string spriteName )
-{
-	bool canAddStaticMapItem = true;
-
-	std::vector<StaticMapItem*>& staticMapItems = map->GetStaticMapItemVector();
-	std::vector<StaticMapItem*>::const_iterator cit;
-
-	for( cit = staticMapItems.begin() ; cit != staticMapItems.end() ; ++cit )
-	{
-		if( ( *cit )->GetPosition().x == position.x && ( *cit )->GetPosition().y == position.y )
-			canAddStaticMapItem = false;
-	}
-
-	if( canAddStaticMapItem )
-	{
-		staticMapItems.push_back( Globals::factory->CreateStaticMapItem( position, "unknown", walkable, spriteName ) );
-	}
-
-	else
+	if( m_mouseHeld )
 	{
 		if( m_mapEditorNotifications )
 		{
-			std::cout << "Nie mozna postawic wiecej niz jeden STATIC MAP ITEM na pozycji x: " << m_brushPosition.x << " y: " << m_brushPosition.y << std::endl;
+			std::cout << "Mouse HELD" << std::endl;
 		}
 	}
 }
 
-void GSMapEditor::RemoveTile( Map* map, Position& position )
+void GSMapEditor::ThinkSpriteBrowserState( void )
 {
-	std::vector<Tile*>& tiles = map->GetTilesVector();
-	std::vector<Tile*>::iterator cit;
-
-	for( cit = tiles.begin() ; cit != tiles.end() ; )
+	for( std::vector<Button*>::iterator it = m_buttonsVector.begin() ; it != m_buttonsVector.end() ; ++it )
 	{
-		if( ( *cit )->GetPosition().x == position.x && ( *cit )->GetPosition().y == position.y )
+		Button* button = (*it);
+		if( button->ButtonClicked() )
 		{
-			delete ( *cit );
-			cit = tiles.erase( cit );
+			m_selectedSpriteName = button->GetSprite().GetSpriteName();
+			Globals::spriteManager->GetSprite( m_selectedSprite, m_selectedSpriteName );
+			m_mapEditorState = MAPPING;
 		}
-
-		else
-			++cit;
 	}
 }
 
-void GSMapEditor::RemoveStaticMapItem( Map* m_map, Position& position )
+void GSMapEditor::ThinkMenuState( void )
 {
-	std::vector<StaticMapItem*>& staticMapItems = m_map->GetStaticMapItemVector();
-	std::vector<StaticMapItem*>::iterator cit;
-
-	for( cit = staticMapItems.begin() ; cit != staticMapItems.end() ; )
-	{
-		if( ( *cit )->GetPosition().x == position.x && ( *cit )->GetPosition().y == position.y )
-		{
-			delete ( *cit );
-			cit = staticMapItems.erase( cit );
-		}
-
-		else
-			++cit;
-	}
+	//TODO
 }
 
-void GSMapEditor::DrawMousePositionInfo( void )
+void GSMapEditor::DrawMappingState( void )
 {
-	int mouse_x = ( Globals::event.motion.x + Globals::camera->GetCameraX() ) / Globals::tilesize;
-	int mouse_y = ( Globals::event.motion.y + Globals::camera->GetCameraY() ) / Globals::tilesize;
+	m_map->Draw();
+	m_textInput->Draw();
+	DrawBrush();
+	DrawMousePositionInfo();
+	m_spriteName->show_text( 700, 10, m_selectedSprite.GetSpriteName(), Globals::screen );
 
-	std::stringstream ss;
-	ss << "x: " << mouse_x << "  y: " << mouse_y;
-
-	m_mousePositionInfo->show_text( 900, 10, ss.str(), Globals::screen );
-}
-
-void GSMapEditor::DrawBrush( void )
-{
-	int spriteWidth = m_selectedSprite.GetSDLSurface()->w;
-	int spriteHeight = m_selectedSprite.GetSDLSurface()->h;
-
-	if( spriteWidth == Globals::tilesize )
-	{
-		m_selectedSprite.Draw( Globals::screen, m_brushPosition );
-	}
+	if( m_mode == TILE )
+		m_mapEditorGraphics[TILE_YES].Draw( Globals::screen, 250, 20 );
 
 	else
-	{
-		m_selectedSprite.DrawAnimatedOnMapPosition( Globals::screen, m_brushPosition );
-	}
+		m_mapEditorGraphics[TILE_NO].Draw( Globals::screen, 250, 20 );
 
-	m_selectedSprite.DrawAnimatedOnScreenPosition( Globals::screen, 5, 50 );
+	if( m_mode == STATIC_ITEM )
+		m_mapEditorGraphics[STATICMAPITEM_YES].Draw( Globals::screen, 360, 20 );
+
+	else
+		m_mapEditorGraphics[STATICMAPITEM_NO].Draw( Globals::screen, 360, 20 );
+
+	if( m_walkableStaticMapItem )
+		m_mapEditorGraphics[WALKABLE_YES].Draw( Globals::screen, 470, 20 );
+
+	else
+		m_mapEditorGraphics[WALKABLE_NO].Draw( Globals::screen, 470, 20 );
+}
+
+void GSMapEditor::DrawSpriteBrowserState( void )
+{
+	for( std::vector<Button*>::iterator it = m_buttonsVector.begin() ; it != m_buttonsVector.end() ; ++it )
+	{
+		Button* button = (*it);
+		button->DrawButtonInSpriteBrowser();
+
+		if( button->ButtonHover() )
+		{
+			m_spriteName->show_text( button->position_x, button->position_y - 20, button->GetSprite().GetSpriteName(), Globals::screen );
+		}
+	}
+}
+
+void GSMapEditor::DrawMenuState( void )
+{
+	m_backgroundPaper.Draw( Globals::screen, 25, 25 );
+	m_mapNameInput->Draw();
 }

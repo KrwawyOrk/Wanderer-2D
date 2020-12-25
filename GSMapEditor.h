@@ -87,6 +87,18 @@ public:
 	void DrawMousePositionInfo( void );
 	void DrawBrush( void );
 
+	void InputMappingState( void );
+	void InputSpriteBrowserState( void );
+	void InputMenuState( void );
+
+	void ThinkMappingState( void );
+	void ThinkSpriteBrowserState( void );
+	void ThinkMenuState( void );
+
+	void DrawMappingState( void );
+	void DrawSpriteBrowserState( void );
+	void DrawMenuState( void );
+
 private:
 	Position m_brushPosition;
 	Sprite m_brushSprite;
