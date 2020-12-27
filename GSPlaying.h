@@ -48,6 +48,8 @@ public:
 	int GetDay( void ) { return m_day; }
 	void PlayerLeaveMap( void );
 	void DrawExitLocationMessage( void );
+	void DrawOpenedContainer( void );
+	void CheckIfContainerIsOpened( void );
 
 	void LevelUpDamage( void );
 

@@ -331,15 +331,7 @@ void GSPlaying::Think( void )
 	m_player->Think();
 	m_playerBelt.Think();
 
-	if( m_openedContainer )
-	{
-		m_openedContainer->Think();
-	}
-
-	if( m_openedContainer && m_player->IsMoving() )
-	{
-		m_openedContainer = NULL;
-	}
+	CheckIfContainerIsOpened();
 
 	if( m_player->IsMoving() )
 	{
@@ -379,16 +371,8 @@ void GSPlaying::Draw( void )
 	m_map->Draw();
 	m_player->Draw();
 	m_playerBelt.Draw();
-
-	if( m_player->GetPosition().x == m_map->GetExitPosition().x && m_player->GetPosition().y == m_map->GetExitPosition().y )
-	{
-		m_exitLocationMessage->show_text( 1280 / 2, 720 / 2, "Press ENTER to exit.", Globals::screen );
-	}
-
-	if( m_openedContainer )
-	{
-		m_openedContainer->Draw();
-	}
+	DrawExitLocationMessage();
+	DrawOpenedContainer();
 }
 
 Map* GSPlaying::GetMapByName( std::string mapName )
@@ -530,5 +514,26 @@ void GSPlaying::LevelUpDamage( void )
 	else
 	{
 		std::cout << "Potrzebujesz " << experienceRequiredToLevelUp << " aby podniesc zwoje zdolnosci bojowe." << std::endl;
+	}
+}
+
+void GSPlaying::DrawOpenedContainer( void )
+{
+	if( m_openedContainer )
+	{
+		m_openedContainer->Draw();
+	}
+}
+
+void GSPlaying::CheckIfContainerIsOpened( void )
+{
+	if( m_openedContainer )
+	{
+		m_openedContainer->Think();
+	}
+
+	if( m_openedContainer && m_player->IsMoving() )
+	{
+		m_openedContainer = NULL;
 	}
 }
