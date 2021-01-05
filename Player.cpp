@@ -355,20 +355,9 @@ void Player::PickBox( void )
 }
 
 void Player::AttackMonster( Monster* monster )
-{
-	if( m_actionPoints > 0 )
-	{
-		monster->SetHealthPoints( monster->GetHealthPoints() - m_damage ); //atakujemy stwora
-		m_healthPoints -= monster->GetBaseDamage();	//kontra
-
-		if( m_morphicHammer == true )
-		{
-			m_junk++;
-		}
-	}
-
-	std::cout << "Atak na potworka, tera jego HP: " << monster->GetHealthPoints() << std::endl;
-	std::cout << "Moje HP: " << m_healthPoints << std::endl;
+{ 
+	monster->SetHealthPoints( monster->GetHealthPoints() - m_damage ); //atakujemy stwora
+	m_healthPoints -= monster->GetBaseDamage();	//kontra
 }
 
 void Player::GiveFood( int food )
