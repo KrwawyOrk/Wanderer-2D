@@ -3,9 +3,9 @@
 
 #include "Creature.h"
 
-
 class BitmapFont;
 class Player;
+class MonsterHealthBar;
 
 const float MONSTER_ATTACK_DELAY = 1.0f;
 
@@ -113,11 +113,6 @@ public:
 	void AttackPlayer();
 	void CreateCorpseWithLootItems( void );
 
-	void DrawHealthBar( void );
-	/*---*/void DrawHealthBarWhenAttackedByPlayer( SDL_Rect *rect );
-	/*---*/void DrawHealthBarOnMouseOver( SDL_Rect* rect );
-		   SDL_Rect* GetSDLRectangleForMonsterHealthBar( void );
-
 private:
 	int m_baseDamage;
 	int m_nextMove;
@@ -134,6 +129,8 @@ private:
 	Sprite m_attackedByPlayerSprite;
 	Sprite m_healthBarSprite;
 	BitmapFont* m_healthPointsFont;
+
+	MonsterHealthBar* m_monsterHealthBar;
 };
 
 #endif
