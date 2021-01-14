@@ -29,10 +29,10 @@ GSMapEditor::GSMapEditor()
 	std::vector<std::string> mapeditorSprites;
 	mapeditorSprites.push_back( "trawa" );
 	mapeditorSprites.push_back( "trawa2" );
-	mapeditorSprites.push_back( "floor1" );
 	mapeditorSprites.push_back( "gravel" );
 	mapeditorSprites.push_back( "ziemiatest" );
 	mapeditorSprites.push_back( "podloga_kratka" );
+	mapeditorSprites.push_back( "floor1" );
 	mapeditorSprites.push_back( "chair01" );
 	mapeditorSprites.push_back( "chair02" );
 	mapeditorSprites.push_back( "chair03" );
@@ -597,6 +597,7 @@ void GSMapEditor::InputMappingState( void )
 			case SDLK_t:
 				if( !m_textInput->InputEnabled() )
 					m_mode = TILE;
+					m_walkableStaticMapItem = false;
 				break;
 
 			case SDLK_s:
