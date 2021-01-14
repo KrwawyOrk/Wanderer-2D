@@ -27,6 +27,11 @@ Monster::Monster()
 	m_healthPointsFont = new BitmapFont( FontStyle::FONT_WHITE_SMALL );
 }
 
+Monster::~Monster()
+{
+	delete m_monsterHealthBar;
+}
+
 void Monster::Think( void )
 {
 	RandomMovement();

@@ -354,12 +354,6 @@ void Player::PickBox( void )
 	}
 }
 
-void Player::AttackMonster( Monster* monster )
-{ 
-	monster->SetHealthPoints( monster->GetHealthPoints() - m_damage ); //atakujemy stwora
-	m_healthPoints -= monster->GetBaseDamage();	//kontra
-}
-
 void Player::GiveFood( int food )
 {
 	int newFood = GetFood() + food;
@@ -414,16 +408,16 @@ void Player::GoSleep( void )
 	}
 }
 
-int Player::GetWeaponDamage( void ) const
+int Player::GetWeaponDamage( void ) 
 {
 	switch( m_weaponType )
 	{
 	case CROWBAR:
-		return CROWBAR_DAMAGE;
+		return CROWBAR_DAMAGE + GetSkills().m_battle;
 		break;
 
 	case PISTOL:
-		return PISTOL_DAMAGE;
+		return PISTOL_DAMAGE + GetSkills().m_battle;
 		break;
 	}
 
@@ -469,6 +463,53 @@ Skill& Player::GetSkillOfType( skillTypes::skillType_t skillType )
 void Player::SetTimeToNextAttack( float time )
 {
 	m_nextAttack = Globals::currentTime + time;
+}
+
+bool Player::IsCooldownReadyToAttack( void )
+{
+	return( Globals::currentTime >= m_nextAttack );
+}
+
+bool Player::IsEnemyInAttackDistance( int distance, Monster* m_attackedMonster )
+{
+	return( static_cast<int>( Tools::CalculateDistance( m_position.x, m_position.y, m_attackedMonster->GetPosition().x, m_attackedMonster->GetPosition().y ) ) <= distance );
+}
+
+void Player::AttackMonster( Monster* monster )
+{ 
+	switch( GetWeaponType() )
+	{
+	case CROWBAR:
+		AttackMonsterWithMaleeWeapon( monster );
+		break;
+
+	case PISTOL:
+		AttackMonsterWithDistanceWeapon( monster );
+		break;
+	}
+}
+
+void Player::AttackMonsterWithMaleeWeapon( Monster* monster )
+{
+	if( IsCooldownReadyToAttack() && IsEnemyInAttackDistance( MALEE_ATTACK_RANGE, monster ) )
+	{
+		monster->SetHealthPoints( monster->GetHealthPoints() - GetWeaponDamage() );
+		SetTimeToNextAttack( ATTACK_DELAY_MALEE );
+	}
+}
+
+void Player::AttackMonsterWithDistanceWeapon( Monster* monster )
+{
+	if( CanFireAtTheMonster( monster ) )
+	{
+		monster->SetHealthPoints( monster->GetHealthPoints() - GetWeaponDamage() );
+		SetTimeToNextAttack( ATTACK_DELAY_GUN );
+	}
+}
+
+bool Player::CanFireAtTheMonster( Monster* monster )
+{
+	return ( GetPistolAmmunition() && IsCooldownReadyToAttack() && IsEnemyInAttackDistance( PISTOL_ATTACK_RANGE, monster ) );
 }
 
 void Player::set_clips()
@@ -553,7 +594,7 @@ void Player::AttackingMonster( void )
 
 					else
 					{
-						m_attackedMonster->SetHealthPoints( m_attackedMonster->GetHealthPoints() - CROWBAR_DAMAGE - GetSkills().m_battle );
+						m_attackedMonster->SetHealthPoints( m_attackedMonster->GetHealthPoints() - GetWeaponDamage() );
 					}
 
 					if( m_attackedMonster->GetHealthPoints() <= 0 )
@@ -579,7 +620,7 @@ void Player::AttackingMonster( void )
 			{
 				if( Globals::currentTime >= m_nextAttack )
 				{
-					std::cout << "Atakujemy Spidera[" << m_attackedMonster->GetHealthPoints() << " HP] zadajac mu " << GetSkills().m_battle + GetWeaponDamage() << " punktow obrazen!" << std::endl;
+					std::cout << "Atakujemy Spidera[" << m_attackedMonster->GetHealthPoints() << " HP] zadajac mu " << GetWeaponDamage() << " punktow obrazen!" << std::endl;
 
 					m_pistolAmmunition--;
 					if( m_pistolAmmunition < 0 )
@@ -587,7 +628,7 @@ void Player::AttackingMonster( void )
 						m_pistolAmmunition = 0;
 					}
 
-					m_attackedMonster->SetHealthPoints( m_attackedMonster->GetHealthPoints() - PISTOL_DAMAGE - GetSkills().m_battle );
+					m_attackedMonster->SetHealthPoints( m_attackedMonster->GetHealthPoints() - GetWeaponDamage() );
 
 					if( m_attackedMonster->GetHealthPoints() <= 0 )
 					{

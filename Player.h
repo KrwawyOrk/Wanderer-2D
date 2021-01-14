@@ -9,9 +9,13 @@
 
 const int CROWBAR_DAMAGE = 2;
 const int PISTOL_DAMAGE = 5;
+
+const int MALEE_ATTACK_RANGE = 1;
 const int PISTOL_ATTACK_RANGE = 4;
-const float ATTACK_DELAY_MALEE = 0.5f;
-const float ATTACK_DELAY_GUN = 3.0f;
+
+const float ATTACK_DELAY_MALEE = 0.3f;
+const float ATTACK_DELAY_GUN = 1.5f;
+
 const int MAX_ATTACK_DISTANCE = PISTOL_ATTACK_RANGE;
 const int SLEEPING_TIME = 2;
 const float BASE_VELOCITY = 100.0f;
@@ -96,9 +100,7 @@ public:
 
 	Skills& GetSkills( void ) { return m_skills; }
 
-	int GetWeaponDamage( void ) const;
-
-	void AttackMonster( Monster* monster );
+	int GetWeaponDamage( void );
 
 	void StopAttackingMonster( void )
 	{
@@ -140,6 +142,13 @@ public:
 	//animation
 	void set_clips();
 	//endanimation
+
+	bool IsCooldownReadyToAttack( void );
+	bool IsEnemyInAttackDistance(int distance, Monster* monster );
+	void AttackMonster( Monster* monster );
+	void AttackMonsterWithMaleeWeapon( Monster* monster );
+	void AttackMonsterWithDistanceWeapon( Monster* monster );
+	bool CanFireAtTheMonster( Monster* monster );
 
 private:
 	bool m_selected;
