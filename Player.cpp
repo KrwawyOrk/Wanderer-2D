@@ -57,10 +57,6 @@ Player::Player()
 	m_weaponType = CROWBAR;
 	m_pistolAmmunition = 4;
 
-	m_sleeping = false;
-	m_sleepingTime = 0;
-	Globals::spriteManager->GetSprite( m_sleepingPlayerSprite, "player_sleeping" );
-
 	Globals::spriteManager->GetSprite( m_sprite, "playertest" );
 	Globals::spriteManager->GetSprite( m_spriteSelected, "championselection" );
 	Globals::currentPlayer = this;
@@ -92,15 +88,6 @@ void Player::Think( void )
 		AttackingMonster();
 	}
 
-	if( m_sleeping )
-	{
-		if( Globals::currentTime > m_sleepingTime + SLEEPING_TIME )
-		{
-			m_sleeping = false;
-			std::cout << "Koniec spania." << std::endl; //console info
-		}
-	}
-
 	if( GetSkillOfType( skillTypes::INCREASED_SPEED ).SkillIsLearned() )
 	{
 		m_velocity = BASE_VELOCITY + 50.0f;
@@ -123,11 +110,6 @@ void Player::Think( void )
 
 void Player::Draw( void )
 {
-	if( m_sleeping )
-	{
-		m_sleepingPlayerSprite.Draw( Globals::screen, m_position );
-	}
-
 	int animationSpeed = int(m_velocity);
 
 	//If Foo is moving left
@@ -210,7 +192,7 @@ void Player::Draw( void )
 
 void Player::Move( direction_t direction )
 {
-	if( IsMoving() || m_sleeping )
+	if( IsMoving() )
 	{
 		return;
 	}
@@ -396,15 +378,6 @@ void Player::CheckMonsterAttackDistance( void )
 
 			Globals::AlertMessageToConsole( "Monster uciekl z zasiegu MAX_ATTACK_DISTANCE" );
 		}
-	}
-}
-
-void Player::GoSleep( void )
-{
-	if( !m_sleeping )
-	{
-		m_sleepingTime = Globals::currentTime;
-		m_sleeping = true;
 	}
 }
 

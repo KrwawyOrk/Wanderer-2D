@@ -127,7 +127,8 @@ void GSPlaying::InputEvents( void )
 				{
 					if( ( *cit )->IsAlive() )
 					{
-						m_player->SetAttackedMonster( (*cit) );
+						//m_player->SetAttackedMonster( (*cit) );
+						m_player->AttackMonster( monster );
 					}
 				}
 			}
@@ -417,8 +418,6 @@ void GSPlaying::ChangeMap( std::string mapName )
 
 void GSPlaying::NextTurn( void )
 {
-	m_player->GoSleep();
-
 	if( Map* map = Globals::currentMap )
 	{
 		map->GenerateRandomObjectsOnMap();

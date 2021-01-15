@@ -17,7 +17,6 @@ const float ATTACK_DELAY_MALEE = 0.3f;
 const float ATTACK_DELAY_GUN = 1.5f;
 
 const int MAX_ATTACK_DISTANCE = PISTOL_ATTACK_RANGE;
-const int SLEEPING_TIME = 2;
 const float BASE_VELOCITY = 100.0f;
 const int INVENTORY_LIMIT = 40;
 
@@ -129,9 +128,6 @@ public:
 	void SetPistolAmmunity( int ammunition ) { m_pistolAmmunition = ammunition; }
 	int GetPistolAmmunition( void ) const { return m_pistolAmmunition; }
 
-	void GoSleep( void ); //odpoczynek przywraca nam pkt wytrzymalosci
-	bool IsSleeping( void ) const { return m_sleeping; }
-
 	std::vector<Item*>& GetItems( void ) { return m_itemsVector; }
 	void GiveItem( Item* item );
 	bool HasSpaceInInventory( void ) const;
@@ -176,10 +172,6 @@ private:
 	weaponType_t m_weaponType;
 	int m_pistolAmmunition;
 
-	bool m_sleeping;
-	float m_sleepingTime;
-
-	Sprite m_sleepingPlayerSprite;
 	std::vector<Item*> m_itemsVector;
 
 	Skills m_skills;
