@@ -1,5 +1,7 @@
 #include "MonsterHealthBar.h"
 
+#include "SDL.h"
+
 #include "Camera.h"
 #include "Globals.h"
 #include "Monster.h"
@@ -48,10 +50,13 @@ void MonsterHealthBar::DrawHealthBarWhenAttackedByPlayer( SDL_Rect *rect )
 void MonsterHealthBar::DrawHealthBarOnMouseOver( SDL_Rect* rect )
 {
 	Position mouse;
-	mouse.x = ( Globals::event.motion.x + Globals::camera->GetCameraX() ) / Globals::tilesize;
-	mouse.y = ( Globals::event.motion.y + Globals::camera->GetCameraY() ) / Globals::tilesize;
+	mouse.x = Globals::event.motion.x;
+	mouse.y = Globals::event.motion.y;
 
-	if( mouse.x == m_monster->GetPosition().x && mouse.y == m_monster->GetPosition().y )
+	int position_x = static_cast<int>( m_monster->GetFloatX() - Globals::camera->GetCameraX() );
+	int position_y = static_cast<int>( m_monster->GetFloatY() - Globals::camera->GetCameraY() );
+
+	if( mouse.x >= position_x && mouse.x <= position_x + 50 && mouse.y >= position_y && mouse.y <= position_y + 50 )
 	{
 		if( !m_monster->GetAttackedByPlayer() )
 		{		
