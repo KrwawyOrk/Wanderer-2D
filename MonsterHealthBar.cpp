@@ -49,21 +49,22 @@ void MonsterHealthBar::DrawHealthBarWhenAttackedByPlayer( SDL_Rect *rect )
 
 void MonsterHealthBar::DrawHealthBarOnMouseOver( SDL_Rect* rect )
 {
-	Position mouse;
-	mouse.x = Globals::event.motion.x;
-	mouse.y = Globals::event.motion.y;
-
-	int position_x = static_cast<int>( m_monster->GetFloatX() - Globals::camera->GetCameraX() );
-	int position_y = static_cast<int>( m_monster->GetFloatY() - Globals::camera->GetCameraY() );
-
-	if( mouse.x >= position_x && mouse.x <= position_x + 50 && mouse.y >= position_y && mouse.y <= position_y + 50 )
+	if( IsCursorOnMonster() && !m_monster->GetAttackedByPlayer() )
 	{
-		if( !m_monster->GetAttackedByPlayer() )
-		{		
-			m_attackedByPlayerSprite.DrawAnimatedOnScreenPosition( Globals::screen, static_cast<int>( m_monster->GetFloatX() - Globals::camera->GetCameraX() ), static_cast<int>( m_monster->GetFloatY() - Globals::camera->GetCameraY() ), 100 );
-		}
+		m_attackedByPlayerSprite.DrawAnimatedOnScreenPosition( Globals::screen, static_cast<int>( m_monster->GetFloatX() - Globals::camera->GetCameraX() ), static_cast<int>( m_monster->GetFloatY() - Globals::camera->GetCameraY() ), 100 );
 
 		m_healthBarSprite.Draw( Globals::screen, static_cast<int>( m_monster->GetFloatX() - Globals::camera->GetCameraX() ), static_cast<int>( m_monster->GetFloatY() - 10 - Globals::camera->GetCameraY() ), &rect[1] );
 		m_healthBarSprite.Draw( Globals::screen, static_cast<int>( m_monster->GetFloatX() - Globals::camera->GetCameraX() ), static_cast<int>( m_monster->GetFloatY() - 10 - Globals::camera->GetCameraY() ), &rect[0] );
 	}
+}
+
+bool MonsterHealthBar::IsCursorOnMonster( void )
+{
+	int mouse_x = Globals::event.motion.x;
+	int mouse_y = Globals::event.motion.y;
+
+	int position_x = static_cast<int>( m_monster->GetFloatX() - Globals::camera->GetCameraX() );
+	int position_y = static_cast<int>( m_monster->GetFloatY() - Globals::camera->GetCameraY() );
+
+	return ( mouse_x >= position_x && mouse_x <= position_x + Globals::tilesize && mouse_y >= position_y && mouse_y <= position_y + Globals::tilesize );
 }

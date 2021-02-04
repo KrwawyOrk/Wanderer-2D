@@ -17,6 +17,7 @@ private:
 	void DrawHealthBarWhenAttackedByPlayer( SDL_Rect *rect );
 	void DrawHealthBarOnMouseOver( SDL_Rect* rect );
 	SDL_Rect* GetSDLRectangleForMonsterHealthBar( void );
+	bool IsCursorOnMonster( void );
 
 	Monster* m_monster;
 
