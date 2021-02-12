@@ -83,11 +83,6 @@ Player::Player()
 
 void Player::Think( void )
 {
-	if( !IsMoving() )
-	{
-		AttackingMonster();
-	}
-
 	if( GetSkillOfType( skillTypes::INCREASED_SPEED ).SkillIsLearned() )
 	{
 		m_velocity = BASE_VELOCITY + 50.0f;
@@ -547,77 +542,4 @@ void Player::set_clips()
     clipsUp[ 2 ].y = 300;
     clipsUp[ 2 ].w = FOO_WIDTH;
     clipsUp[ 2 ].h = FOO_HEIGHT;
-}
-
-void Player::AttackingMonster( void )
-{
-	if( m_attackedMonster && m_attackedMonster->IsAlive() )
-	{
-		if( m_weaponType == CROWBAR )
-		{
-			if( static_cast<int>( Tools::CalculateDistance( m_position.x, m_position.y, m_attackedMonster->GetPosition().x, m_attackedMonster->GetPosition().y ) ) == 1 )
-			{
-				if( Globals::currentTime >= m_nextAttack )
-				{
-					std::cout << "Atakujemy Spidera[" << m_attackedMonster->GetHealthPoints() << " HP] zadajac mu " << GetSkills().m_battle + GetWeaponDamage() << " punktow obrazen!" << std::endl;
-					if( m_actionPoints <= 0 )
-					{
-						m_attackedMonster->SetHealthPoints( m_attackedMonster->GetHealthPoints() - ( CROWBAR_DAMAGE / 2 )- GetSkills().m_battle ); //Przy zmeczeniu zadajemy polowe mnie obrazej przy broni bialej.
-					}
-
-					else
-					{
-						m_attackedMonster->SetHealthPoints( m_attackedMonster->GetHealthPoints() - GetWeaponDamage() );
-					}
-
-					if( m_attackedMonster->GetHealthPoints() <= 0 )
-					{
-						m_attackedMonster = NULL;
-						m_experiencePoints++;
-						m_monstersKilled++;
-
-						if( m_morphicHammer )
-						{
-							m_junk++;
-						}
-					}
-
-					m_nextAttack = Globals::currentTime + ATTACK_DELAY_MALEE;
-				}
-			}
-		}
-
-		if( m_weaponType == PISTOL && m_pistolAmmunition > 0 )
-		{
-			if( static_cast<int>( Tools::CalculateDistance( m_position.x, m_position.y, m_attackedMonster->GetPosition().x, m_attackedMonster->GetPosition().y ) ) <= PISTOL_ATTACK_RANGE )
-			{
-				if( Globals::currentTime >= m_nextAttack )
-				{
-					std::cout << "Atakujemy Spidera[" << m_attackedMonster->GetHealthPoints() << " HP] zadajac mu " << GetWeaponDamage() << " punktow obrazen!" << std::endl;
-
-					m_pistolAmmunition--;
-					if( m_pistolAmmunition < 0 )
-					{
-						m_pistolAmmunition = 0;
-					}
-
-					m_attackedMonster->SetHealthPoints( m_attackedMonster->GetHealthPoints() - GetWeaponDamage() );
-
-					if( m_attackedMonster->GetHealthPoints() <= 0 )
-					{
-						m_attackedMonster = NULL;
-						m_experiencePoints++;
-						m_monstersKilled++;
-
-						if( m_morphicHammer )
-						{
-							m_junk++;
-						}
-					}
-
-					m_nextAttack = Globals::currentTime + ATTACK_DELAY_GUN;
-				}
-			}
-		}
-	}
 }

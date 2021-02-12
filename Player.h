@@ -107,7 +107,6 @@ public:
 	}
 
 	void SetAttackedMonster( Monster* monster );
-	void AttackingMonster( void );
 	void CheckMonsterAttackDistance( void );
 
 	Monster* GetAttackedMonster( void )
