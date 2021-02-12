@@ -3,14 +3,16 @@
 #include "Button.h"
 #include "ItemSlot.h"
 #include "Position.h"
+#include "SpriteManager.h"
 
 Container::Container()
 {
 	m_locked = false;
+	Globals::spriteManager->GetSprite(m_background, "opened_container");
 
-	int draw_x = 10;
-	int draw_y = 150;
-	int itemSlotsInRow = 2;
+	int draw_x = 812;
+	int draw_y = 460;
+	int itemSlotsInRow = 5;
 
 	for( int i = 0 ; i < 10 ; i++ )
 	{
@@ -23,15 +25,13 @@ Container::Container()
 		{
 			if( i >= itemSlotsInRow )
 			{
-				draw_x = 10;
+				draw_x = 812;
 				draw_y += 51;
 			}
 		}
 
 		m_itemSlots.push_back( new ItemSlot( draw_x, draw_y, itemSlotType::CONTAINER_SLOT ) );
 	}
-
-	
 }
 
 Container::~Container()
@@ -54,6 +54,7 @@ void Container::Think( void )
 
 void Container::Draw( void )
 {
+	m_background.Draw( Globals::screen, 803, 430 );
 	for( std::vector<ItemSlot*>::iterator it = m_itemSlots.begin() ; it != m_itemSlots.end() ; ++it )
 	{
 		( *it )->Draw();

@@ -148,7 +148,7 @@ void Map::Draw( void )
 
 			if( player->GetSkillOfType( skillTypes::INCREASED_VISIBILITY ).SkillIsLearned() )
 				{
-					if( distance < DISTANCE_FROM_PLAYER_TO_RENDER + 2 ) 
+					if( distance < DISTANCE_FROM_PLAYER_TO_RENDER + 3 ) 
 					{
 						tile->Draw();
 					}
@@ -194,7 +194,7 @@ void Map::Draw( void )
 
 				if( player->GetSkillOfType( skillTypes::INCREASED_VISIBILITY ).SkillIsLearned() )
 				{
-					if( distance < DISTANCE_FROM_PLAYER_TO_RENDER + 2 ) 
+					if( distance < DISTANCE_FROM_PLAYER_TO_RENDER + 3 ) 
 					{
 						staticMapItem->Draw();
 					}
@@ -244,7 +244,7 @@ void Map::Draw( void )
 
 		if( player->GetSkillOfType( skillTypes::INCREASED_VISIBILITY ).SkillIsLearned() )
 		{
-			if( distance < DISTANCE_FROM_PLAYER_TO_RENDER + 2 ) 
+			if( distance < DISTANCE_FROM_PLAYER_TO_RENDER + 3 ) 
 			{
 				monster->Draw();
 			}

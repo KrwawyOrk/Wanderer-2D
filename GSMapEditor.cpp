@@ -45,6 +45,8 @@ GSMapEditor::GSMapEditor()
 	mapeditorSprites.push_back( "pctable04" );
 	mapeditorSprites.push_back( "labtestwall" );
 	mapeditorSprites.push_back( "labtestwalldirt" );
+	mapeditorSprites.push_back( "labtestwalldirt2" );
+	mapeditorSprites.push_back( "labwall_fusebox" );
 	mapeditorSprites.push_back( "labwallbase" );
 	mapeditorSprites.push_back( "szafkatest" );
 	mapeditorSprites.push_back( "health_info" );

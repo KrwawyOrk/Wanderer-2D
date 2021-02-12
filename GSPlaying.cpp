@@ -288,6 +288,7 @@ void GSPlaying::InputEvents( void )
 
 		case SDLK_1:
 			m_player->SetWeapon( CROWBAR );
+			m_player->Move( NORTH );
 			break;
 
 		case SDLK_2:

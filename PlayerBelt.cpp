@@ -16,7 +16,7 @@
 PlayerBelt::PlayerBelt()
 {
 	Globals::spriteManager->GetSprite( m_top, "gui_top" );
-	Globals::spriteManager->GetSprite( m_bottom, "gui_bottom" );
+	Globals::spriteManager->GetSprite( m_bottom, "inventory_background" );
 	Globals::spriteManager->GetSprite( m_left, "gui_left" );
 	Globals::spriteManager->GetSprite( m_right, "gui_right" );
 	Globals::spriteManager->GetSprite( m_detail01, "detail01" );
@@ -43,9 +43,9 @@ PlayerBelt::PlayerBelt()
 	m_quitButton = new Button( 460, 790, "quit_button", true );
 
 	//Tworzymy sloty itemow, dwa rzedy po 10 slotow.
-	int draw_x_start = 1162;
+	int draw_x_start = 1610;
 	int draw_x = draw_x_start;
-	int draw_y = 467;
+	int draw_y = 610;
 	int itemSlotsInRow = 5;
 
 	for( int i = 0 ; i < INVENTORY_LIMIT ; i++ )
@@ -149,7 +149,7 @@ void PlayerBelt::Think( void )
 void PlayerBelt::Draw( void )
 {
 	//m_top.Draw( Globals::screen, 0, 0 );
-	//m_bottom.Draw( Globals::screen, 0, 615 );
+	m_bottom.Draw( Globals::screen, 1605, 585 );
 	//m_left.Draw( Globals::screen, 0, 40 );
 	//m_right.Draw( Globals::screen, 1004, 40 );
 	//m_detail01.Draw( Globals::screen, 0, 0 );
@@ -204,7 +204,7 @@ void PlayerBelt::Draw( void )
 	m_quitButton->DrawButton();
 
 	//m_inventoryBelt.Draw( Globals::screen, 522, 744 );
-	DrawPlayerHealthBar( 525, 715);
+	DrawPlayerHealthBar( 720, 190);
 
 	for( std::vector<ItemSlot*>::iterator it = m_itemSlots.begin() ; it != m_itemSlots.end() ; ++it )
 	{
@@ -247,5 +247,5 @@ void PlayerBelt::DrawPlayerHealthBar( int position_x, int position_y ) // x = 52
 
 	std::ostringstream sshp;
 	sshp << m_player->GetHealthPoints() << " / " << m_player->GetMaxHealthPoints();
-	m_healthPoints->show_text( 740, 715, sshp.str(), Globals::screen );
+	m_healthPoints->show_text( position_x + 220, position_y, sshp.str(), Globals::screen );
 }

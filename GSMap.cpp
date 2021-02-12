@@ -15,7 +15,7 @@ GSMap::~GSMap(void)
 
 void GSMap::Draw( void )
 {
-	m_map.Draw( Globals::screen, 400, 400 );
+	m_map.Draw( Globals::screen, 0, 0 );
 }
 
 

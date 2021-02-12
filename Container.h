@@ -44,6 +44,7 @@ private:
 
 	bool m_locked;
 	Button* m_exitButton;
+	Sprite m_background;
 };
 
 #endif

@@ -10,7 +10,7 @@
 namespace Globals
 {
 	Game*			game;
-	bool			fullScreen = false;
+	bool			fullScreen = true;
 	bool			showCursor = true;
 	SpriteManager*	spriteManager;
 	SDL_Surface*	screen;
@@ -27,8 +27,8 @@ namespace Globals
 	int				spriteAnimationSpeed = 400;
 
 	int				tilesize = 50;
-	int				resolution_x = 1440;
-	int				resolution_y = 900;
+	int				resolution_x = 1920;
+	int				resolution_y = 1080;
 	int				healthKitHeal = 30;
 
 	void AlertMessageToConsole( std::string message )

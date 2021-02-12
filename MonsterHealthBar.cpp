@@ -51,7 +51,7 @@ void MonsterHealthBar::DrawHealthBarOnMouseOver( SDL_Rect* rect )
 {
 	if( IsCursorOnMonster() && !m_monster->GetAttackedByPlayer() )
 	{
-		m_attackedByPlayerSprite.DrawAnimatedOnScreenPosition( Globals::screen, static_cast<int>( m_monster->GetFloatX() - Globals::camera->GetCameraX() ), static_cast<int>( m_monster->GetFloatY() - Globals::camera->GetCameraY() ), 100 );
+		m_attackedByPlayerSprite.DrawAnimatedOnScreenPosition( Globals::screen, static_cast<int>( m_monster->GetFloatX() - Globals::camera->GetCameraX() ), static_cast<int>( m_monster->GetFloatY() - Globals::camera->GetCameraY() ), 200 );
 
 		m_healthBarSprite.Draw( Globals::screen, static_cast<int>( m_monster->GetFloatX() - Globals::camera->GetCameraX() ), static_cast<int>( m_monster->GetFloatY() - 10 - Globals::camera->GetCameraY() ), &rect[1] );
 		m_healthBarSprite.Draw( Globals::screen, static_cast<int>( m_monster->GetFloatX() - Globals::camera->GetCameraX() ), static_cast<int>( m_monster->GetFloatY() - 10 - Globals::camera->GetCameraY() ), &rect[0] );
