@@ -14,10 +14,7 @@ class Monster : public Creature
 public:
 	Monster();
 
-	virtual ~Monster()
-	{
-		std::cout << "Destruktor klasy Monster" << std::endl;
-	}
+	virtual ~Monster();
 
 	virtual void Think( void );
 	virtual void Draw( void );
@@ -112,6 +109,7 @@ public:
 	void RandomMovement( void );
 	void AttackPlayer();
 	void CreateCorpseWithLootItems( void );
+	bool IsCursorOnMonster( void );
 
 private:
 	int m_baseDamage;

@@ -123,3 +123,14 @@ void Monster::CreateCorpseWithLootItems( void )
 	Map* map = Globals::currentMap;
 	map->GetStaticMapItemVector().push_back( item );
 }
+
+bool Monster::IsCursorOnMonster( void )
+{
+	int mouse_x = Globals::event.motion.x;
+	int mouse_y = Globals::event.motion.y;
+
+	int position_x = static_cast<int>( this->GetFloatX() - Globals::camera->GetCameraX() );
+	int position_y = static_cast<int>( this->GetFloatY() - Globals::camera->GetCameraY() );
+
+	return ( mouse_x >= position_x && mouse_x <= position_x + Globals::tilesize && mouse_y >= position_y && mouse_y <= position_y + Globals::tilesize );
+}
