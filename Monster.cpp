@@ -58,34 +58,52 @@ void Monster::Draw( void )
 	m_monsterHealthBar->Draw();
 }
 
+bool Monster::CanRandomMovement( void )
+{
+	int distance = Tools::CalculateDistance( Globals::player->GetPosition().x, Globals::player->GetPosition().y, GetPosition().x, GetPosition().y );
+
+	if( distance < 6 )
+	{
+		return true;
+	}
+
+	else
+	{
+		return false;
+	}
+}
+
 void Monster::RandomMovement( void )
 {
-	if( !IsMoving() && !m_attackingPlayer && Globals::currentTime > m_nextMove )
+	if( CanRandomMovement () )
 	{
-		int min = 1;
-		int max = 4;
-		int random = min + ( rand() % static_cast<int>( max - min + 1 ) );
-
-		switch( random )
+		if( !IsMoving() && !m_attackingPlayer && Globals::currentTime > m_nextMove )
 		{
-		case 1:
-			Move( NORTH );
-			break;
+			int min = 1;
+			int max = 4;
+			int random = min + ( rand() % static_cast<int>( max - min + 1 ) );
 
-		case 2:
-			Move( SOUTH );
-			break;
+			switch( random )
+			{
+			case 1:
+				Move( NORTH );
+				break;
 
-		case 3:
-			Move( WEST );
-			break;
+			case 2:
+				Move( SOUTH );
+				break;
 
-		case 4:
-			Move( EAST );
-			break;
-		};
+			case 3:
+				Move( WEST );
+				break;
 
-		m_nextMove = Globals::currentTime + 0.0f;
+			case 4:
+				Move( EAST );
+				break;
+			};
+
+			m_nextMove = Globals::currentTime + 0.0f;
+		}
 	}
 }
 
