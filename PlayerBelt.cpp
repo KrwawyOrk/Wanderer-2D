@@ -30,22 +30,20 @@ PlayerBelt::PlayerBelt()
 	//m_day = new Text( 14, WHITE, Position( 25, 680 ) );
 
 	m_healthPoints = new BitmapFont( FontStyle::FONT_WHITE_SMALL );
-	m_movementPoints = new BitmapFont( FontStyle::FONT_WHITE_SMALL_OLD );
 	m_toolbox = new BitmapFont( FontStyle::FONT_WHITE_SMALL_OLD );
 	m_junk = new BitmapFont( FontStyle::FONT_WHITE_SMALL_OLD );
-	m_information = new BitmapFont( FontStyle::FONT_WHITE_SMALL_OLD );
 	m_pistolAmmunition = new BitmapFont( FontStyle::FONT_WHITE_SMALL_OLD );
 	m_experiencePoints = new BitmapFont( FontStyle::FONT_WHITE_SMALL );
 	m_damage = new BitmapFont( FontStyle::FONT_WHITE_SMALL );
 	m_monstersKilled = new BitmapFont( FontStyle::FONT_WHITE_SMALL );
 
-	m_inventoryButton = new Button( 460, 750, "inventory_button", true );
-	m_quitButton = new Button( 460, 790, "quit_button", true );
+	m_inventoryButton = new Button( 1155, 390, "inventory_button", true );
+	m_quitButton = new Button( 1220, 390, "quit_button", true );
 
 	//Tworzymy sloty itemow, dwa rzedy po 10 slotow.
-	int draw_x_start = 1610;
+	int draw_x_start = 1160;
 	int draw_x = draw_x_start;
-	int draw_y = 610;
+	int draw_y = 460;
 	int itemSlotsInRow = 5;
 
 	for( int i = 0 ; i < INVENTORY_LIMIT ; i++ )
@@ -82,9 +80,6 @@ PlayerBelt::~PlayerBelt()
 	delete m_healthPoints;
 	m_healthPoints = NULL;
 
-	delete m_movementPoints;
-	m_movementPoints = NULL;
-
 	delete m_food;
 	m_food = NULL;
 
@@ -93,9 +88,6 @@ PlayerBelt::~PlayerBelt()
 
 	delete m_junk;
 	m_junk = NULL;
-
-	delete m_information;
-	m_information = NULL;
 
 	delete m_healthPoints;
 	m_healthPoints = NULL;
@@ -149,7 +141,7 @@ void PlayerBelt::Think( void )
 void PlayerBelt::Draw( void )
 {
 	//m_top.Draw( Globals::screen, 0, 0 );
-	m_bottom.Draw( Globals::screen, 1605, 585 );
+	m_bottom.Draw( Globals::screen, 1155, 435 );
 	//m_left.Draw( Globals::screen, 0, 40 );
 	//m_right.Draw( Globals::screen, 1004, 40 );
 	//m_detail01.Draw( Globals::screen, 0, 0 );
@@ -157,12 +149,6 @@ void PlayerBelt::Draw( void )
 	//m_gui_background.Draw( Globals::screen, 434, 698 );
 
 	m_food->DrawText( Globals::screen );
-
-	m_information->show_text( 300, 10, "Technik - gra w fazie development.", Globals::screen );
-
-	std::ostringstream ssmp;
-	ssmp << m_player->GetActionPoints() << " / " << m_player->GetMaxActionPoints();
-	m_movementPoints->show_text( 190, 725, ssmp.str(), Globals::screen );
 
 	/*std::ostringstream sstoolbox;
 	sstoolbox << "Narzedzia " << m_player->GetToolBox();
@@ -179,32 +165,32 @@ void PlayerBelt::Draw( void )
 	switch( m_player->GetWeaponType() )
 	{
 	case PISTOL:
-		m_pistol.Draw( Globals::screen, 775, 628 );
+		m_pistol.Draw( Globals::screen, 1315, 350 );
 		break;
 
 	case CROWBAR:
-		m_crowbar.Draw( Globals::screen, 775, 628 );
+		m_crowbar.Draw( Globals::screen, 1315, 350 );
 		break;
 	};
 
 	std::ostringstream ssmonsterskilled;
 	ssmonsterskilled << m_player->GetMonstersKilled();
-	m_monstersKilled->show_text( 375, 630, "MONSTERS KILLED " + ssmonsterskilled.str(), Globals::screen );
+	m_monstersKilled->show_text( 1155, 330, "MONSTERS KILLED " + ssmonsterskilled.str(), Globals::screen );
 
 	std::ostringstream ssexperiencepoints;
 	ssexperiencepoints << m_player->GetExperiencePoints();
-	m_experiencePoints->show_text( 375, 650, "EXPERIENCE POINTS " + ssexperiencepoints.str(), Globals::screen );
+	m_experiencePoints->show_text( 1155, 350, "EXPERIENCE POINTS " + ssexperiencepoints.str(), Globals::screen );
 
 	std::ostringstream ssdamage;
 	ssdamage << m_player->GetSkills().m_battle << " [" << m_player->GetWeaponDamage() << "]";
 
-	m_damage->show_text( 375, 670, "DAMAGE " + ssdamage.str(), Globals::screen );
+	m_damage->show_text( 1155, 370, "DAMAGE " + ssdamage.str(), Globals::screen );
 
 	m_inventoryButton->DrawButton();
 	m_quitButton->DrawButton();
 
 	//m_inventoryBelt.Draw( Globals::screen, 522, 744 );
-	DrawPlayerHealthBar( 720, 190);
+	DrawPlayerHealthBar( 480, 100);
 
 	for( std::vector<ItemSlot*>::iterator it = m_itemSlots.begin() ; it != m_itemSlots.end() ; ++it )
 	{
