@@ -1,3 +1,3 @@
 # Wanderer-2D
-Wanderer 2D to prosty projekt gry RPG pisany w języku C++ w ramach nauki. Gra wykorzystuje bibliotekę graficzną SDL 1. Klimaty postapo.
-Gra jest pisana od.... dawna z dużymi przerwami.
+Wanderer 2D is a simple RPG project written in C++ as a learning experience. The game uses SDL 1 graphics library. Postapo climate.
+The game has been written since.... long time with big breaks.
