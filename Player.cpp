@@ -471,6 +471,7 @@ void Player::AttackMonsterWithDistanceWeapon( Monster* monster )
 	if( CanFireAtTheMonster( monster ) )
 	{
 		monster->SetHealthPoints( monster->GetHealthPoints() - GetWeaponDamage() );
+		RemovePistolAmmunition();
 		SetTimeToNextAttack( ATTACK_DELAY_GUN );
 	}
 }
@@ -479,6 +480,12 @@ bool Player::CanFireAtTheMonster( Monster* monster )
 {
 	return ( GetPistolAmmunition() && IsCooldownReadyToAttack() && IsEnemyInAttackDistance( PISTOL_ATTACK_RANGE, monster ) );
 }
+
+void Player::RemovePistolAmmunition( void )
+{
+	m_pistolAmmunition--;
+}
+
 
 void Player::set_clips()
 {
