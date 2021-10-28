@@ -7,7 +7,8 @@ enum itemType_t
 {
 	HEALTH_REGENERATION,
 	WEAPON,
-	EXPERIENCE_BOOK
+	EXPERIENCE_BOOK,
+	AMMO_PACK
 };
 
 class Player;

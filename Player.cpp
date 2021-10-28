@@ -486,6 +486,11 @@ void Player::RemovePistolAmmunition( void )
 	m_pistolAmmunition--;
 }
 
+void Player::GiveAmmunition( int count )
+{
+	m_pistolAmmunition += count;
+}
+
 
 void Player::set_clips()
 {

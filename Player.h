@@ -145,6 +145,7 @@ public:
 	void AttackMonsterWithDistanceWeapon( Monster* monster );
 	bool CanFireAtTheMonster( Monster* monster );
 	void RemovePistolAmmunition( void );
+	void GiveAmmunition( int count );
 
 private:
 	bool m_selected;

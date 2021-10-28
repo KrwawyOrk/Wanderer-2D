@@ -23,6 +23,11 @@ Item::Item( Position position, itemType_t itemType )
 		m_itemType = EXPERIENCE_BOOK;
 		Globals::spriteManager->GetSprite( m_sprite, "experience_book" );
 		break;
+
+	case AMMO_PACK:
+		m_itemType = AMMO_PACK;
+		Globals::spriteManager->GetSprite( m_sprite, "ammo_pack" );
+		break;
 	}	
 }
 
@@ -42,6 +47,10 @@ void Item::OnUse( Player* player )
 
 	case EXPERIENCE_BOOK:
 		player->SetExperiencePoints( player->GetExperiencePoints() + 5 );
+		break;
+
+	case AMMO_PACK:
+		player->GiveAmmunition( 10 );
 		break;
 	}
 }
