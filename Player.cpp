@@ -491,6 +491,16 @@ void Player::GiveAmmunition( int count )
 	m_pistolAmmunition += count;
 }
 
+void Player::LevelUpDamage( void )
+{
+	int experienceRequiredToLevelUp = GetSkills().m_battle * 2;
+	if( GetExperiencePoints() >= experienceRequiredToLevelUp )
+	{
+		//SetBaseDamage( m_player->GetBaseDamage() + 1 );
+		GetSkills().m_battle += 1;
+		SetExperiencePoints( GetExperiencePoints() - experienceRequiredToLevelUp );
+	}
+}
 
 void Player::set_clips()
 {

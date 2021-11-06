@@ -146,6 +146,7 @@ public:
 	bool CanFireAtTheMonster( Monster* monster );
 	void RemovePistolAmmunition( void );
 	void GiveAmmunition( int count );
+	void LevelUpDamage( void );
 
 private:
 	bool m_selected;

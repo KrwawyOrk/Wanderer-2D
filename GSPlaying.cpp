@@ -243,7 +243,7 @@ void GSPlaying::InputEvents( void )
 			break;
 
 		case SDLK_u:
-			LevelUpDamage();
+			m_player->LevelUpDamage();
 			break;
 
 		case SDLK_y:
@@ -496,24 +496,6 @@ void GSPlaying::DrawExitLocationMessage( void )
 	if( m_player->GetPosition().x == m_map->GetExitPosition().x && m_player->GetPosition().y == m_map->GetExitPosition().y )
 	{
 		m_exitLocationMessage->show_text( 1280 / 2, 720 / 2, "Press ENTER to exit.", Globals::screen );
-	}
-}
-
-void GSPlaying::LevelUpDamage( void )
-{
-	int experienceRequiredToLevelUp = m_player->GetSkills().m_battle * 2;
-	if( m_player->GetExperiencePoints() >= experienceRequiredToLevelUp )
-	{
-		//m_player->SetBaseDamage( m_player->GetBaseDamage() + 1 );
-		m_player->GetSkills().m_battle += 1;
-		m_player->SetExperiencePoints( m_player->GetExperiencePoints() - experienceRequiredToLevelUp );
-
-		std::cout << "Podniosles swoje zdolnosci bojowe. Obrazenia +1." << std::endl;
-	}
-
-	else
-	{
-		std::cout << "Potrzebujesz " << experienceRequiredToLevelUp << " aby podniesc zwoje zdolnosci bojowe." << std::endl;
 	}
 }
 

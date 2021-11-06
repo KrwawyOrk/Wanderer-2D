@@ -51,8 +51,6 @@ public:
 	void DrawOpenedContainer( void );
 	void CheckIfContainerIsOpened( void );
 
-	void LevelUpDamage( void );
-
 private:
 	bool m_keysHeld[323];
     playingState_t m_playingState;
