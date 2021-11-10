@@ -404,16 +404,7 @@ void Player::GiveItem( Item* item )
 
 bool Player::HasSpaceInInventory( void ) const
 {
-	if( m_itemsVector.size() < INVENTORY_LIMIT )
-	{
-		return true;
-	}
-
-	else
-	{
-		std::cout << "Nie ma miejsca w kontenerze." << std::endl;
-		return false;
-	}
+	return m_itemsVector.size() < INVENTORY_LIMIT ? true : false;
 }
 
 
