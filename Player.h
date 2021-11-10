@@ -117,7 +117,6 @@ public:
 	virtual void Move( direction_t direction );
 	void PickBox( void );
 	void RestoreActionPoints( void ) { m_actionPoints = m_maxActionPoints; }
-	void GiveFood( int food );
 	void Selected( bool s ) { m_selected = s; }
 	bool IsSelected( void ) { return m_selected; }
 
@@ -146,6 +145,7 @@ public:
 	bool CanFireAtTheMonster( Monster* monster );
 	void RemovePistolAmmunition( void );
 	void GiveAmmunition( int count );
+	void GiveFood( int count );
 	void LevelUpDamage( void );
 
 private:

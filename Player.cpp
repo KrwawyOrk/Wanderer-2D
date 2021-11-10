@@ -331,26 +331,6 @@ void Player::PickBox( void )
 	}
 }
 
-void Player::GiveFood( int food )
-{
-	int newFood = GetFood() + food;
-
-	if( newFood > GetMaxFood() )
-	{
-		SetFood( GetMaxFood() );
-	}
-
-	else if( newFood < 0 )
-	{
-		SetFood( 0 );
-	}
-
-	else
-	{
-		SetFood( newFood );
-	}
-}
-
 void Player::SetAttackedMonster( Monster* monster )
 {
 	if( monster && monster->IsAlive() )
@@ -359,8 +339,6 @@ void Player::SetAttackedMonster( Monster* monster )
 		m_attackedMonster->SetAttackedByPlayer( true );
 	}
 }
-
-
 
 void Player::CheckMonsterAttackDistance( void )
 {
@@ -480,6 +458,11 @@ void Player::RemovePistolAmmunition( void )
 void Player::GiveAmmunition( int count )
 {
 	m_pistolAmmunition += count;
+}
+
+void Player::GiveFood( int count )
+{
+	m_food += count;
 }
 
 void Player::LevelUpDamage( void )
