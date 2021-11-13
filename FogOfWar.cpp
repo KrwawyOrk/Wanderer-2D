@@ -21,15 +21,7 @@ void FogOfWar::Think( void )
 	Player* player = Globals::player;
 	int distance = static_cast<int>( Tools::CalculateDistance( m_position.x, m_position.y, player->GetPosition().x, player->GetPosition().y ) );
 
-	if( distance <= FOGOFWAR_DISTANCE )
-	{
-		m_explored = true;
-	}
-
-	else
-	{
-		m_explored = false;
-	}
+	m_explored = distance <= FOGOFWAR_DISTANCE;
 }
 
 
