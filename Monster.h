@@ -106,6 +106,7 @@ public:
 		}
 	}
 
+	bool CanRandomMovement( void );
 	void RandomMovement( void );
 	void AttackPlayer();
 	void CreateCorpseWithLootItems( void );

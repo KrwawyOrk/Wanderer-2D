@@ -195,11 +195,6 @@ void Player::Move( direction_t direction )
 	bool canMove = true;
 	Position newPosition = GetPosition();
 
-	std::vector<StaticMapItem*>&	staticMapItems = Globals::currentMap->GetStaticMapItemVector();
-	std::vector<Monster*>&			monsters = Globals::currentMap->GetMonstersVector();
-	std::vector<Item*>&			Items = Globals::currentMap->GetItemsVector();
-	std::vector<FoodGenerator*>&	foodGenerators = Globals::currentMap->GetFoodGeneratorsVector();
-
 	switch( direction )
 	{
 	case NORTH:
@@ -219,101 +214,65 @@ void Player::Move( direction_t direction )
 		break;
 	}
 
-	for( std::vector<StaticMapItem*>::const_iterator cit = staticMapItems.begin() ; cit != staticMapItems.end() ; ++cit )
+	Map* map = Globals::currentMap;
+	std::vector<StaticMapItem*>&	staticMapItems = map->GetStaticMapItemVector();
+	std::vector<Monster*>&			monsters = map->GetMonstersVector();
+	std::vector<Item*>&				Items = map->GetItemsVector();
+	std::vector<FoodGenerator*>&	foodGenerators = map->GetFoodGeneratorsVector();
+	std::list<ActionMapChange*>&	actionMapChangeList = map->GetActionMapChangeList();
+
+
+	for (auto item : staticMapItems)
 	{
-		if( ( *cit )->GetPosition().x == newPosition.x && ( *cit)->GetPosition().y == newPosition.y )
+		if (item->GetPosition().x == newPosition.x && item->GetPosition().y == newPosition.y)
 		{
-			if( (*cit)->IsWalkable() == false )
+			if (!item->IsWalkable())
 			{
 				canMove = false;
-				return;		// Jak jest kolizja to konczymy dzialanie funkcji bo nie ma sensu dalej kombinowac.
-			}
-
-			else
-			{
-				canMove = true;
-			}		
-		}
-	}
-
-	for( std::vector<Monster*>::const_iterator cit = monsters.begin() ; cit != monsters.end() ; ++cit )
-	{
-		if( ( *cit )->GetPosition().x == newPosition.x && ( *cit )->GetPosition().y == newPosition.y )
-		{
-			if( ( *cit )->IsAlive() )
-			{
-				canMove = false;
-				//AttackMonster( (*cit) );
 				return;
 			}
-
-			else
-				canMove = true;
 		}
 	}
 
-	/*for( std::vector<Item*>::const_iterator cit = Items.begin() ; cit != Items.end() ; ++cit )
+	for (auto monster : monsters)
 	{
-	Item* Item = ( *cit );
-	if( Item->GetPosition().x == newPosition.x && Item->GetPosition().y == newPosition.y )
-	{
-	GSPlaying* gsPlaying = dynamic_cast<GSPlaying*>( Globals::game->GetGameState( "Play" ) );
-	if( gsPlaying )
-	{
-	gsPlaying->PlayerPickItem( Item );
-	}
-
-	return;
-	}
-	}*/
-
-	std::list<ActionMapChange*>& actionMapChangeList = Globals::currentMap->GetActionMapChangeList();
-	std::list<ActionMapChange*>::const_iterator cit;
-	for( cit = actionMapChangeList.begin() ; cit != actionMapChangeList.end() ; ++cit )
-	{
-		if( ( *cit )->GetPosition().x == newPosition.x && ( *cit )->GetPosition().y == newPosition.y )
+		if (monster->GetPosition().x == newPosition.x && monster->GetPosition().y == newPosition.y)
 		{
-			GSPlaying* gsPlaying = dynamic_cast<GSPlaying*>( Globals::game->GetGameState( "Play" ) );
-			if( gsPlaying )
+			if (monster->IsAlive())
 			{
-				gsPlaying->ChangeMap( ( *cit )->GetNextMapName() );
-				SetPosition( ( *cit )->GetLandPosition() );
-				flposition_x = static_cast<float>( m_position.x * Globals::tilesize );
-				flposition_y = static_cast<float>( m_position.y * Globals::tilesize );
+				canMove = false;;
+				return;
+			}
+		}
+	}
+
+	for (auto mapChangeController : actionMapChangeList)
+	{
+		if (mapChangeController->GetPosition().x == newPosition.x && mapChangeController->GetPosition().y == newPosition.y)
+		{
+			GSPlaying* gameStatePlaying = dynamic_cast<GSPlaying*>(Globals::game->GetGameState( "Play" ));
+			if (gameStatePlaying)
+			{
+				gameStatePlaying->ChangeMap( mapChangeController->GetNextMapName() );
+				SetPosition( mapChangeController->GetLandPosition() );
+				flposition_x = static_cast<float>(m_position.x * Globals::tilesize);
+				flposition_y = static_cast<float>(m_position.y * Globals::tilesize);
 
 				Globals::camera->Center( this );
 
 				return;
 			}
-
 		}
 	}
 
-	if( Map* map = Globals::currentMap )
+	if( !map->TileExistsAtPosition( newPosition.x, newPosition.y ) )
 	{
-		if( !map->TileExistsAtPosition( newPosition.x, newPosition.y ) )
-		{
-			canMove = false;
-		}
+		canMove = false;
 	}
 
-	if( canMove /*&& m_actionPoints > 0*/ && m_selected == true )
+	if (canMove)
 	{
-		Globals::camera->FollowPlayer( true );
-		//Globals::camera->Center( this );
-
-		if( m_actionPoints > 0 )
-		{
-			m_actionPoints--;
-		}
-
-		else
-		{
-			m_actionPoints = 0;
-		}
-
 		SetPosition( newPosition );
-		//SetTimeToNextAttack( ATTACK_DELAY_MALEE );
 	}
 }
 

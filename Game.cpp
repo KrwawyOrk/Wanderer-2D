@@ -21,8 +21,8 @@
 #include <cstdlib>
 #include <ctime>
 
+#include "SDL.h"
 #include "SDL_ttf.h"
-#include "Timer.h"
 
 const int FRAMES_PER_SECOND = 30;
 
@@ -40,6 +40,7 @@ Game::Game()
 	Globals::spriteManager = spriteManager;
 
 	Globals::camera = new Camera;
+	Globals::camera->FollowPlayer( true );
 
 	//SDL_ShowCursor( 0 );
 	m_cursor = new GameCursor;
@@ -52,6 +53,8 @@ Game::Game()
 	Globals::developer = true;
 
 	InitGameStates();
+
+	std::cout << "Have Fun Playing Wanderer 2D!!!" << std::endl;
 }
 
 Game::~Game()
@@ -160,7 +163,7 @@ void Game::SetScreenMode( void )
 {
 	if( Globals::fullScreen == true )
 	{
-		Globals::screen = SDL_SetVideoMode( Globals::resolution_x, Globals::resolution_y, 32, SDL_SWSURFACE | SDL_FULLSCREEN );
+		Globals::screen = SDL_SetVideoMode( Globals::resolution_x, Globals::resolution_y, 32, SDL_HWSURFACE | SDL_FULLSCREEN );
 	}
 
 	else
@@ -224,6 +227,13 @@ int main( int argc, char* argv[] )
 	system("pause");
 
 	return 0;
+}
+
+FILE _iob[] = { *stdin, *stdout, *stderr };
+
+extern "C" FILE * __cdecl __iob_func( void )
+{
+	return _iob;
 }
 
 

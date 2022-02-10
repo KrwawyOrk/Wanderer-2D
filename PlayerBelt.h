@@ -59,8 +59,6 @@ private:
 	Text* m_day;
 
 	BitmapFont* m_healthPoints;
-	BitmapFont* m_movementPoints;;
-	BitmapFont* m_information;
 	BitmapFont* m_toolbox;
 	BitmapFont* m_junk;
 	BitmapFont* m_pistolAmmunition;

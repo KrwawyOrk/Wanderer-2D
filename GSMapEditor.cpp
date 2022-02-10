@@ -90,9 +90,6 @@ GSMapEditor::GSMapEditor()
 	Globals::spriteManager->GetSprite( m_brushSprite, "brush" );
 	Globals::spriteManager->GetSprite( m_backgroundPaper, "paperbackground" );
 
-
-
-
 	int draw_x = 10;
 	int draw_y = 30;
 	int spritesInRow = 14;
@@ -262,7 +259,7 @@ void GSMapEditor::SaveMap( Map* map )
 	}
 }
 
-void GSMapEditor::AddTile( Map *map, Position& position, std::string spriteName )
+void GSMapEditor::AddTile( Map *map, Position position, std::string spriteName )
 {
 	bool canAddTile = true;
 
@@ -440,22 +437,22 @@ void GSMapEditor::InputMappingState( void )
 
 				int mouse_x = Globals::event.motion.x;
 				int mouse_y = Globals::event.motion.y;
-				if( mouse_y < 20 )
+				if( mouse_y < 5 )
 				{
 					Globals::camera->velocity_y = -Globals::camera->cameraVelocity;
 				}
 
-				else if( mouse_y > 748 )
+				else if( mouse_y > Globals::resolution_y - 5 )
 				{
 					Globals::camera->velocity_y = Globals::camera->cameraVelocity;
 				}
 
-				else if( mouse_x < 20 )
+				else if( mouse_x < 5 )
 				{
 					Globals::camera->velocity_x = -Globals::camera->cameraVelocity;
 				}
 
-				else if( mouse_x > 1004 )
+				else if( mouse_x > Globals::resolution_x - 5 )
 				{
 					Globals::camera->velocity_x = Globals::camera->cameraVelocity;
 				}
@@ -464,7 +461,6 @@ void GSMapEditor::InputMappingState( void )
 				{
 					Globals::camera->velocity_x = 0;
 					Globals::camera->velocity_y = 0;
-
 				}
 
 				SetBrushPosition( position );

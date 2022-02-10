@@ -10,8 +10,8 @@ Container::Container()
 	m_locked = false;
 	Globals::spriteManager->GetSprite(m_background, "opened_container");
 
-	int draw_x = 812;
-	int draw_y = 460;
+	int draw_x = 595;
+	int draw_y = 405;
 	int itemSlotsInRow = 5;
 
 	for( int i = 0 ; i < 10 ; i++ )
@@ -25,7 +25,7 @@ Container::Container()
 		{
 			if( i >= itemSlotsInRow )
 			{
-				draw_x = 812;
+				draw_x = 595;
 				draw_y += 51;
 			}
 		}
@@ -54,7 +54,7 @@ void Container::Think( void )
 
 void Container::Draw( void )
 {
-	m_background.Draw( Globals::screen, 803, 430 );
+	m_background.Draw( Globals::screen, 585, 375 );
 	for( std::vector<ItemSlot*>::iterator it = m_itemSlots.begin() ; it != m_itemSlots.end() ; ++it )
 	{
 		( *it )->Draw();

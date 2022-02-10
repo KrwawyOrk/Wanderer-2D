@@ -68,7 +68,7 @@ public:
 	void MoveBrush( brushDirection_t brushDirection );
 	void SaveMap( Map* map );
 
-	void AddTile( Map* map, Position& position, std::string spriteName );
+	void AddTile( Map* map, Position position, std::string spriteName );
 	void AddStaticMapItem( Map* map, Position& position, bool walkable, std::string spriteName );
 
 	void RemoveTile( Map* map, Position& position );
