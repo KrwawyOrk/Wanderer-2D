@@ -588,6 +588,7 @@ void GSMapEditor::InputMappingState( void )
 				{
 					Globals::game->SetGameState( "Play" );
 					Globals::camera->Center( Globals::currentPlayer );
+					Globals::camera->FollowPlayer( true );
 					m_textInput->Clear();
 					break;
 				}

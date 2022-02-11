@@ -1,7 +1,6 @@
 #include "Factory.h"
 
 #include "Box.h"
-#include "FoodGenerator.h"
 #include "GameObject.h"
 #include "Globals.h"
 #include "Monster.h"
@@ -79,11 +78,6 @@ Box* Factory::CreateBox( Position position )
 Item* Factory::CreateItem( Position position, itemType_t itemType )
 {
 	return new Item( position, itemType );
-}
-
-FoodGenerator* Factory::CreateFoodGenerator( Position position )
-{
-	return new FoodGenerator( position );
 }
 
 

@@ -13,7 +13,6 @@
 #include "GSBattleFight.h"
 #include "GSPlaying.h"
 #include "GSMapEditor.h"
-#include "GSCraftMenu.h"
 
 #include <fstream>
 #include <iostream>
@@ -54,7 +53,7 @@ Game::Game()
 
 	InitGameStates();
 
-	std::cout << "Have Fun Playing Wanderer 2D!!!" << std::endl;
+	std::cout << "Have Fun Playing Wanderer 2D!!! :-) - kind regards Krwawy Ork" << std::endl;
 }
 
 Game::~Game()
@@ -119,19 +118,6 @@ bool Game::SetGameState( std::string gameStateTitle )
 		else if( gameStateTitle == "Map editor" )
 			m_gamestateEnum = MAPEDITOR;
 
-		else if( gameStateTitle == "Craft menu" )
-			m_gamestateEnum = CRAFTMENU;
-
-
-		Player* player = Globals::currentPlayer;
-		player->StopAttackingMonster();
-
-		if( player->GetAttackedMonster() )
-		{
-			player->GetAttackedMonster()->SetAttackedByPlayer( false );
-			player->GetAttackedMonster()->SetAttackingPlayer( false );
-		}
-
 		return true;
 	}
 
@@ -154,7 +140,6 @@ void Game::InitGameStates( void )
 {
 	m_gameStateMap["Play"] = new GSPlaying;
 	m_gameStateMap["Map editor"] = new GSMapEditor;
-	m_gameStateMap["Craft menu"] = new GSCraftMenu;
 
 	SetGameState( "Play" );
 }

@@ -7,7 +7,6 @@
 #include "Globals.h"
 #include "GSMapEditor.h"
 #include "ItemSlot.h"
-#include "NPC.h"
 #include "SpriteManager.h"
 #include "StaticMapItem.h"
 #include "Tile.h"
@@ -39,7 +38,6 @@ GSPlaying::GSPlaying( void )
 	Globals::player = m_player;
 	m_playerBelt.SetPlayer( Globals::player );
 
-	m_map->GenerateRandomObjectsOnMap();
 	Globals::camera->Center( Globals::player );
 	Globals::camera->FollowPlayer( true );
 
@@ -74,15 +72,6 @@ void GSPlaying::InputEvents( void )
 			position.x = ( Globals::event.button.x + Globals::camera->GetCameraX() ) / Globals::tilesize;
 			position.y = ( Globals::event.button.y + Globals::camera->GetCameraY() ) / Globals::tilesize;
 
-			if( m_player->GetMiningAbility() )
-			{
-				if( static_cast<int>( Tools::CalculateDistance( m_player->GetPosition().x, m_player->GetPosition().y, position.x, position.y ) ) == 1 )
-				{
-					m_map->RemoveStaticMapItem( position.x, position.y );
-					m_player->SetJunk( m_player->GetJunk() + 1 );
-					std::cout << "Mining ability enabled, odleglosc 1. Mozna drazyc mury." << std::endl;
-				}
-			}
 
 			std::vector<Item*> &items = Globals::currentMap->GetItemsVector();
 			std::vector<Item*>::iterator it;
@@ -114,8 +103,7 @@ void GSPlaying::InputEvents( void )
 			position.x = ( Globals::event.button.x + Globals::camera->GetCameraX() ) / Globals::tilesize;
 			position.y = ( Globals::event.button.y + Globals::camera->GetCameraY() ) / Globals::tilesize;
 
-			m_player->StopAttackingMonster();
-
+	
 			std::vector<Monster*>&monsters = Globals::currentMap->GetMonstersVector();
 
 			for( std::vector<Monster*>::const_iterator cit = monsters.begin() ; cit != monsters.end() ; ++cit )
@@ -168,26 +156,22 @@ void GSPlaying::InputEvents( void )
 		int mouse_y = Globals::event.motion.y;
 
 		if( mouse_y < 2 )
-		{
-			Globals::camera->FollowPlayer( false );
+		{	
 			Globals::camera->velocity_y = -Globals::camera->cameraVelocity;
 		}
 
 		else if( mouse_y > Globals::resolution_y - 2 )
-		{
-			Globals::camera->FollowPlayer( false );
+		{	
 			Globals::camera->velocity_y = Globals::camera->cameraVelocity;
 		}
 
 		else if( mouse_x < 2 )
-		{
-			Globals::camera->FollowPlayer( false );
+		{	
 			Globals::camera->velocity_x = -Globals::camera->cameraVelocity;
 		}
 
 		else if( mouse_x > Globals::resolution_x - 2 )
-		{
-			Globals::camera->FollowPlayer( false );
+		{	
 			Globals::camera->velocity_x = Globals::camera->cameraVelocity;
 		}
 
@@ -227,7 +211,7 @@ void GSPlaying::InputEvents( void )
 			break;
 
 		case SDLK_b:
-			Globals::game->SetGameState( "Craft menu" );
+			
 			break;
 
 		case SDLK_c:
@@ -251,7 +235,6 @@ void GSPlaying::InputEvents( void )
 			break;
 
 		case SDLK_SPACE:
-			NextTurn();
 			break;
 
 		case SDLK_TAB:
@@ -417,29 +400,6 @@ void GSPlaying::ChangeMap( std::string mapName )
 	}
 }
 
-void GSPlaying::NextTurn( void )
-{
-	if( Map* map = Globals::currentMap )
-	{
-		map->GenerateRandomObjectsOnMap();
-		m_player->RestoreActionPoints();
-
-		if( m_player->GetFood() <= 0 )
-		{
-			m_player->Heal( -5 );
-		}
-
-		m_player->GiveFood( -1 );
-
-		for( std::vector<FoodGenerator*>::iterator it = map->GetFoodGeneratorsVector().begin() ; it != map->GetFoodGeneratorsVector().end() ; ++it )
-		{
-			( *it )->NextTurn();
-		}
-
-		m_day++;
-	}
-}
-
 void GSPlaying::PlaceProtectionZone( Position& position )
 {
 	for( std::vector<Tile*>::iterator it = m_map->GetTilesVector().begin() ; it != m_map->GetTilesVector().end() ; ++it )
@@ -451,32 +411,13 @@ void GSPlaying::PlaceProtectionZone( Position& position )
 	}
 }
 
-void GSPlaying::PlaceFoodGenerator( Position& position )
-{
-	if( m_player->GetToolBox() >= 10 )
-	{
-		Map* map = Globals::currentMap;
-		map->GetFoodGeneratorsVector().push_back( Globals::factory->CreateFoodGenerator( position ) );
-
-		m_player->SetToolBox( m_player->GetToolBox() - 10 );
-
-		if( m_player->GetToolBox() < 0 )
-		{
-			m_player->SetToolBox( 0 );
-		}
-	}
-}
-
 void GSPlaying::PlayerLeaveMap( void )
 {
 	Map* map = Globals::currentMap;
 	if( m_player->GetPosition().x == map->GetExitPosition().x && m_player->GetPosition().y == map->GetExitPosition().y )
 	{
-		m_player->StopAttackingMonster();
-
-
 		std::cout << "Opuszczamy mape" << std::endl;
-		Globals::game->SetGameState( "Craft menu" );
+		Globals::game->SetGameState( "Map editor" );
 
 
 		// ---------------------- -----------BUG FIX ---------------------------------

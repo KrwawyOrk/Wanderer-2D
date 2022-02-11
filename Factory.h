@@ -6,7 +6,6 @@
 #include "Item.h"
 
 class Box;
-class FoodGenerator;
 class Monster;
 class Position;
 class StaticMapItem;
@@ -21,7 +20,6 @@ public:
 	StaticMapItem*		CreateStaticMapItem( Position position, std::string name, bool walkable, std::string spriteName );
 	Box*				CreateBox( Position position );
 	Item*			CreateItem( Position position, itemType_t itemType );
-	FoodGenerator*		CreateFoodGenerator( Position position );
 };
 
 #endif

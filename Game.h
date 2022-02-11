@@ -12,7 +12,6 @@ enum gamestate_t
 {
 	PLAYING = 1,
 	MAPEDITOR,
-	CRAFTMENU
 };
 
 class Game

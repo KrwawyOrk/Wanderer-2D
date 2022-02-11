@@ -3,7 +3,6 @@
 #include "ActionMapChange.h"
 #include "Box.h"
 #include "Camera.h"
-#include "FoodGenerator.h"
 #include "Game.h"
 #include "Globals.h"
 #include "GSBattleFight.h"
@@ -33,22 +32,12 @@ Player::Player()
 	m_maxHealthPoints = 100;
 	m_healthPoints = m_maxHealthPoints;
 
-	m_maxActionPoints = 100;
-	m_actionPoints = m_maxActionPoints;
-
-	m_maxFood = 99;
-	m_food = 5;
-	m_toolbox = 0;
-	m_junk = 0;
 	m_experiencePoints = 0;
 	m_monstersKilled = 0;
 
 	m_selected = true;
 	m_damage = 1;
-	//Umiejetnosci itp.
-	m_morphicHammer = false;
-	m_miningHammerDurability = 3;
-	m_miningAbility = false;
+
 
 	m_attackedMonster = NULL;
 	m_nextAttack = 0.0;
@@ -215,14 +204,8 @@ void Player::Move( direction_t direction )
 	}
 
 	Map* map = Globals::currentMap;
-	std::vector<StaticMapItem*>&	staticMapItems = map->GetStaticMapItemVector();
-	std::vector<Monster*>&			monsters = map->GetMonstersVector();
-	std::vector<Item*>&				Items = map->GetItemsVector();
-	std::vector<FoodGenerator*>&	foodGenerators = map->GetFoodGeneratorsVector();
-	std::list<ActionMapChange*>&	actionMapChangeList = map->GetActionMapChangeList();
 
-
-	for (auto item : staticMapItems)
+	for (auto item : map->GetStaticMapItemVector())
 	{
 		if (item->GetPosition().x == newPosition.x && item->GetPosition().y == newPosition.y)
 		{
@@ -234,7 +217,7 @@ void Player::Move( direction_t direction )
 		}
 	}
 
-	for (auto monster : monsters)
+	for (auto monster : map->GetMonstersVector())
 	{
 		if (monster->GetPosition().x == newPosition.x && monster->GetPosition().y == newPosition.y)
 		{
@@ -246,7 +229,7 @@ void Player::Move( direction_t direction )
 		}
 	}
 
-	for (auto mapChangeController : actionMapChangeList)
+	for (auto mapChangeController : map->GetActionMapChangeList())
 	{
 		if (mapChangeController->GetPosition().x == newPosition.x && mapChangeController->GetPosition().y == newPosition.y)
 		{
@@ -273,29 +256,6 @@ void Player::Move( direction_t direction )
 	if (canMove)
 	{
 		SetPosition( newPosition );
-	}
-}
-
-void Player::PickBox( void )
-{
-	std::vector<Box*>& boxes = Globals::currentMap->GetBoxes();
-	std::vector<Box*>::const_iterator cit;
-
-	for( cit = boxes.begin() ; cit != boxes.end() ; ++cit )
-	{
-		if( ( *cit )->GetPosition().x == GetPosition().x && ( *cit )->GetPosition().y == GetPosition().y )
-		{
-
-		}
-	}
-}
-
-void Player::SetAttackedMonster( Monster* monster )
-{
-	if( monster && monster->IsAlive() )
-	{
-		m_attackedMonster = monster;
-		m_attackedMonster->SetAttackedByPlayer( true );
 	}
 }
 
@@ -417,11 +377,6 @@ void Player::RemovePistolAmmunition( void )
 void Player::GiveAmmunition( int count )
 {
 	m_pistolAmmunition += count;
-}
-
-void Player::GiveFood( int count )
-{
-	m_food += count;
 }
 
 void Player::LevelUpDamage( void )

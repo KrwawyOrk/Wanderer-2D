@@ -269,20 +269,6 @@ void Map::Draw( void )
 		}	*/
 	}
 
-	for( std::vector<FoodGenerator*>::iterator it = m_foodGenerators.begin() ; it != m_foodGenerators.end() ; ++it )
-	{
-		FoodGenerator* foodGenerator = ( *it );
-		if( !FogOfWarExistsAtPosition( foodGenerator->GetPosition().x, foodGenerator->GetPosition().y ) )
-		{
-			foodGenerator->Draw();
-		}
-
-		else if( FogOfWarExistsAtPosition( foodGenerator->GetPosition().x, foodGenerator->GetPosition().y ) )
-		{
-			m_questionMark.Draw( Globals::screen, foodGenerator->GetPosition() );
-		}
-	}
-
 	//Grafika fog of war zamula grę i pozostaniemy przy "próżni" SDL'a :D
 	for( std::vector<Tile*>::iterator it = m_tiles.begin() ; it != m_tiles.end() ; ++it )
 	{
@@ -498,65 +484,12 @@ bool Map::ItemExistsAtPosition( int x, int y )
 	return false;
 }
 
-void Map::GenerateRandomObjectsOnMap( void )
-{
-	for( std::vector<Tile*>::const_iterator cit = m_tiles.begin() ; cit != m_tiles.end() ; ++cit )
-	{
-		Tile* tile = ( *cit );
-		Player* player = Globals::player;
-
-		/*int monsterRandom = ( std::rand() % 70 ) + 1; //losowa liczba dla potworków
-		if( monsterRandom == 1 )
-		{
-		std::cout << "GenerateRandomMonsters: " << monsterRandom << std::endl;
-		if( !tile->IsProtectionZone() && !ItemExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) &&!StaticItemExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && !MonsterExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && !FoodGeneratorExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && player->GetPosition().x != tile->GetPosition().x && player->GetPosition().y != tile->GetPosition().y )
-		{
-		m_monsters.push_back( Globals::factory->CreateMonster( "Spider", Position( tile->GetPosition().x, tile->GetPosition().y ), 20, 20, 5, "monsterinfo" ) );
-		}
-		}*/
-
-		int toolboxRandom = ( std::rand() % 450 ) + 1; //losowa liczba dla skrzyn z narzedziami
-		/*	if( toolboxRandom == 1 )
-		{
-		std::cout << "GenerateRandomToolBox: " << toolboxRandom << std::endl;
-		if( !tile->IsProtectionZone() && !ItemExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && !StaticItemExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && !MonsterExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && !FoodGeneratorExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && player->GetPosition().x != tile->GetPosition().x && player->GetPosition().y != tile->GetPosition().y )
-		{
-		m_Items.push_back( Globals::factory->CreateItem( tile->GetPosition(), TOOL_BOX ) );
-		}
-		}*/
-
-		int healthkitRandom = ( std::rand() % 450 ) + 1;
-		if( healthkitRandom == 1 )
-		{
-			std::cout << "GenerateRandomHealthKit:: " << healthkitRandom << std::endl;
-			if( !tile->IsProtectionZone() && !ItemExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && !StaticItemExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && !MonsterExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && !FoodGeneratorExistsAtPosition( tile->GetPosition().x, tile->GetPosition().y ) && player->GetPosition().x != tile->GetPosition().x && player->GetPosition().y != tile->GetPosition().y )
-			{
-				m_Items.push_back( Globals::factory->CreateItem( tile->GetPosition(), HEALTH_REGENERATION ) );
-			}
-		}
-	}
-}
-
 bool Map::FogOfWarExistsAtPosition( int x, int y )
 {
 	for( std::vector<Tile*>::iterator it = m_tiles.begin() ; it != m_tiles.end() ; ++it )
 	{
 		Tile* tile = ( *it );
 		if( tile->GetFogOfWar().GetPosition().x == x && tile->GetFogOfWar().GetPosition().y == y && !tile->GetFogOfWar().IsExplored() )
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
-bool Map::FoodGeneratorExistsAtPosition( int x, int y )
-{
-	for( std::vector<FoodGenerator*>::iterator it = m_foodGenerators.begin(); it != m_foodGenerators.end() ; ++it )
-	{
-		FoodGenerator* foodGenerator = ( *it );
-		if( x == foodGenerator->GetPosition().x && y == foodGenerator->GetPosition().y )
 		{
 			return true;
 		}

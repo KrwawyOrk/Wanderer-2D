@@ -59,40 +59,10 @@ public:
 	virtual void Think( void );
 	virtual void Draw( void );
 
-	int GetActionPoints( void ) const { return m_actionPoints; }
-	void SetActionPoints( int actionPoints ) { m_actionPoints = actionPoints; }
-
-	int GetMaxActionPoints( void ) const { return m_maxActionPoints; }
-	void SetMaxActionPoints( int maxActionPoints ) { m_maxActionPoints = maxActionPoints; }
-
-	int GetFood( void ) const { return m_food; }
-	void SetFood( int food ) { m_food = food; }
-
-	int GetMaxFood( void ) const { return m_maxFood; }
-	void SetMaxFood( int food ) { m_maxFood = food; }
-
-	int GetToolBox( void ) const { return m_toolbox; }
-	void SetToolBox( int box ) { m_toolbox = box; }
-
-	int GetJunk( void ) const { return m_junk; }
-	void SetJunk( int junk ) { m_junk = junk; }
-
 	int GetExperiencePoints( void ) const { return m_experiencePoints; }
 	void SetExperiencePoints( int experiencePoints ) { m_experiencePoints = experiencePoints; }
 
 	int GetMonstersKilled( void ) const { return m_monstersKilled; }
-
-	void SetMorphicHammer( bool b ) { m_morphicHammer = b; }
-	bool GetMorphicHammer( void ) { return m_morphicHammer; }
-
-	void SetMiningAbility( bool b ) { m_miningAbility = b ; }
-	bool GetMiningAbility( void ) { return m_miningAbility; }
-
-	void SetMiningMode( bool b ) { m_miningMode = b; }
-	bool GetMiningMode( void ) { return m_miningMode; }
-
-	void SetMiningHammerDurability( int durability ) { m_miningHammerDurability = durability; }
-	int GetMiningHammerDurability( void ) const { return m_miningHammerDurability; }
 
 	int GetBaseDamage( void ) { return m_damage; }
 	void SetBaseDamage( int damage ) { m_damage = damage; }
@@ -101,22 +71,9 @@ public:
 
 	int GetWeaponDamage( void );
 
-	void StopAttackingMonster( void )
-	{
-		m_attackedMonster = NULL;
-	}
-
-	void SetAttackedMonster( Monster* monster );
 	void CheckMonsterAttackDistance( void );
 
-	Monster* GetAttackedMonster( void )
-	{
-		return m_attackedMonster;
-	}
-
 	virtual void Move( direction_t direction );
-	void PickBox( void );
-	void RestoreActionPoints( void ) { m_actionPoints = m_maxActionPoints; }
 	void Selected( bool s ) { m_selected = s; }
 	bool IsSelected( void ) { return m_selected; }
 
@@ -145,27 +102,16 @@ public:
 	bool CanFireAtTheMonster( Monster* monster );
 	void RemovePistolAmmunition( void );
 	void GiveAmmunition( int count );
-	void GiveFood( int count );
 	void LevelUpDamage( void );
 
 private:
 	bool m_selected;
 	Sprite m_spriteSelected;
 
-	int m_actionPoints;
-	int m_maxActionPoints;
+
 	int m_damage;
-	int m_food;
-	int m_maxFood;
-	int m_toolbox;
-	int m_junk;
 	int m_experiencePoints;
 	int m_monstersKilled;
-
-	bool m_morphicHammer;
-	int m_miningHammerDurability;
-	bool m_miningAbility;
-	bool m_miningMode;
 
 	Monster* m_attackedMonster;
 	float m_nextAttack;

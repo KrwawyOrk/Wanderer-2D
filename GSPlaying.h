@@ -18,7 +18,6 @@ enum playingState_t
 };
 
 class Container;
-class FoodGenerator;
 class Item;
 class NPC;
 
@@ -42,9 +41,7 @@ public:
 	Map* GetCurrentMap( void ) { return m_map; }
 	bool MapExists( std::string mapName ) const;
 	void ChangeMap( std::string mapName );
-	void NextTurn( void );
 	void PlaceProtectionZone( Position& position );
-	void PlaceFoodGenerator( Position& position );
 	int GetDay( void ) { return m_day; }
 	void PlayerLeaveMap( void );
 	void DrawExitLocationMessage( void );
