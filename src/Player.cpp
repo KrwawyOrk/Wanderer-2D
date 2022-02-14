@@ -9,7 +9,6 @@
 #include "Item.h"
 #include "Map.h"
 #include "Monster.h"
-//#include "PlayerBelt.h"
 #include "SpriteManager.h"
 #include "StaticMapItem.h"
 #include "Item.h"
@@ -38,7 +37,6 @@ Player::Player()
 	m_damage = 1;
 
 
-	m_attackedMonster = NULL;
 	m_nextAttack = 0.0;
 	m_attackSpeed = 1.0;
 
@@ -61,7 +59,7 @@ Player::Player()
 	set_clips();
 	//Initialize movement variables
     offSet = 0;
-
+ 
     //Initialize animation variables
     frame = 0;
     status = FOO_RIGHT;
@@ -76,7 +74,7 @@ void Player::Think( void )
 		m_velocity = BASE_VELOCITY + 50.0f;
 	}
 
-	else
+	else 
 	{
 		m_velocity = BASE_VELOCITY;
 	}
@@ -115,7 +113,7 @@ void Player::Draw( void )
 		//frame = (SDL_GetTicks() / static_cast<int>(m_velocity) ) % 3;
 		frame = int(((SDL_GetTicks() / animationSpeed) % 3));
     }
-
+	
 	else if( IsMovingUp() )
 	{
 		status = FOO_UP;
@@ -181,24 +179,24 @@ void Player::Move( direction_t direction )
 	}
 
 	bool canMove = true;
-	Position newPosition = GetPosition();
+	Position nextMovePosition = GetPosition();
 
 	switch( direction )
 	{
 	case NORTH:
-		newPosition.y--;
+		nextMovePosition.y--;
 		break;
 
 	case SOUTH:
-		newPosition.y++;
+		nextMovePosition.y++;
 		break;
 
 	case EAST:
-		newPosition.x++;
+		nextMovePosition.x++;
 		break;
 
 	case WEST:
-		newPosition.x--;
+		nextMovePosition.x--;
 		break;
 	}
 
@@ -206,7 +204,7 @@ void Player::Move( direction_t direction )
 
 	for (auto item : map->GetStaticMapItemVector())
 	{
-		if (item->GetPosition().x == newPosition.x && item->GetPosition().y == newPosition.y)
+		if (item->GetPosition().x == nextMovePosition.x && item->GetPosition().y == nextMovePosition.y)
 		{
 			if (!item->IsWalkable())
 			{
@@ -218,7 +216,7 @@ void Player::Move( direction_t direction )
 
 	for (auto monster : map->GetMonstersVector())
 	{
-		if (monster->GetPosition().x == newPosition.x && monster->GetPosition().y == newPosition.y)
+		if (monster->GetPosition().x == nextMovePosition.x && monster->GetPosition().y == nextMovePosition.y)
 		{
 			if (monster->IsAlive())
 			{
@@ -230,7 +228,7 @@ void Player::Move( direction_t direction )
 
 	for (auto mapChangeController : map->GetActionMapChangeList())
 	{
-		if (mapChangeController->GetPosition().x == newPosition.x && mapChangeController->GetPosition().y == newPosition.y)
+		if (mapChangeController->GetPosition().x == nextMovePosition.x && mapChangeController->GetPosition().y == nextMovePosition.y)
 		{
 			GSPlaying* gameStatePlaying = dynamic_cast<GSPlaying*>(Globals::game->GetGameState( "Play" ));
 			if (gameStatePlaying)
@@ -247,32 +245,19 @@ void Player::Move( direction_t direction )
 		}
 	}
 
-	if( !map->TileExistsAtPosition( newPosition.x, newPosition.y ) )
+	if( !map->TileExistsAtPosition( nextMovePosition.x, nextMovePosition.y ) )
 	{
 		canMove = false;
+		return;
 	}
 
 	if (canMove)
 	{
-		SetPosition( newPosition );
+		SetPosition( nextMovePosition );
 	}
 }
 
-void Player::CheckMonsterAttackDistance( void )
-{
-	if( m_attackedMonster )
-	{
-		if( static_cast<int>( Tools::CalculateDistance( m_position.x, m_position.y, m_attackedMonster->GetPosition().x, m_attackedMonster->GetPosition().y ) ) > MAX_ATTACK_DISTANCE )
-		{
-			m_attackedMonster->SetAttackedByPlayer( false );
-			m_attackedMonster = NULL;
-
-			Globals::AlertMessageToConsole( "Monster uciekl z zasiegu MAX_ATTACK_DISTANCE" );
-		}
-	}
-}
-
-int Player::GetWeaponDamage( void )
+int Player::GetWeaponDamage( void ) 
 {
 	switch( m_weaponType )
 	{
@@ -331,7 +316,7 @@ bool Player::IsEnemyInAttackDistance( int distance, Monster* m_attackedMonster )
 }
 
 void Player::AttackMonster( Monster* monster )
-{
+{ 
 	switch( GetWeaponType() )
 	{
 	case CROWBAR:

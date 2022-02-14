@@ -7,7 +7,7 @@
 
 void NumberToString( int value, std::string& string )
 {
-	//TODO
+	//TODO	
 }
 
 double Tools::CalculateDistance( double dX0, double dY0, double dX1, double dY1 )

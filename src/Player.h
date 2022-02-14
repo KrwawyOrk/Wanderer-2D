@@ -71,8 +71,6 @@ public:
 
 	int GetWeaponDamage( void );
 
-	void CheckMonsterAttackDistance( void );
-
 	virtual void Move( direction_t direction );
 	void Selected( bool s ) { m_selected = s; }
 	bool IsSelected( void ) { return m_selected; }
@@ -113,7 +111,6 @@ private:
 	int m_experiencePoints;
 	int m_monstersKilled;
 
-	Monster* m_attackedMonster;
 	float m_nextAttack;
 	float m_attackSpeed; //tylko liczby int
 
