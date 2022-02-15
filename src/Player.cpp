@@ -204,7 +204,7 @@ void Player::Move( direction_t direction )
 
 	for (auto item : map->GetStaticMapItemVector())
 	{
-		if (item->GetPosition().x == nextMovePosition.x && item->GetPosition().y == nextMovePosition.y)
+		if (item->GetPosition() == nextMovePosition)
 		{
 			if (!item->IsWalkable())
 			{
@@ -216,7 +216,7 @@ void Player::Move( direction_t direction )
 
 	for (auto monster : map->GetMonstersVector())
 	{
-		if (monster->GetPosition().x == nextMovePosition.x && monster->GetPosition().y == nextMovePosition.y)
+		if (monster->GetPosition() == nextMovePosition)
 		{
 			if (monster->IsAlive())
 			{
@@ -228,7 +228,7 @@ void Player::Move( direction_t direction )
 
 	for (auto mapChangeController : map->GetActionMapChangeList())
 	{
-		if (mapChangeController->GetPosition().x == nextMovePosition.x && mapChangeController->GetPosition().y == nextMovePosition.y)
+		if (mapChangeController->GetPosition() == nextMovePosition)
 		{
 			GSPlaying* gameStatePlaying = dynamic_cast<GSPlaying*>(Globals::game->GetGameState( "Play" ));
 			if (gameStatePlaying)
