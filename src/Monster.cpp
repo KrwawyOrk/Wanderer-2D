@@ -23,7 +23,6 @@ Monster::Monster()
 	Globals::spriteManager->GetSprite( m_healthBarSprite, "healthbar" );
 
 	m_monsterHealthBar = new MonsterHealthBar( this );
-
 	m_healthPointsFont = new BitmapFont( FontStyle::FONT_WHITE_SMALL );
 }
 
@@ -110,11 +109,11 @@ void Monster::RandomMovement( void )
 void Monster::AttackPlayer( void )
 {
 	Player* player = Globals::player;
-	if( static_cast<int>( Tools::CalculateDistance( player->GetPosition().x, player->GetPosition().y, m_position.x, m_position.y ) ) == 1 )
+	if( IsPlayerInAttackDistance( 1, player ) )
 	{
 		m_attackingPlayer = true; 
 
-		if( Globals::currentTime >= m_nextAttack )
+		if( IsCooldownReadyToAttack() )
 		{
 			player->SetHealthPoints( player->GetHealthPoints() - m_baseDamage );
 			m_nextAttack = Globals::currentTime + MONSTER_ATTACK_DELAY;
@@ -151,4 +150,14 @@ bool Monster::IsCursorOnMonster( void )
 	int position_y = static_cast<int>( this->GetFloatY() - Globals::camera->GetCameraY() );
 
 	return ( mouse_x >= position_x && mouse_x <= position_x + Globals::tilesize && mouse_y >= position_y && mouse_y <= position_y + Globals::tilesize );
+}
+
+bool Monster::IsCooldownReadyToAttack( void )
+{
+	return (Globals::currentTime >= m_nextAttack);
+}
+
+bool Monster::IsPlayerInAttackDistance( int distance, Player* player )
+{
+	return (static_cast<int>(Tools::CalculateDistance( player->GetPosition().x, player->GetPosition().y, m_position.x, m_position.y )) <= distance);
 }

@@ -111,6 +111,8 @@ public:
 	void AttackPlayer();
 	void CreateCorpseWithLootItems( void );
 	bool IsCursorOnMonster( void );
+	bool IsCooldownReadyToAttack( void );
+	bool IsPlayerInAttackDistance( int distance, Player* player );
 
 private:
 	int m_baseDamage;
