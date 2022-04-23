@@ -28,7 +28,10 @@ public:
 	virtual ~GSPlaying();
 
 	virtual void InputEvents( void );
+
 	virtual void Think( void );
+	void ThinkMovementInputButtonsHeld( void );
+
 	virtual void Update( float deltaTime );
 	virtual void Draw( void );
 	virtual void OnQuit( void ) { return; }
@@ -47,6 +50,8 @@ public:
 	void DrawExitLocationMessage( void );
 	void DrawOpenedContainer( void );
 	void CheckIfContainerIsOpened( void );
+	void OpenMapEditorToEditCurrentMap( void );
+	void OpenMapEditorNewMapWindow( void );
 
 private:
 	bool m_keysHeld[323];
