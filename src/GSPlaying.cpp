@@ -235,8 +235,6 @@ void GSPlaying::InputEvents( void )
 			break;
 
 		case SDLK_SPACE:
-			break;
-
 		case SDLK_TAB:
 			Globals::camera->Center( m_player );
 			break;
@@ -248,30 +246,8 @@ void GSPlaying::InputEvents( void )
 			}
 			break;
 
-		case SDLK_f:
-			//Globals::currentMap->MoveAllMonsters();
-			break;
-
-		case SDLK_F9:
-			if( Globals::developer == true )
-			{
-				GSMapEditor* mapEditor = dynamic_cast<GSMapEditor*>( Globals::game->GetGameState( "Map editor" ) );
-				if( mapEditor )
-				{		
-					mapEditor->GiveMap( m_map );
-					mapEditor->SetBrushPosition( GetPlayer()->GetPosition() );
-					mapEditor->SetMapEditorState( MAPPING );
-
-					Globals::camera->FollowPlayer( false );
-					Globals::game->SetGameState( "Map editor" );
-				}
-			}
-
-			break;
-
 		case SDLK_1:
 			m_player->SetWeapon( CROWBAR );
-			m_player->Move( NORTH );
 			break;
 
 		case SDLK_2:
@@ -282,17 +258,12 @@ void GSPlaying::InputEvents( void )
 			Globals::camera->FollowPlayer( !Globals::camera->GetCameraFollowPlayer() );
 			break;
 
-		case SDLK_F10:
-			if( Globals::developer == true )
-			{
-				GSMapEditor* mapEditor = dynamic_cast<GSMapEditor*>( Globals::game->GetGameState( "Map editor" ) );
-				if( mapEditor )
-				{
-					mapEditor->SetMapEditorState( MENU );
-					Globals::game->SetGameState( "Map editor" );
-				}
-			}
+		case SDLK_F9:
+			OpenMapEditorToEditCurrentMap();
+			break;
 
+		case SDLK_F10:
+			OpenMapEditorNewMapWindow();
 			break;
 
 		case SDLK_RETURN:
@@ -316,29 +287,33 @@ void GSPlaying::Think( void )
 	m_player->Think();
 	m_playerBelt.Think();
 
-	CheckIfContainerIsOpened();
-
-	if( m_player->IsMoving() )
+	if (m_player->IsMoving())
 	{
 		m_npc = NULL;
 	}
 
-	if( m_keysHeld[SDLK_UP] || m_keysHeld[SDLK_w] )
+	CheckIfContainerIsOpened();
+	ThinkMovementInputButtonsHeld();
+}
+
+void GSPlaying::ThinkMovementInputButtonsHeld( void )
+{
+	if (m_keysHeld[SDLK_UP] || m_keysHeld[SDLK_w])
 	{
 		m_player->Move( NORTH );
 	}
 
-	else if( m_keysHeld[SDLK_DOWN] || m_keysHeld[SDLK_s] )
+	else if (m_keysHeld[SDLK_DOWN] || m_keysHeld[SDLK_s])
 	{
 		m_player->Move( SOUTH );
 	}
 
-	else if( m_keysHeld[SDLK_RIGHT] || m_keysHeld[SDLK_d] )
+	else if (m_keysHeld[SDLK_RIGHT] || m_keysHeld[SDLK_d])
 	{
 		m_player->Move( EAST );
 	}
 
-	else if( m_keysHeld[SDLK_LEFT] || m_keysHeld[SDLK_a] )
+	else if (m_keysHeld[SDLK_LEFT] || m_keysHeld[SDLK_a])
 	{
 		m_player->Move( WEST );
 	}
@@ -458,5 +433,35 @@ void GSPlaying::CheckIfContainerIsOpened( void )
 	if( m_openedContainer && m_player->IsMoving() )
 	{
 		m_openedContainer = NULL;
+	}
+}
+
+void GSPlaying::OpenMapEditorToEditCurrentMap( void )
+{
+	if (Globals::developer == true)
+	{
+		GSMapEditor* mapEditor = dynamic_cast<GSMapEditor*>(Globals::game->GetGameState( "Map editor" ));
+		if (mapEditor)
+		{
+			mapEditor->GiveMap( m_map );
+			mapEditor->SetBrushPosition( GetPlayer()->GetPosition() );
+			mapEditor->SetMapEditorState( MAPPING );
+
+			Globals::camera->FollowPlayer( false );
+			Globals::game->SetGameState( "Map editor" );
+		}
+	}
+}
+
+void GSPlaying::OpenMapEditorNewMapWindow( void )
+{
+	if (Globals::developer == true)
+	{
+		GSMapEditor* mapEditor = dynamic_cast<GSMapEditor*>(Globals::game->GetGameState( "Map editor" ));
+		if (mapEditor)
+		{
+			mapEditor->SetMapEditorState( MENU );
+			Globals::game->SetGameState( "Map editor" );
+		}
 	}
 }
