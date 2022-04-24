@@ -152,35 +152,7 @@ void GSPlaying::InputEvents( void )
 
 	if( Globals::event.type == SDL_MOUSEMOTION )
 	{
-		int mouse_x = Globals::event.motion.x;
-		int mouse_y = Globals::event.motion.y;
-
-		if( mouse_y < 2 )
-		{	
-			Globals::camera->velocity_y = -Globals::camera->cameraVelocity;
-		}
-
-		else if( mouse_y > Globals::resolution_y - 2 )
-		{	
-			Globals::camera->velocity_y = Globals::camera->cameraVelocity;
-		}
-
-		else if( mouse_x < 2 )
-		{	
-			Globals::camera->velocity_x = -Globals::camera->cameraVelocity;
-		}
-
-		else if( mouse_x > Globals::resolution_x - 2 )
-		{	
-			Globals::camera->velocity_x = Globals::camera->cameraVelocity;
-		}
-
-		else
-		{
-			Globals::camera->velocity_x = 0;
-			Globals::camera->velocity_y = 0;
-
-		}
+		MoveCameraOnMouseMotion();
 	}
 
 	if( Globals::event.type == SDL_KEYDOWN )
@@ -219,11 +191,7 @@ void GSPlaying::InputEvents( void )
 			break;
 
 		case SDLK_i:
-			std::cout << m_player->GetPosition().x << "\t" << m_player->GetPosition().y << std::endl;
-			std::cout << "Pozycja startowa mapy: " << Globals::currentMap->GetStartPosition().x << "\t" << Globals::currentMap->GetStartPosition().y << std::endl;
-			std::cout << "Pozycja wyjsciowa mapy: " << Globals::currentMap->GetExitPosition().x << "\t" << Globals::currentMap->GetExitPosition().y << std::endl;
-			std::cout << "Punkty zycia: " << m_player->GetHealthPoints() << "/" << m_player->GetMaxHealthPoints() << std::endl;
-			std::cout << "Pozycja kamery: x: " << Globals::camera->GetCameraX() << " y: " << Globals::camera->GetCameraY() << std::endl;
+			PrintInformationsInConsole();
 			break;
 
 		case SDLK_u:
@@ -463,5 +431,47 @@ void GSPlaying::OpenMapEditorNewMapWindow( void )
 			mapEditor->SetMapEditorState( MENU );
 			Globals::game->SetGameState( "Map editor" );
 		}
+	}
+}
+
+void GSPlaying::PrintInformationsInConsole( void )
+{
+	std::cout << m_player->GetPosition().x << "\t" << m_player->GetPosition().y << std::endl;
+	std::cout << "Pozycja startowa mapy: " << Globals::currentMap->GetStartPosition().x << "\t" << Globals::currentMap->GetStartPosition().y << std::endl;
+	std::cout << "Pozycja wyjsciowa mapy: " << Globals::currentMap->GetExitPosition().x << "\t" << Globals::currentMap->GetExitPosition().y << std::endl;
+	std::cout << "Punkty zycia: " << m_player->GetHealthPoints() << "/" << m_player->GetMaxHealthPoints() << std::endl;
+	std::cout << "Pozycja kamery: x: " << Globals::camera->GetCameraX() << " y: " << Globals::camera->GetCameraY() << std::endl;
+}
+
+void GSPlaying::MoveCameraOnMouseMotion( void )
+{
+	int mouse_x = Globals::event.motion.x;
+	int mouse_y = Globals::event.motion.y;
+
+	if (mouse_y < 2)
+	{
+		Globals::camera->velocity_y = -Globals::camera->cameraVelocity;
+	}
+
+	else if (mouse_y > Globals::resolution_y - 2)
+	{
+		Globals::camera->velocity_y = Globals::camera->cameraVelocity;
+	}
+
+	else if (mouse_x < 2)
+	{
+		Globals::camera->velocity_x = -Globals::camera->cameraVelocity;
+	}
+
+	else if (mouse_x > Globals::resolution_x - 2)
+	{
+		Globals::camera->velocity_x = Globals::camera->cameraVelocity;
+	}
+
+	else
+	{
+		Globals::camera->velocity_x = 0;
+		Globals::camera->velocity_y = 0;
+
 	}
 }

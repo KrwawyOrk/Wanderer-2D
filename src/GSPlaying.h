@@ -52,6 +52,8 @@ public:
 	void CheckIfContainerIsOpened( void );
 	void OpenMapEditorToEditCurrentMap( void );
 	void OpenMapEditorNewMapWindow( void );
+	void PrintInformationsInConsole( void );
+	void MoveCameraOnMouseMotion( void );
 
 private:
 	bool m_keysHeld[323];
