@@ -68,6 +68,7 @@ pistol_icon		pliki/grafika/gui/pistol_icon.png
 knife_icon		pliki/grafika/gui/knife_icon.png
 inventory_button	pliki/grafika/gui/inventory_button.png
 quit_button		pliki/grafika/gui/quit_button.png
+close_button 		pliki/grafika/gui/close_button.png
 player_sleeping		pliki/grafika/player_sleeping.png
 pctable01		pliki/grafika/tiles/pctable01.png
 pctable02		pliki/grafika/tiles/pctable02.png

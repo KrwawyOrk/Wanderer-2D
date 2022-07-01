@@ -139,6 +139,7 @@ void GSPlaying::InputEvents( void )
 
 						else
 						{
+							staticMapItem->GetContainer()->setWindowVisible( true );
 							m_openedContainer = staticMapItem->GetContainer();
 						}
 					}

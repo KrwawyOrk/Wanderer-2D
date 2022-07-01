@@ -39,10 +39,21 @@ public:
 		return m_locked;
 	}
 
+	void setWindowVisible( bool visible )
+	{
+		m_windowVisible = visible;
+	}
+
+	bool isWindowVisible( void ) 
+	{
+		return m_windowVisible;
+	}
+
 private:
 	std::vector<ItemSlot*> m_itemSlots;
 
 	bool m_locked;
+	bool m_windowVisible;
 	Button* m_exitButton;
 	Sprite m_background;
 };

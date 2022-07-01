@@ -8,7 +8,9 @@
 Container::Container()
 {
 	m_locked = false;
+	m_windowVisible = true;
 	Globals::spriteManager->GetSprite(m_background, "opened_container");
+	m_exitButton = new Button( 585, 335, "close_button", true );
 
 	int draw_x = 595;
 	int draw_y = 405;
@@ -46,18 +48,31 @@ void Container::InputEvents( void )
 
 void Container::Think( void )
 {
-	for( std::vector<ItemSlot*>::iterator it = m_itemSlots.begin() ; it != m_itemSlots.end() ; ++it )
+	if (isWindowVisible())
 	{
-		( *it )->Think();
+		for (std::vector<ItemSlot*>::iterator it = m_itemSlots.begin(); it != m_itemSlots.end(); ++it)
+		{
+			(*it)->Think();
+		}
+
+		if (m_exitButton->ButtonClicked())
+		{
+			setWindowVisible( !isWindowVisible() );
+		}
 	}
 }
 
 void Container::Draw( void )
 {
-	m_background.Draw( Globals::screen, 585, 375 );
-	for( std::vector<ItemSlot*>::iterator it = m_itemSlots.begin() ; it != m_itemSlots.end() ; ++it )
+	if ( isWindowVisible() )
 	{
-		( *it )->Draw();
+		m_background.Draw( Globals::screen, 585, 375 );
+		for (std::vector<ItemSlot*>::iterator it = m_itemSlots.begin(); it != m_itemSlots.end(); ++it)
+		{
+			(*it)->Draw();
+		}
+
+		m_exitButton->DrawButton();
 	}
 }
 
