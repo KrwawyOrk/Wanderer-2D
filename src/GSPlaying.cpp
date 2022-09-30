@@ -109,14 +109,18 @@ void GSPlaying::InputEvents( void )
 			for( std::vector<Monster*>::const_iterator cit = monsters.begin() ; cit != monsters.end() ; ++cit )
 			{
 				Monster* monster = ( *cit );
-				( *cit )->SetAttackedByPlayer( false );
+				monster->SetAttackedByPlayer( false );
 
-				if( ( *cit )->GetPosition().x == position.x && ( *cit )->GetPosition().y == position.y )
+				if(monster->GetPosition().x == position.x && monster->GetPosition().y == position.y )
 				{
-					if( ( *cit )->IsAlive() )
+					if(monster->IsAlive() )
 					{
-						//m_player->SetAttackedMonster( (*cit) );
 						m_player->AttackMonster( monster );
+
+						if (m_openedContainer)
+						{
+							m_openedContainer->setWindowVisible( false );
+						}
 					}
 				}
 			}
