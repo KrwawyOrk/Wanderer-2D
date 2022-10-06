@@ -101,6 +101,7 @@ public:
 	void RemovePistolAmmunition( void );
 	void GiveAmmunition( int count );
 	void LevelUpDamage( void );
+	void CheckReductionInSpeedAtLowHealthPoints( void );
 
 private:
 	bool m_selected;

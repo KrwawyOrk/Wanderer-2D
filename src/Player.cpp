@@ -69,7 +69,7 @@ Player::Player()
 
 void Player::Think( void )
 {
-	if( GetSkillOfType( skillTypes::INCREASED_SPEED ).SkillIsLearned() )
+	/*if( GetSkillOfType( skillTypes::INCREASED_SPEED ).SkillIsLearned() )
 	{
 		m_velocity = BASE_VELOCITY + 50.0f;
 	}
@@ -77,7 +77,9 @@ void Player::Think( void )
 	else 
 	{
 		m_velocity = BASE_VELOCITY;
-	}
+	}*/
+
+	CheckReductionInSpeedAtLowHealthPoints();
 
 	//Move
     offSet += static_cast<int>(m_velocity);
@@ -372,6 +374,11 @@ void Player::LevelUpDamage( void )
 		GetSkills().m_battle += 1;
 		SetExperiencePoints( GetExperiencePoints() - experienceRequiredToLevelUp );
 	}
+}
+
+void Player::CheckReductionInSpeedAtLowHealthPoints( void )
+{
+	m_healthPoints <= 10 ? m_velocity = BASE_VELOCITY : m_velocity = BASE_VELOCITY + 50.0f;
 }
 
 void Player::set_clips()
