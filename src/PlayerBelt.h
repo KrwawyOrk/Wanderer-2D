@@ -33,6 +33,7 @@ public:
 
 	void InsertItemToInventory( Item* item );
 	void DrawPlayerHealthBar( int position_x, int position_y );
+	void DrawConditionAlerts( void );
 
 	std::vector<ItemSlot*>& GetItemSlots( void ) { return m_itemSlots; }
 
@@ -54,6 +55,7 @@ private:
 
 	Sprite m_playerHealthBar;
 	Sprite m_gui_background;
+	Sprite m_lowhealthpoints;
 
 	Text* m_food;
 	Text* m_day;

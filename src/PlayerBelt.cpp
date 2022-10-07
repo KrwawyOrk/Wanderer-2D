@@ -26,6 +26,8 @@ PlayerBelt::PlayerBelt()
 	Globals::spriteManager->GetSprite( m_playerHealthBar, "player_healthbar" );
 	Globals::spriteManager->GetSprite( m_gui_background, "gui_background" );
 
+	Globals::spriteManager->GetSprite( m_lowhealthpoints, "lowhealthpoints" );
+
 	m_food = new Text( 14, WHITE, Position( 25, 650 ) );
 	//m_day = new Text( 14, WHITE, Position( 25, 680 ) );
 
@@ -118,7 +120,7 @@ void PlayerBelt::InputEvents( void )
 {
 	if( m_inventoryButton->ButtonClicked() )
 	{
-		Globals::game->SetGameState( "Craft menu" );
+		std::cout << "Clicked inventory button!" << std::endl;
 	}
 
 	if( m_quitButton->ButtonClicked() )
@@ -141,7 +143,7 @@ void PlayerBelt::Think( void )
 void PlayerBelt::Draw( void )
 {
 	//m_top.Draw( Globals::screen, 0, 0 );
-	m_bottom.Draw( Globals::screen, 1155, 435 );
+	
 	//m_left.Draw( Globals::screen, 0, 40 );
 	//m_right.Draw( Globals::screen, 1004, 40 );
 	//m_detail01.Draw( Globals::screen, 0, 0 );
@@ -181,6 +183,9 @@ void PlayerBelt::Draw( void )
 	ssexperiencepoints << m_player->GetExperiencePoints();
 	m_experiencePoints->show_text( 1155, 350, "EXPERIENCE POINTS " + ssexperiencepoints.str(), Globals::screen );
 
+	//std::string testmsg = "Welcome! I think you\nwill ready to hack!\n";
+	//m_experiencePoints->show_text( 1155, 350, "Welcome! I think you\nwill ready to hack!\nUse your knowledge of\nprogramming to open doors.", Globals::screen );
+
 	std::ostringstream ssdamage;
 	ssdamage << m_player->GetSkills().m_battle << " [" << m_player->GetWeaponDamage() << "]";
 
@@ -192,6 +197,8 @@ void PlayerBelt::Draw( void )
 	//m_inventoryBelt.Draw( Globals::screen, 522, 744 );
 	DrawPlayerHealthBar( 480, 100);
 
+	m_bottom.Draw( Globals::screen, 1155, 435 );
+
 	for( std::vector<ItemSlot*>::iterator it = m_itemSlots.begin() ; it != m_itemSlots.end() ; ++it )
 	{
 		( *it )->Draw();
@@ -199,6 +206,8 @@ void PlayerBelt::Draw( void )
 
 	m_containerSlotTest->Draw();
 	//m_container->Draw();
+
+	DrawConditionAlerts();
 }
 
 void PlayerBelt::InsertItemToInventory( Item* item )
@@ -234,4 +243,12 @@ void PlayerBelt::DrawPlayerHealthBar( int position_x, int position_y ) // x = 52
 	std::ostringstream sshp;
 	sshp << m_player->GetHealthPoints() << " / " << m_player->GetMaxHealthPoints();
 	m_healthPoints->show_text( position_x + 220, position_y, sshp.str(), Globals::screen );
+}
+
+void PlayerBelt::DrawConditionAlerts( void )
+{
+	if (m_player->GetHealthPoints() <= 10)
+	{
+		m_lowhealthpoints.Draw( Globals::screen, 50, 50 );
+	}
 }
