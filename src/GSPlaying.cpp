@@ -7,6 +7,7 @@
 #include "Globals.h"
 #include "GSMapEditor.h"
 #include "ItemSlot.h"
+#include "MapEntitiesLoader.h";
 #include "SpriteManager.h"
 #include "StaticMapItem.h"
 #include "Tile.h"
@@ -29,7 +30,9 @@ GSPlaying::GSPlaying( void )
 	m_mapList.push_back( new Map( "lasek" ) );
 	m_mapList.push_back( new Map( "lasek2" ) );
 
-	Map* map = GetMapByName( "lasek" );
+	MapEntitiesLoader mapEntitiesLoader;
+	mapEntitiesLoader.LoadLaboratoryEntities( GetMapByName( "lasek" ) );
+
 	ChangeMap( "lasek" );
 
 	m_playingState = GAMEPLAY;
