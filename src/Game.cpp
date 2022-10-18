@@ -12,6 +12,7 @@
 
 #include "GSPlaying.h"
 #include "GSMapEditor.h"
+#include "GSMap.h"
 
 #include <fstream>
 #include <iostream>
@@ -139,6 +140,7 @@ void Game::InitGameStates( void )
 {
 	m_gameStateMap["Play"] = new GSPlaying;
 	m_gameStateMap["Map editor"] = new GSMapEditor;
+	m_gameStateMap["World map"] = new GSMap;
 
 	SetGameState( "Play" );
 }

@@ -11,10 +11,7 @@ public:
 	GSMap();
 	virtual ~GSMap();
 
-	virtual void InputEvents( void )
-	{
-
-	}
+	virtual void InputEvents( void );
 
 	virtual void Think( void )
 	{

@@ -368,7 +368,7 @@ void GSPlaying::PlayerLeaveMap( void )
 	if( m_player->GetPosition().x == map->GetExitPosition().x && m_player->GetPosition().y == map->GetExitPosition().y )
 	{
 		std::cout << "Opuszczamy mape" << std::endl;
-		Globals::game->SetGameState( "Map editor" );
+		Globals::game->SetGameState( "World map" );
 
 
 		// ---------------------- -----------BUG FIX ---------------------------------
