@@ -7,7 +7,8 @@
 #include "Globals.h"
 #include "GSMapEditor.h"
 #include "ItemSlot.h"
-#include "MapEntitiesLoader.h";
+#include "Map.h"
+#include "MapEntitiesLoader.h"
 #include "SpriteManager.h"
 #include "StaticMapItem.h"
 #include "Tile.h"
