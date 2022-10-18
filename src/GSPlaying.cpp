@@ -31,8 +31,10 @@ GSPlaying::GSPlaying( void )
 	m_mapList.push_back( new Map( "lasek" ) );
 	m_mapList.push_back( new Map( "lasek2" ) );
 
+	Map* map = GetMapByName( "lasek" );
+
 	MapEntitiesLoader mapEntitiesLoader;
-	mapEntitiesLoader.LoadLaboratoryEntities( GetMapByName( "lasek" ) );
+	mapEntitiesLoader.LoadLaboratoryEntities( map );
 
 	ChangeMap( "lasek" );
 
