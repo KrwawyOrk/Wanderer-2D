@@ -22,6 +22,7 @@ set(WANDERER2D_SRC
 	${CMAKE_CURRENT_LIST_DIR}/ItemSlot.cpp
 	${CMAKE_CURRENT_LIST_DIR}/LootGenerator.cpp
 	${CMAKE_CURRENT_LIST_DIR}/Map.cpp
+	${CMAKE_CURRENT_LIST_DIR}/MapEntitiesLoader.cpp
 	${CMAKE_CURRENT_LIST_DIR}/Monster.cpp
 	${CMAKE_CURRENT_LIST_DIR}/MonsterHealthBar.cpp
 	${CMAKE_CURRENT_LIST_DIR}/MouseCursor.cpp
