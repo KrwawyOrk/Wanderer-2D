@@ -50,7 +50,7 @@ void Item::OnUse( Player* player )
 		break;
 
 	case AMMO_PACK:
-		player->GiveAmmunition( 10 );
+		player->GiveAmmunition( 5 );
 		break;
 	}
 }

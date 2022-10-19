@@ -114,3 +114,5 @@ inventory_background	pliki/grafika/gui/inventory_background.png
 opened_container	pliki/grafika/gui/opened_container.png
 ammo_pack		pliki/grafika/items/ammo_pack.png
 lowhealthpoints		pliki/grafika/condition_alerts/lowhealthpoints.png
+secret_laboratory_button	pliki/grafika/travelmap/secretlaboratory.png
+blocking_wall		pliki/grafika/walls/blocking_wall.png

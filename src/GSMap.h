@@ -2,8 +2,9 @@
 #define GSMAP_H
 
 #include "GameState.h"
-
 #include "Sprite.h"
+
+class Button;
 
 class GSMap : public GameState
 {
@@ -13,10 +14,7 @@ public:
 
 	virtual void InputEvents( void );
 
-	virtual void Think( void )
-	{
-
-	}
+	virtual void Think( void );
 
 	virtual void Update( float deltaTime )
 	{
@@ -32,6 +30,8 @@ public:
 
 private:
 	Sprite m_map;
+	Button* m_exitButton;
+	Button* m_secretLaboratory;
 };
 
 #endif
