@@ -10,9 +10,9 @@ void NumberToString( int value, std::string& string )
 	//TODO	
 }
 
-double Tools::CalculateDistance( double dX0, double dY0, double dX1, double dY1 )
+double Tools::CalculateDistance( double x1, double y1, double x2, double y2 )
 {
-	return sqrt((dX1 - dX0)*(dX1 - dX0) + (dY1 - dY0)*(dY1 - dY0));
+	return sqrt( pow( x2 - x1, 2 ) + pow( y2 - y1, 2 ) );
 }
 
 int Tools::GenerateRandomNumber( int number )
