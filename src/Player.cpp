@@ -15,33 +15,25 @@
 #include "Tools.h"
 
 #include <math.h>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include "rapidxml/rapidxml.hpp"
 
 Player::Player()
 {
+	LoadPlayerDataFromXML( "pliki/player.xml" );
 	m_name = "Gracz";
 
-	m_position.x = Globals::currentMap->GetStartPosition().x;
-	m_position.y = Globals::currentMap->GetStartPosition().y;
 	flposition_x = static_cast<float>( m_position.x * Globals::tilesize );
 	flposition_y = static_cast<float>( m_position.y * Globals::tilesize );
 
 	m_velocity = BASE_VELOCITY;
 
-	m_maxHealthPoints = 100;
-	m_healthPoints = m_maxHealthPoints;
-
-	m_experiencePoints = 0;
-	m_monstersKilled = 0;
-
 	m_selected = true;
-	m_damage = 1;
-
-
 	m_nextAttack = 0.0;
 	m_attackSpeed = 1.0;
-
 	m_weaponType = CROWBAR;
-	m_pistolAmmunition = 4;
 
 	Globals::spriteManager->GetSprite( m_sprite, "playertest" );
 	Globals::spriteManager->GetSprite( m_spriteSelected, "championselection" );
@@ -65,6 +57,24 @@ Player::Player()
     status = FOO_RIGHT;
 
 	Globals::spriteManager->GetSprite( m_animationSprite, "foo" );
+}
+
+void Player::LoadPlayerDataFromXML( const std::string& fileName )
+{
+	std::ifstream file( fileName );
+	std::string xmlString( (std::istreambuf_iterator<char>( file )), std::istreambuf_iterator<char>() );
+	rapidxml::xml_document<> doc;
+	doc.parse<0>( &xmlString[0] );
+
+	rapidxml::xml_node<>* root = doc.first_node( "player" );
+	m_healthPoints = std::stoi( root->first_node( "health" )->value() );
+	m_maxHealthPoints = std::stoi( root->first_node( "maxHealth" )->value() );	
+	m_experiencePoints = std::stoi( root->first_node( "experiencePoints" )->value() );
+	m_monstersKilled = std::stoi( root->first_node( "monstersKilled" )->value() );
+	m_pistolAmmunition = std::stoi( root->first_node( "pistolAmmunition" )->value() );
+	m_damage = std::stoi( root->first_node( "damage" )->value() );
+	m_position.x = std::stoi( root->first_node( "position_x" )->value() );
+	m_position.y = std::stoi( root->first_node( "position_y" )->value() );
 }
 
 void Player::Think( void )

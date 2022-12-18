@@ -56,6 +56,8 @@ public:
 	Player();
 	virtual ~Player() {}
 
+	void LoadDataFromXML( const std::string& fileName );
+
 	virtual void Think( void );
 	virtual void Draw( void );
 
