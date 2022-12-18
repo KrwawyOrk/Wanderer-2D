@@ -37,4 +37,8 @@ set(WANDERER2D_SRC
 	${CMAKE_CURRENT_LIST_DIR}/Tile.cpp
 	${CMAKE_CURRENT_LIST_DIR}/Timer.cpp
 	${CMAKE_CURRENT_LIST_DIR}/Tools.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/rapidxml/rapidxml.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/rapidxml/rapidxml_iterators.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/rapidxml/rapidxml_print.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/rapidxml/rapidxml_utils.hpp
 	PARENT_SCOPE)
