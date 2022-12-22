@@ -15,6 +15,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <cmath>
 
 Monster::Monster()
 {
@@ -33,7 +34,8 @@ Monster::~Monster()
 
 void Monster::Think( void )
 {
-	RandomMovement();
+	//RandomMovement();
+	MoveTowardsPlayer();
 	AttackPlayer();
 }
 
@@ -160,4 +162,32 @@ bool Monster::IsCooldownReadyToAttack( void )
 bool Monster::IsPlayerInAttackDistance( int distance, Player* player )
 {
 	return (static_cast<int>(Tools::CalculateDistance( player->GetPosition().x, player->GetPosition().y, m_position.x, m_position.y )) <= distance);
+}
+
+void Monster::MoveTowardsPlayer( void ) 
+{
+	double radius = std::sqrt( std::pow( m_position.x - Globals::player->GetPosition().x, 2 ) + std::pow( m_position.y - Globals::player->GetPosition().y, 2 ) );
+
+	if (!IsMoving() && !m_attackingPlayer && Globals::currentTime > m_nextMove)
+	{
+		if (radius < 7) {
+			if (m_position.x < Globals::player->GetPosition().x) {
+				Move( EAST );
+			}
+
+			else if (m_position.x > Globals::player->GetPosition().x) {	
+				Move( WEST );
+			}
+
+			else if (m_position.y < Globals::player->GetPosition().y) {	
+				Move( SOUTH );
+			}
+
+			else if (m_position.y > Globals::player->GetPosition().y) {		
+				Move( NORTH );
+			}
+
+			m_nextMove = Globals::currentTime + 0.0f;
+		}
+	}
 }

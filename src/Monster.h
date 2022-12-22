@@ -113,6 +113,7 @@ public:
 	bool IsCursorOnMonster( void );
 	bool IsCooldownReadyToAttack( void );
 	bool IsPlayerInAttackDistance( int distance, Player* player );
+	void MoveTowardsPlayer( void );
 
 private:
 	int m_baseDamage;
