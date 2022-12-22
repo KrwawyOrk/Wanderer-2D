@@ -50,6 +50,11 @@ Map::~Map()
 	}
 }
 
+void Map::InputEvents( void )
+{
+
+}
+
 void Map::Think( void )
 {
 	std::vector<Monster*>::iterator cit;

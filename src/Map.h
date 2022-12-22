@@ -36,6 +36,7 @@ public:
 	Map( std::string mapName );
 	~Map();
 
+	void InputEvents( void );
 	void Think( void );
 	void Update( float deltaTime );
 	void Draw( void );

@@ -19,6 +19,10 @@
 #include <fstream>
 #include <string>
 #include "rapidxml/rapidxml.hpp"
+#include "rapidxml/rapidxml_print.hpp"
+
+#define RAPIDXML_NO_EXCEPTIONS
+using namespace rapidxml;
 
 Player::Player()
 {
@@ -77,6 +81,28 @@ void Player::LoadPlayerDataFromXML( const std::string& fileName )
 	m_position.y = std::stoi( root->first_node( "position_y" )->value() );
 }
 
+//void Player::UpdatePlayerDataXML( void )
+//{
+//	std::ifstream file( "pliki/player.xml" );
+//	std::string xmlString( (std::istreambuf_iterator<char>( file )), std::istreambuf_iterator<char>() );
+//	rapidxml::xml_document<> doc;
+//	doc.parse<0>( &xmlString[0] );
+//
+//	rapidxml::xml_node<>* root = doc.first_node( "player" );
+//	root->first_node( "health" )->value( std::to_string( m_healthPoints ).c_str() );
+//	root->first_node( "maxHealth" )->value( std::to_string( m_maxHealthPoints ).c_str() );
+//	root->first_node( "experiencePoints" )->value( std::to_string( m_experiencePoints ).c_str() );
+//	root->first_node( "monstersKilled" )->value( std::to_string( m_monstersKilled ).c_str() );
+//	root->first_node( "pistolAmmunition" )->value( std::to_string( m_pistolAmmunition ).c_str() );
+//	root->first_node( "damage" )->value( std::to_string( m_damage ).c_str() );
+//	root->first_node( "position_x" )->value( std::to_string( m_position.x ).c_str() );
+//	root->first_node( "position_y" )->value( std::to_string( m_position.y ).c_str() );
+//
+//	std::ofstream outFile( "pliki/player.xml" );
+//	outFile << doc;
+//	outFile.close();
+//}
+
 void Player::Think( void )
 {
 	/*if( GetSkillOfType( skillTypes::INCREASED_SPEED ).SkillIsLearned() )
@@ -103,51 +129,35 @@ void Player::Think( void )
 
 void Player::Draw( void )
 {
-	int animationSpeed = int(m_velocity);
-
-	//If Foo is moving left
 	if( IsMovingLeft() )
     {
-        //Set the animation to left
         status = FOO_LEFT;
-
-        //Move to the next frame in the animation
-		//frame = (SDL_GetTicks() / static_cast<int>(m_velocity) ) % 3;
-		frame = int(((SDL_GetTicks() / animationSpeed) % 3));
+		frame = GetFrame( GetAnimationSpeedBasedOnPlayerVelocity() );
     }
-    //If Foo is moving right
+
     else if( IsMovingRight() )
     {
-        //Set the animation to right
         status = FOO_RIGHT;
-
-        //Move to the next frame in the animation
-		//frame = (SDL_GetTicks() / static_cast<int>(m_velocity) ) % 3;
-		frame = int(((SDL_GetTicks() / animationSpeed) % 3));
+		frame = GetFrame( GetAnimationSpeedBasedOnPlayerVelocity() );
     }
 	
 	else if( IsMovingUp() )
 	{
 		status = FOO_UP;
-		//frame = (SDL_GetTicks() / static_cast<int>(m_velocity) ) % 3;
-		frame = int(((SDL_GetTicks() / animationSpeed) % 3));
+		frame = GetFrame( GetAnimationSpeedBasedOnPlayerVelocity() );
 	}
 
 	else if( IsMovingDown() )
 	{
 		status = FOO_DOWN;
-		//frame = (SDL_GetTicks() / static_cast<int>(m_velocity) ) % 3;
-		frame = int(((SDL_GetTicks() / animationSpeed) % 3));
+		frame = GetFrame( GetAnimationSpeedBasedOnPlayerVelocity() );
 	}
 
-    //If Foo standing
     if( !IsMoving() )
     {
-        //Restart the animation
         frame = 1;
     }
 
-    //Loop the animation
     if( frame >= 3 )
     {
         frame = 0;
@@ -388,7 +398,18 @@ void Player::LevelUpDamage( void )
 
 void Player::CheckReductionInSpeedAtLowHealthPoints( void )
 {
-	m_healthPoints <= 10 ? m_velocity = BASE_VELOCITY : m_velocity = BASE_VELOCITY + 50.0f;
+
+	m_healthPoints < m_maxHealthPoints * 0.3 ? m_velocity = BASE_VELOCITY / 2 : m_velocity = BASE_VELOCITY;
+}
+
+int Player::GetFrame( int animationSpeed )
+{
+	return int( ((SDL_GetTicks() / animationSpeed) % 3) );
+}
+
+int Player::GetAnimationSpeedBasedOnPlayerVelocity()
+{
+	return std::max( 50, 200 - (int)m_velocity );
 }
 
 void Player::set_clips()

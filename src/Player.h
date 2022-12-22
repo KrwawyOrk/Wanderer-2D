@@ -17,7 +17,7 @@ const float ATTACK_DELAY_MALEE = 0.3f;
 const float ATTACK_DELAY_GUN = 1.5f;
 
 const int MAX_ATTACK_DISTANCE = PISTOL_ATTACK_RANGE;
-const float BASE_VELOCITY = 100.0f;
+const float BASE_VELOCITY = 140.0f;
 const int INVENTORY_LIMIT = 40;
 
 class Item;
@@ -57,6 +57,7 @@ public:
 	virtual ~Player() {}
 
 	void LoadPlayerDataFromXML( const std::string& fileName );
+	//void UpdatePlayerDataXML( void );
 
 	virtual void Think( void );
 	virtual void Draw( void );
@@ -92,6 +93,8 @@ public:
 
 	//animation
 	void set_clips();
+	int GetFrame( int animationSpeed );
+	int GetAnimationSpeedBasedOnPlayerVelocity();
 	//endanimation
 
 	bool IsCooldownReadyToAttack( void );

@@ -33,8 +33,8 @@ GSPlaying::GSPlaying( void )
 
 	Map* map = GetMapByName( "lasek" );
 
-	MapEntitiesLoader mapEntitiesLoader;
-	mapEntitiesLoader.LoadLaboratoryEntities( map );
+	//MapEntitiesLoader mapEntitiesLoader;
+	//mapEntitiesLoader.LoadLaboratoryEntities( map );
 
 	ChangeMap( "lasek" );
 
@@ -257,6 +257,7 @@ void GSPlaying::InputEvents( void )
 	}
 
 	m_playerBelt.InputEvents();
+	m_map->InputEvents();
 }
 
 void GSPlaying::Think( void )

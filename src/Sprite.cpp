@@ -85,3 +85,4 @@ void Sprite::Draw( SDL_Surface* screen, int x, int y, SDL_Rect* clip = NULL )
 		SDL_BlitSurface( m_surface, clip, screen, &rect );
 	}
 }
+
