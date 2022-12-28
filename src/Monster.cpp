@@ -16,6 +16,7 @@
 #include <iostream>
 #include <sstream>
 #include <cmath>
+#include "SDL.h"
 
 Monster::Monster()
 {
@@ -50,10 +51,6 @@ void Monster::Draw( void )
 	{
 		m_attackedByPlayerSprite.DrawAnimatedOnScreenPosition( Globals::screen, static_cast<int>( flposition_x - Globals::camera->GetCameraX() ), static_cast<int>( flposition_y - Globals::camera->GetCameraY() ), 100 );
 	}
-
-	/*std::ostringstream sshp;
-	sshp << "HP " << m_healthPoints << "/" << m_maxHealthPoints;
-	m_healthPointsFont->show_text( static_cast<int>( flposition_x - 5 - Globals::camera->GetCameraX() ), static_cast<int>( flposition_y - 5 - Globals::camera->GetCameraY() ), sshp.str(), Globals::screen );*/
 
 	GameObject::Draw();
 	m_monsterHealthBar->Draw();

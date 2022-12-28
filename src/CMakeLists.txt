@@ -41,4 +41,5 @@ set(WANDERER2D_SRC
         ${CMAKE_CURRENT_LIST_DIR}/rapidxml/rapidxml_iterators.hpp
         ${CMAKE_CURRENT_LIST_DIR}/rapidxml/rapidxml_print.hpp
         ${CMAKE_CURRENT_LIST_DIR}/rapidxml/rapidxml_utils.hpp
+	${CMAKE_CURRENT_LIST_DIR}/nlohmann/json.hpp
 	PARENT_SCOPE)

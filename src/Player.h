@@ -56,8 +56,7 @@ public:
 	Player();
 	virtual ~Player() {}
 
-	void LoadPlayerDataFromXML( const std::string& fileName );
-	//void UpdatePlayerDataXML( void );
+	void LoadPlayerDataFromJSON( void );
 
 	virtual void Think( void );
 	virtual void Draw( void );

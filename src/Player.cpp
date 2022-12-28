@@ -20,13 +20,14 @@
 #include <string>
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
+#include "nlohmann/json.hpp"
 
-#define RAPIDXML_NO_EXCEPTIONS
 using namespace rapidxml;
 
 Player::Player()
 {
-	LoadPlayerDataFromXML( "pliki/player.xml" );
+	//LoadPlayerDataFromXML( "pliki/player.xml" );
+	LoadPlayerDataFromJSON();
 	m_name = "Gracz";
 
 	flposition_x = static_cast<float>( m_position.x * Globals::tilesize );
@@ -63,45 +64,21 @@ Player::Player()
 	Globals::spriteManager->GetSprite( m_animationSprite, "foo" );
 }
 
-void Player::LoadPlayerDataFromXML( const std::string& fileName )
+void Player::LoadPlayerDataFromJSON( void )
 {
-	std::ifstream file( fileName );
-	std::string xmlString( (std::istreambuf_iterator<char>( file )), std::istreambuf_iterator<char>() );
-	rapidxml::xml_document<> doc;
-	doc.parse<0>( &xmlString[0] );
+	std::ifstream file( "pliki/player.json" );
+	nlohmann::json player;
+	file >> player;
 
-	rapidxml::xml_node<>* root = doc.first_node( "player" );
-	m_healthPoints = std::stoi( root->first_node( "health" )->value() );
-	m_maxHealthPoints = std::stoi( root->first_node( "maxHealth" )->value() );	
-	m_experiencePoints = std::stoi( root->first_node( "experiencePoints" )->value() );
-	m_monstersKilled = std::stoi( root->first_node( "monstersKilled" )->value() );
-	m_pistolAmmunition = std::stoi( root->first_node( "pistolAmmunition" )->value() );
-	m_damage = std::stoi( root->first_node( "damage" )->value() );
-	m_position.x = std::stoi( root->first_node( "position_x" )->value() );
-	m_position.y = std::stoi( root->first_node( "position_y" )->value() );
+	m_healthPoints = player["health"];
+	m_maxHealthPoints = player["maxHealth"];
+	m_experiencePoints = player["experiencePoints"];
+	m_monstersKilled = player["monstersKilled"];
+	m_pistolAmmunition = player["pistolAmmunition"];
+	m_damage = player["damage"];
+	m_position.x = player["position_x"];
+	m_position.y = player["position_y"];
 }
-
-//void Player::UpdatePlayerDataXML( void )
-//{
-//	std::ifstream file( "pliki/player.xml" );
-//	std::string xmlString( (std::istreambuf_iterator<char>( file )), std::istreambuf_iterator<char>() );
-//	rapidxml::xml_document<> doc;
-//	doc.parse<0>( &xmlString[0] );
-//
-//	rapidxml::xml_node<>* root = doc.first_node( "player" );
-//	root->first_node( "health" )->value( std::to_string( m_healthPoints ).c_str() );
-//	root->first_node( "maxHealth" )->value( std::to_string( m_maxHealthPoints ).c_str() );
-//	root->first_node( "experiencePoints" )->value( std::to_string( m_experiencePoints ).c_str() );
-//	root->first_node( "monstersKilled" )->value( std::to_string( m_monstersKilled ).c_str() );
-//	root->first_node( "pistolAmmunition" )->value( std::to_string( m_pistolAmmunition ).c_str() );
-//	root->first_node( "damage" )->value( std::to_string( m_damage ).c_str() );
-//	root->first_node( "position_x" )->value( std::to_string( m_position.x ).c_str() );
-//	root->first_node( "position_y" )->value( std::to_string( m_position.y ).c_str() );
-//
-//	std::ofstream outFile( "pliki/player.xml" );
-//	outFile << doc;
-//	outFile.close();
-//}
 
 void Player::Think( void )
 {
