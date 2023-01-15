@@ -170,7 +170,7 @@ void GSPlaying::InputEvents( void )
 	{
 		m_keysHeld[Globals::event.key.keysym.sym] = true;
 
-		switch( Globals::event.key.keysym.sym )
+		switch (Globals::event.key.keysym.sym)
 		{
 		case SDLK_q:
 		case SDLK_ESCAPE:
@@ -194,11 +194,11 @@ void GSPlaying::InputEvents( void )
 			break;
 
 		case SDLK_b:
-			
+
 			break;
 
 		case SDLK_c:
-			Globals::camera->SetPosition( 0 , 0 );
+			Globals::camera->SetPosition( 0, 0 );
 			break;
 
 		case SDLK_i:
@@ -219,11 +219,11 @@ void GSPlaying::InputEvents( void )
 			break;
 
 		case SDLK_p:
-			{
-				bool b = m_player->GetSkillOfType( skillTypes::INCREASED_VISIBILITY ).SkillIsLearned();
-				m_player->GetSkillOfType( skillTypes::INCREASED_VISIBILITY ).SetLearnedSkill( !b );
-			}
-			break;
+		{
+			bool b = m_player->GetSkillOfType( skillTypes::INCREASED_VISIBILITY ).SkillIsLearned();
+			m_player->GetSkillOfType( skillTypes::INCREASED_VISIBILITY ).SetLearnedSkill( !b );
+		}
+		break;
 
 		case SDLK_1:
 			m_player->SetWeapon( CROWBAR );
@@ -248,6 +248,9 @@ void GSPlaying::InputEvents( void )
 		case SDLK_RETURN:
 			PlayerLeaveMap();
 			break;
+
+		case SDLK_h:
+			ShakeScreen( Globals::screen, 20, 10 );
 		}
 	}
 
@@ -485,5 +488,22 @@ void GSPlaying::MoveCameraOnMouseMotion( void )
 		Globals::camera->velocity_x = 0;
 		Globals::camera->velocity_y = 0;
 
+	}
+}
+
+void GSPlaying::ShakeScreen( SDL_Surface* screen, int shake_count, int shake_intensity )
+{
+	for (int i = 0; i < shake_count; i++) 
+	{
+		int x = rand() % shake_intensity - shake_intensity / 2;
+		int y = rand() % shake_intensity - shake_intensity / 2;
+
+		SDL_Rect offset;
+		offset.x = x;
+		offset.y = y;
+
+		SDL_BlitSurface( screen, NULL, screen, &offset );
+		SDL_UpdateRect( screen, 0, 0, 0, 0 );
+		SDL_Delay( 50 );
 	}
 }

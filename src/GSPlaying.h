@@ -54,6 +54,7 @@ public:
 	void OpenMapEditorNewMapWindow( void );
 	void PrintInformationsInConsole( void );
 	void MoveCameraOnMouseMotion( void );
+	void ShakeScreen( SDL_Surface* screen, int shake_count, int shake_intensity );
 
 private:
 	bool m_keysHeld[323];
