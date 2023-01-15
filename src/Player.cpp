@@ -168,8 +168,6 @@ void Player::Draw( void )
 		int y = static_cast<int>( flposition_y - Globals::camera->GetCameraY() - m_sprite.GetSDLSurface()->h + Globals::tilesize );
         m_animationSprite.Draw( Globals::screen, x, y, &clipsDown[frame] );
 	}
-
-	RenderLightEffect( 100 );
 }
 
 void Player::Move( direction_t direction )
