@@ -1,0 +1,10 @@
+{
+    "health": 30,
+    "maxHealth": 100,
+    "experiencePoints": 5,
+    "monstersKilled": 0,
+    "pistolAmmunition": 10,
+    "damage": 1,
+    "position_x": 5,
+    "position_y": 5
+}

@@ -1,0 +1,10 @@
+{
+    "maps": [
+        {
+            "name": "lasek2",
+            "positions": [
+                { "x": 10, "y": 4, "next_x": 10, "next_y": 4 }
+            ]
+        }
+    ]
+}

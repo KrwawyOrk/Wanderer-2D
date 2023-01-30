@@ -12,6 +12,9 @@
 #include <cstdlib>
 #include <ctime>
 
+#include "nlohmann/json.hpp"
+using json = nlohmann::json;
+
 Map::Map( std::string mapName )
 {
 	m_mapName = mapName;
@@ -108,19 +111,6 @@ void Map::Think( void )
 			tile->Think();
 		}
 	}
-
-	/*for( std::vector<Item*>::iterator it = m_Items.begin() ; it != m_Items.end() ; )
-	{
-	Item* Item = ( *it );
-	if( Item->IsPicked() )
-	{
-	delete ( *it );
-	it = m_Items.erase( it );
-	}
-
-	else
-	++it;
-	}*/
 }
 
 void Map::Update( float deltaTime )
@@ -349,63 +339,46 @@ void Map::LoadStaticMapItems( void )
 
 void Map::LoadActionMapChange( void )
 {
-	std::ifstream stream;
-	stream.open( ( "pliki/mapy/" + m_mapName + "/actionmapchange.txt" ).c_str() );
+	std::string filepath = "pliki/mapy/" + m_mapName + "/change_location_positions.json";
+	std::ifstream file( filepath );
 
-	if( stream )
+	if (file.is_open())
 	{
-		std::vector<ActionMapChangeInfo> actionMapChangeInfoVector;
+		nlohmann::json j;
+		file >> j;
 
-		while( !stream.eof() )
+		for (auto& map : j["maps"])
 		{
-			ActionMapChangeInfo actionMapChange;
-
-			stream >> actionMapChange.m_position.x;
-			stream >> actionMapChange.m_position.y;
-			stream >> actionMapChange.m_nextMapName;
-			stream >> actionMapChange.m_landPosition.x;
-			stream >> actionMapChange.m_landPosition.y;
-
-			actionMapChangeInfoVector.push_back( actionMapChange );
+			for (auto& pos : map["positions"])
+			{
+				m_actionMapChangeList.push_back( new ActionMapChange( Position( pos["x"], pos["y"] ), map["name"], Position( pos["next_x"], pos["next_y"] ) ) );
+			}
 		}
 
-		std::vector<ActionMapChangeInfo>::const_iterator cit;
-		for( cit = actionMapChangeInfoVector.begin(); cit != actionMapChangeInfoVector.end() ; ++cit )
-		{
-			m_actionMapChangeList.push_back( new ActionMapChange( Position( cit->m_position.x, cit->m_position.y ), cit->m_nextMapName, Position( cit->m_landPosition.x, cit->m_landPosition.y ) ) );
-		}
-
-		stream.close();
+		file.close();
 	}
 }
 
 void Map::LoadMonsters( void )
 {
-	std::ifstream stream;
-	stream.open( ( "pliki/mapy/" + m_mapName + "/monsters.txt" ).c_str() );
+	std::string filepath = "pliki/mapy/" + m_mapName + "/monster_respawns.json";
+	std::ifstream file( filepath );
 
-	if( stream )
+	if( file.is_open() )
 	{
-		std::vector<MonsterRespawnInfo> monsterInfoVector;
+		nlohmann::json j;
+		file >> j;
 
-		while( !stream.eof() )
+		for( auto& monster : j["monsters"] )
 		{
-			MonsterRespawnInfo monsterInfo;
-			stream >> monsterInfo.m_monsterName;
-			stream >> monsterInfo.m_respawnPosition.x;
-			stream >> monsterInfo.m_respawnPosition.y;
-			stream >> monsterInfo.m_respawnTime;
-
-			monsterInfoVector.push_back( monsterInfo );
+			m_monsters.push_back( Globals::factory->CreateMonsterRespawn(
+				monster["name"],
+				Position( monster["location"]["x"], monster["location"]["y"] ),
+				monster["respawn_time"]
+			) );
 		}
 
-		std::vector<MonsterRespawnInfo>::const_iterator cit;
-		for( cit = monsterInfoVector.begin() ; cit != monsterInfoVector.end() ; ++cit )
-		{
-			m_monsters.push_back( Globals::factory->CreateMonsterRespawn( cit->m_monsterName, Position( cit->m_respawnPosition.x, cit->m_respawnPosition.y ), cit->m_respawnTime ) );
-		}
-
-		stream.close();
+		file.close();
 	}
 }
 
