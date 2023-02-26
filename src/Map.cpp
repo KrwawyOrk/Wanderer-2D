@@ -410,6 +410,11 @@ void Map::LoadStartExitPositions( void )
 	stream.close();
 }
 
+void Map::LoadMapEvents( void )
+{
+	//TODO...
+}
+
 bool Map::TileExistsAtPosition( int x, int y )
 {
 	for( std::vector<Tile*>::const_iterator cit = m_tiles.begin() ; cit != m_tiles.end() ; ++cit )

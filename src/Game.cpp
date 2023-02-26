@@ -22,6 +22,7 @@
 
 #include "SDL.h"
 #include "SDL_ttf.h"
+#include "nlohmann/json.hpp"
 
 const int FRAMES_PER_SECOND = 30;
 
@@ -44,6 +45,7 @@ Game::Game()
 	//SDL_ShowCursor( 0 );
 	m_cursor = new GameCursor;
 
+	LoadConfiguration();
 	SetScreenMode();
 
 	m_gameState = NULL;
@@ -134,6 +136,15 @@ GameState* Game::GetGameState( std::string gameStateTitle )
 	}
 
 	return NULL;
+}
+
+void Game::LoadConfiguration( void )
+{
+	std::ifstream file( "configuration.json" );
+	nlohmann::json config;
+	file >> config;
+
+	Globals::fullScreen = config["fullscreen"] == 1 ? true : false;
 }
 
 void Game::InitGameStates( void )

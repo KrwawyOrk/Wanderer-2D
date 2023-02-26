@@ -34,6 +34,7 @@ public:
 	gamestate_t GetGameStateEnum( void ) const { return m_gamestateEnum; }
 
 private:
+	void LoadConfiguration( void );
 	void InitGameStates( void );
 	void SetScreenMode( void );
 	void OnQuit( void );

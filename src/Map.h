@@ -104,6 +104,7 @@ private:
 	void LoadActionMapChange( void );
 	void LoadMonsters( void );
 	void LoadStartExitPositions( void );
+	void LoadMapEvents( void );
 
 	std::vector<Tile*> m_tiles;
 	std::vector<StaticMapItem*> m_staticItems;
