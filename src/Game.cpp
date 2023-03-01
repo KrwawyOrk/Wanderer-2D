@@ -40,7 +40,6 @@ Game::Game()
 	Globals::spriteManager = spriteManager;
 
 	Globals::camera = new Camera;
-	Globals::camera->FollowPlayer( true );
 
 	//SDL_ShowCursor( 0 );
 	m_cursor = new GameCursor;
@@ -68,6 +67,16 @@ Game::~Game()
 	SDL_Quit();
 
 	std::cout << "Niszcze obiekt klasy Game." << std::endl;
+}
+
+void Game::LoadConfiguration( void )
+{
+	std::ifstream file( "configuration.json" );
+	nlohmann::json config;
+	file >> config;
+
+	Globals::fullScreen = config["fullscreen"] == 1 ? true : false;
+	Globals::camera->FollowPlayer( config["camera_follow_player"] == 1 ? true : false );
 }
 
 void Game::InputEvents( void )
@@ -138,15 +147,6 @@ GameState* Game::GetGameState( std::string gameStateTitle )
 	return NULL;
 }
 
-void Game::LoadConfiguration( void )
-{
-	std::ifstream file( "configuration.json" );
-	nlohmann::json config;
-	file >> config;
-
-	Globals::fullScreen = config["fullscreen"] == 1 ? true : false;
-}
-
 void Game::InitGameStates( void )
 {
 	m_gameStateMap["Play"] = new GSPlaying;
@@ -165,13 +165,31 @@ void Game::SetScreenMode( void )
 
 	else
 	{
-		Globals::screen = SDL_SetVideoMode( Globals::resolution_x, Globals::resolution_y, 32, SDL_SWSURFACE );
+		Globals::screen = SDL_SetVideoMode( Globals::resolution_x, Globals::resolution_y, 32, SDL_HWSURFACE );
 	}
 }
 
 void Game::OnQuit( void )
 {
 
+}
+
+void Game::ToggleFullScreen( void )
+{
+	Uint32 flags = Globals::screen->flags;
+
+	if (!Globals::fullScreen)
+	{
+		flags |= SDL_FULLSCREEN;
+		Globals::fullScreen = true;
+	}
+
+	else {
+		flags ^= SDL_FULLSCREEN;
+		Globals::fullScreen = false;
+	}
+
+	Globals::fullScreen = SDL_SetVideoMode( Globals::resolution_x, Globals::resolution_y, 32, flags );
 }
 
 int main( int argc, char* argv[] )

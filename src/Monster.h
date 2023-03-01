@@ -22,12 +22,12 @@ public:
 	void SetBaseDamage( int baseDamage ) { m_baseDamage = baseDamage; }
 	int GetBaseDamage( void ) const { return m_baseDamage; }
 
-	void SetNextMove( int nextMove )
+	void SetNextMove( float nextMove )
 	{
 		m_nextMove = nextMove;
 	}
 
-	int GetNextMove( void )
+	float GetNextMove( void )
 	{
 		return m_nextMove;
 	}
@@ -117,7 +117,7 @@ public:
 
 private:
 	int m_baseDamage;
-	int m_nextMove;
+	float m_nextMove;
 	float m_nextAttack;
 
 	Position m_respawnPosition;

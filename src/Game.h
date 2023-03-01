@@ -33,6 +33,8 @@ public:
 
 	gamestate_t GetGameStateEnum( void ) const { return m_gamestateEnum; }
 
+	void ToggleFullScreen( void );
+
 private:
 	void LoadConfiguration( void );
 	void InitGameStates( void );

@@ -10,7 +10,7 @@
 namespace Globals
 {
 	Game*			game;
-	bool			fullScreen = false;
+	bool			fullScreen = true;
 	bool			showCursor = true;
 	SpriteManager*	spriteManager;
 	SDL_Surface*	screen;
@@ -25,7 +25,6 @@ namespace Globals
 	Player*			currentPlayer;
 	PlayerBelt*		playerBelt;
 	int				spriteAnimationSpeed = 400;
-
 	int				tilesize = 50;
 	int				resolution_x = 1440;
 	int				resolution_y = 900;

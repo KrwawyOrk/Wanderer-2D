@@ -45,7 +45,6 @@ GSPlaying::GSPlaying( void )
 	m_playerBelt.SetPlayer( Globals::player );
 
 	Globals::camera->Center( Globals::player );
-	Globals::camera->FollowPlayer( true );
 
 	m_fishing = false;
 	m_day = 1;
@@ -244,6 +243,9 @@ void GSPlaying::InputEvents( void )
 		case SDLK_F10:
 			OpenMapEditorNewMapWindow();
 			break;
+
+		case SDLK_F12:
+			Globals::game->ToggleFullScreen();
 
 		case SDLK_RETURN:
 			PlayerLeaveMap();
