@@ -192,6 +192,26 @@ void Game::ToggleFullScreen( void )
 	Globals::fullScreen = SDL_SetVideoMode( Globals::resolution_x, Globals::resolution_y, 32, flags );
 }
 
+void Game::FadeToBlack( int duration )
+{
+	SDL_Surface* screen = Globals::screen;
+	int fadeSteps = 50; // Liczba kroków do powolnego przyciemniania ekranu
+	int fadeDelay = duration / fadeSteps; // Czas oczekiwania miêdzy krokami
+
+	Uint8 alpha = 255; // Pocz¹tkowa wartoœæ alpha (pe³na widocznoœæ)
+	Uint32 fadeColor = SDL_MapRGBA( screen->format, 0, 0, 0, alpha ); // Kolor czarny z wartoœci¹ alpha
+
+	for (int i = 0; i < fadeSteps; i++) {
+		alpha -= 255 / fadeSteps; // Zmniejszenie wartoœci alpha o 1/50 wartoœci
+		fadeColor = SDL_MapRGBA( screen->format, 0, 0, 0, alpha ); // Aktualizacja koloru z now¹ wartoœci¹ alpha
+
+		SDL_FillRect( screen, NULL, fadeColor ); // Wype³nienie ca³ego ekranu nowym kolorem
+		SDL_Flip( screen ); // Odœwie¿enie ekranu
+
+		SDL_Delay( fadeDelay ); // Oczekiwanie na kolejny krok
+	}
+}
+
 int main( int argc, char* argv[] )
 {
 	srand( time(NULL) );

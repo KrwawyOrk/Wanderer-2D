@@ -243,9 +243,14 @@ void GSPlaying::InputEvents( void )
 		case SDLK_F10:
 			OpenMapEditorNewMapWindow();
 			break;
+			
+		case SDLK_F11:
+			Globals::game->FadeToBlack( 5000 );
+			break;
 
 		case SDLK_F12:
 			Globals::game->ToggleFullScreen();
+			break;
 
 		case SDLK_RETURN:
 			PlayerLeaveMap();
@@ -253,6 +258,7 @@ void GSPlaying::InputEvents( void )
 
 		case SDLK_h:
 			ShakeScreen( Globals::screen, 20, 10 );
+			break;
 		}
 	}
 

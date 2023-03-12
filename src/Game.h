@@ -34,6 +34,7 @@ public:
 	gamestate_t GetGameStateEnum( void ) const { return m_gamestateEnum; }
 
 	void ToggleFullScreen( void );
+	void FadeToBlack( int duration );
 
 private:
 	void LoadConfiguration( void );
