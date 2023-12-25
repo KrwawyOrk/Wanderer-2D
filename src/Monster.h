@@ -18,6 +18,7 @@ public:
 
 	virtual void Think( void );
 	virtual void Draw( void );
+	virtual void Die( void );
 
 	void SetBaseDamage( int baseDamage ) { m_baseDamage = baseDamage; }
 	int GetBaseDamage( void ) const { return m_baseDamage; }

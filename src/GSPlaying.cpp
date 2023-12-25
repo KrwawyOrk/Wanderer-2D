@@ -213,7 +213,6 @@ void GSPlaying::InputEvents( void )
 			break;
 
 		case SDLK_SPACE:
-		case SDLK_TAB:
 			Globals::camera->Center( m_player );
 			break;
 
@@ -258,6 +257,19 @@ void GSPlaying::InputEvents( void )
 
 		case SDLK_h:
 			ShakeScreen( Globals::screen, 20, 10 );
+			break;
+
+		case SDLK_TAB:
+			PlayerBelt* belt = Globals::playerBelt;
+
+			if( belt->GetPlayerBeltState() == playerBeltState_t::INVENTORY_STATE ) 
+			{
+				belt->SetPlayerBeltState( playerBeltState_t::STATISTIC_STATE );
+			}
+			else {
+				belt->SetPlayerBeltState( playerBeltState_t::INVENTORY_STATE );
+			}
+
 			break;
 		}
 	}
@@ -459,11 +471,14 @@ void GSPlaying::OpenMapEditorNewMapWindow( void )
 
 void GSPlaying::PrintInformationsInConsole( void )
 {
+	std::cout << "**********************************" << std::endl;
 	std::cout << m_player->GetPosition().x << "\t" << m_player->GetPosition().y << std::endl;
 	std::cout << "Pozycja startowa mapy: " << Globals::currentMap->GetStartPosition().x << "\t" << Globals::currentMap->GetStartPosition().y << std::endl;
 	std::cout << "Pozycja wyjsciowa mapy: " << Globals::currentMap->GetExitPosition().x << "\t" << Globals::currentMap->GetExitPosition().y << std::endl;
 	std::cout << "Punkty zycia: " << m_player->GetHealthPoints() << "/" << m_player->GetMaxHealthPoints() << std::endl;
 	std::cout << "Pozycja kamery: x: " << Globals::camera->GetCameraX() << " y: " << Globals::camera->GetCameraY() << std::endl;
+	m_player->PrintLevelAdvanceInformations();
+	std::cout << "**********************************" << std::endl;
 }
 
 void GSPlaying::MoveCameraOnMouseMotion( void )

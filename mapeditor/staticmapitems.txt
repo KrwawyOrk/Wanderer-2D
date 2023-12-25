@@ -15,7 +15,6 @@
 12 7 unknown 0 labwallbase
 12 6 unknown 0 labwallbase
 12 5 unknown 0 labwallbase
-12 4 unknown 0 labwallbase
 24 17 unknown 0 labwallbase
 23 17 unknown 0 labwallbase
 22 17 unknown 0 labwallbase
@@ -152,8 +151,6 @@
 20 7 unknown 0 labwallbase
 20 6 unknown 0 labwallbase
 20 5 unknown 0 labwallbase
-20 4 unknown 0 labwallbase
-20 3 unknown 0 labwallbase
 20 2 unknown 0 labwallbase
 28 2 unknown 0 labwallbase
 28 3 unknown 0 labwallbase
@@ -255,9 +252,6 @@
 7 9 unknown 0 labwallbase
 7 8 unknown 0 labwallbase
 8 8 unknown 0 labwallbase
-9 9 unknown 0 labtestwall
-8 9 unknown 0 labtestwall
-8 11 unknown 0 chair04
 16 25 unknown 0 pctable04
 16 24 unknown 0 pctable03
 17 24 unknown 0 chair02
@@ -344,3 +338,11 @@
 45 20 unknown 0 labtestwalldirt
 43 20 unknown 0 labwall_fusebox
 33 20 unknown 0 labwall_fusebox
+12 4 unknown 0 labwallbase
+20 4 unknown 0 labwallbase
+20 3 unknown 0 labwallbase
+8 9 unknown 0 labtestwalldirt
+9 9 unknown 0 labwall_fusebox
+8 10 unknown 0 szafkatest
+10 4 unknown 0 pctable01
+11 4 unknown 0 pctable02

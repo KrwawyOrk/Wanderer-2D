@@ -67,6 +67,7 @@ void Map::Think( void )
 
 		if( (*cit)->GetHealthPoints() <= 0 )
 		{
+			( *cit )->Die();
 			( *cit )->SetDeathTime( Globals::currentTime );
 			( *cit )->CreateCorpseWithLootItems();
 

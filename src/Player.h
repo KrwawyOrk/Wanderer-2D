@@ -1,6 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include "PlayerAdvanceLevel.h"
 #include "Monster.h"
 #include "Skill.h"
 
@@ -106,6 +107,8 @@ public:
 	void GiveAmmunition( int count );
 	void LevelUpDamage( void );
 	void CheckReductionInSpeedAtLowHealthPoints( void );
+	void PrintLevelAdvanceInformations( void );
+	void GiveExperiencePoints( int points );
 
 private:
 	bool m_selected;
@@ -137,6 +140,8 @@ private:
 	SDL_Rect clipsDown[3];
 
 	Sprite m_animationSprite;
+
+	PlayerAdvanceLevel m_playerAdvanceLevel;
 };
 
 #endif

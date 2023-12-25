@@ -11,7 +11,7 @@ GSMap::GSMap(void)
 {
 	Globals::spriteManager->GetSprite( m_map, "worldmap" );
 	m_exitButton = new Button( 1285, 115, "close_button", true );
-	m_secretLaboratory = new Button( 1016, 624, "secret_laboratory_button", true );
+	m_secretLaboratory = new Button( 400, 500, "secret_laboratory_button", false );
 }
 
 

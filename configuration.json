@@ -1,3 +1,4 @@
 {
-    "fullscreen": 0
+    "fullscreen": 0,
+    "camera_follow_player": 1
 }

@@ -56,6 +56,15 @@ void Monster::Draw( void )
 	m_monsterHealthBar->Draw();
 }
 
+void Monster::Die( void )
+{
+	Player* player = Globals::player;
+	player->GiveExperiencePoints( 100 );
+
+	std::cout << "Potworek zwany " << this->GetName() << " zostal zabity! :)";
+	std::cout << "Experience points: " << player->GetExperiencePoints() << std::endl;
+}
+
 bool Monster::CanRandomMovement( void )
 {
 	int distance = Tools::CalculateDistance( Globals::player->GetPosition().x, Globals::player->GetPosition().y, GetPosition().x, GetPosition().y );

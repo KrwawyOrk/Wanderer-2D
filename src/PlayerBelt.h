@@ -13,6 +13,12 @@ class Item;
 class ItemSlot;
 class Player;
 
+enum class playerBeltState_t
+{
+	INVENTORY_STATE,
+	STATISTIC_STATE
+};
+
 class PlayerBelt
 {
 public:
@@ -31,14 +37,22 @@ public:
 		}
 	}
 
+	playerBeltState_t GetPlayerBeltState( void ) { return m_playerBeltState; }
+	void SetPlayerBeltState( playerBeltState_t playerBeltState );
+
 	void InsertItemToInventory( Item* item );
 	void DrawPlayerHealthBar( int position_x, int position_y );
 	void DrawConditionAlerts( void );
+	void DrawStatsInformations( void );
+	void DrawInventorySlots( void );
+	void DrawBeltCards( void );
+	void DrawSelectedWeapon( void );
 
 	std::vector<ItemSlot*>& GetItemSlots( void ) { return m_itemSlots; }
 
 private:
 	Player* m_player;
+	playerBeltState_t m_playerBeltState;
 
 	Sprite m_background;
 	Sprite m_healthPotion;
@@ -76,6 +90,8 @@ private:
 
 	ItemSlot* m_containerSlotTest;
 	Container* m_container;
+
+	Sprite m_gameplaygui;
 };
 
 #endif

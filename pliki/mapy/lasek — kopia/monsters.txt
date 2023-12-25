@@ -1,0 +1,7 @@
+spider 14 15 120
+spider 9 11 90
+spider 19 15 120
+spider 26 11 60
+spider 19 24 120
+spider 27 28 120
+spider 44 21 90

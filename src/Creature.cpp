@@ -47,8 +47,6 @@ void Creature::Move( direction_t direction )
 		{
 			if( !(*cit)->IsWalkable() )
 				canMove = false;
-
-			return;
 		}
 	}
 

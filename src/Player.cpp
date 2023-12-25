@@ -389,6 +389,24 @@ int Player::GetAnimationSpeedBasedOnPlayerVelocity()
 	return std::max( 50, 200 - (int)m_velocity );
 }
 
+void Player::PrintLevelAdvanceInformations( void )
+{
+	m_playerAdvanceLevel.PrintLevelAdvanceInformations( this );
+}
+
+void Player::GiveExperiencePoints( int points )
+{
+	int previousLevel = m_playerAdvanceLevel.CheckForLevelAdvance( this );
+
+	m_experiencePoints += points;
+	int currentLevel = m_playerAdvanceLevel.CheckForLevelAdvance( this );
+
+	if (currentLevel > previousLevel)
+	{
+		std::cout << "Level advanced!!" << std::endl;
+	}
+}
+
 
 void Player::set_clips()
 {

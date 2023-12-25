@@ -1,7 +1,7 @@
 {
-    "health": 30,
+    "health": 100,
     "maxHealth": 100,
-    "experiencePoints": 5,
+    "experiencePoints": 0,
     "monstersKilled": 0,
     "pistolAmmunition": 10,
     "damage": 1,

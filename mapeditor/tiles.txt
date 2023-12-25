@@ -488,10 +488,6 @@
 7 9 trawa
 7 8 trawa
 8 8 trawa
-8 10 podloga_kratka
-8 11 podloga_kratka
-9 11 podloga_kratka
-9 10 podloga_kratka
 8 9 trawa
 9 9 trawa
 18 25 trawa
@@ -670,3 +666,7 @@
 38 21 trawa2
 39 22 trawa2
 41 22 trawa2
+8 10 floor1
+9 10 floor1
+9 11 trawa2
+8 11 trawa2

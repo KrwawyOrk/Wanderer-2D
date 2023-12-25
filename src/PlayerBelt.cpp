@@ -27,6 +27,7 @@ PlayerBelt::PlayerBelt()
 	Globals::spriteManager->GetSprite( m_gui_background, "gui_background" );
 
 	Globals::spriteManager->GetSprite( m_lowhealthpoints, "lowhealthpoints" );
+	Globals::spriteManager->GetSprite( m_gameplaygui, "gameplaygui" );
 
 	m_food = new Text( 14, WHITE, Position( 25, 650 ) );
 	//m_day = new Text( 14, WHITE, Position( 25, 680 ) );
@@ -43,9 +44,9 @@ PlayerBelt::PlayerBelt()
 	m_quitButton = new Button( 1220, 390, "quit_button", true );
 
 	//Tworzymy sloty itemow, dwa rzedy po 10 slotow.
-	int draw_x_start = 1160;
+	int draw_x_start = 90;
 	int draw_x = draw_x_start;
-	int draw_y = 460;
+	int draw_y = 130;
 	int itemSlotsInRow = 5;
 
 	for( int i = 0 ; i < INVENTORY_LIMIT ; i++ )
@@ -75,6 +76,8 @@ PlayerBelt::PlayerBelt()
 	m_container->AddItem( new Item( Position( 5, 5 ), HEALTH_REGENERATION ) );
 	m_container->AddItem( new Item( Position( 5, 5 ), HEALTH_REGENERATION ) );
 	m_container->AddItem( new Item( Position( 5, 5 ), HEALTH_REGENERATION ) );
+
+	m_playerBeltState = playerBeltState_t::STATISTIC_STATE;
 }
 
 PlayerBelt::~PlayerBelt()
@@ -142,6 +145,8 @@ void PlayerBelt::Think( void )
 
 void PlayerBelt::Draw( void )
 {
+	m_gameplaygui.Draw( Globals::screen, 0, 0 );
+
 	//m_top.Draw( Globals::screen, 0, 0 );
 	
 	//m_left.Draw( Globals::screen, 0, 40 );
@@ -162,49 +167,23 @@ void PlayerBelt::Draw( void )
 
 	std::ostringstream sspistolammunition;
 	sspistolammunition << m_player->GetPistolAmmunition();
-	m_pistolAmmunition->show_text( 955, 716, sspistolammunition.str(), Globals::screen );
+	m_pistolAmmunition->show_text( 315, 815, sspistolammunition.str(), Globals::screen );
 
-	switch( m_player->GetWeaponType() )
-	{
-	case PISTOL:
-		m_pistol.Draw( Globals::screen, 1315, 350 );
-		break;
-
-	case CROWBAR:
-		m_crowbar.Draw( Globals::screen, 1315, 350 );
-		break;
-	};
-
-	std::ostringstream ssmonsterskilled;
-	ssmonsterskilled << m_player->GetMonstersKilled();
-	m_monstersKilled->show_text( 1155, 330, "MONSTERS KILLED " + ssmonsterskilled.str(), Globals::screen );
-
-	std::ostringstream ssexperiencepoints;
-	ssexperiencepoints << m_player->GetExperiencePoints();
-	m_experiencePoints->show_text( 1155, 350, "EXPERIENCE POINTS " + ssexperiencepoints.str(), Globals::screen );
+	DrawSelectedWeapon();
+	DrawBeltCards();
 
 	//std::string testmsg = "Welcome! I think you\nwill ready to hack!\n";
 	//m_experiencePoints->show_text( 1155, 350, "Welcome! I think you\nwill ready to hack!\nUse your knowledge of\nprogramming to open doors.", Globals::screen );
 
-	std::ostringstream ssdamage;
-	ssdamage << m_player->GetSkills().m_battle << " [" << m_player->GetWeaponDamage() << "]";
-
-	m_damage->show_text( 1155, 370, "DAMAGE " + ssdamage.str(), Globals::screen );
-
-	m_inventoryButton->DrawButton();
-	m_quitButton->DrawButton();
+	//m_inventoryButton->DrawButton();
+	//m_quitButton->DrawButton();
 
 	//m_inventoryBelt.Draw( Globals::screen, 522, 744 );
 	DrawPlayerHealthBar( 480, 100);
 
-	m_bottom.Draw( Globals::screen, 1155, 435 );
+	//m_bottom.Draw( Globals::screen, 1155, 435 );
 
-	for( std::vector<ItemSlot*>::iterator it = m_itemSlots.begin() ; it != m_itemSlots.end() ; ++it )
-	{
-		( *it )->Draw();
-	}
-
-	m_containerSlotTest->Draw();
+	//m_containerSlotTest->Draw();
 	//m_container->Draw();
 
 	DrawConditionAlerts();
@@ -251,4 +230,62 @@ void PlayerBelt::DrawConditionAlerts( void )
 	{
 		m_lowhealthpoints.Draw( Globals::screen, 50, 50 );
 	}
+}
+
+void PlayerBelt::DrawStatsInformations( void )
+{
+	std::ostringstream ssmonsterskilled;
+	ssmonsterskilled << m_player->GetMonstersKilled();
+	m_monstersKilled->show_text( 110, 110, "MONSTERS KILLED " + ssmonsterskilled.str(), Globals::screen );
+
+	std::ostringstream ssexperiencepoints;
+	ssexperiencepoints << m_player->GetExperiencePoints();
+	m_experiencePoints->show_text( 110, 140, "EXPERIENCE POINTS " + ssexperiencepoints.str(), Globals::screen );
+
+	std::ostringstream ssdamage;
+	ssdamage << m_player->GetSkills().m_battle << " [" << m_player->GetWeaponDamage() << "]";
+
+	m_damage->show_text( 110, 170, "DAMAGE " + ssdamage.str(), Globals::screen );
+}
+
+void PlayerBelt::DrawInventorySlots( void )
+{
+	for (std::vector<ItemSlot*>::iterator it = m_itemSlots.begin(); it != m_itemSlots.end(); ++it)
+	{
+		(*it)->Draw();
+	}
+}
+
+void PlayerBelt::DrawBeltCards( void )
+{
+	switch (m_playerBeltState)
+	{
+	case playerBeltState_t::STATISTIC_STATE:
+		DrawStatsInformations();
+		break;
+
+	case playerBeltState_t::INVENTORY_STATE:
+		DrawInventorySlots();
+		break;
+	}
+}
+
+void PlayerBelt::DrawSelectedWeapon( void )
+{
+	switch (m_player->GetWeaponType())
+	{
+	case PISTOL:
+		m_pistol.Draw( Globals::screen, 145, 830 );
+		break;
+
+	case CROWBAR:
+		m_crowbar.Draw( Globals::screen, 145, 830 );
+		break;
+	};
+
+}
+
+void PlayerBelt::SetPlayerBeltState( playerBeltState_t playerBeltState )
+{
+	m_playerBeltState = playerBeltState;
 }

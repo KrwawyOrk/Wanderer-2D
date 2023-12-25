@@ -46,7 +46,7 @@ void Item::OnUse( Player* player )
 		break;
 
 	case EXPERIENCE_BOOK:
-		player->SetExperiencePoints( player->GetExperiencePoints() + 5 );
+		player->GiveExperiencePoints( 200 );
 		break;
 
 	case AMMO_PACK:
