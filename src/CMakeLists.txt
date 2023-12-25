@@ -26,6 +26,7 @@ set(WANDERER2D_SRC
 	${CMAKE_CURRENT_LIST_DIR}/Monster.cpp
 	${CMAKE_CURRENT_LIST_DIR}/MonsterHealthBar.cpp
 	${CMAKE_CURRENT_LIST_DIR}/MouseCursor.cpp
+	${CMAKE_CURRENT_LIST_DIR}/PlayerAdvanceLevel.cpp
 	${CMAKE_CURRENT_LIST_DIR}/PlayerAnimation.cpp
 	${CMAKE_CURRENT_LIST_DIR}/PlayerBelt.cpp
 	${CMAKE_CURRENT_LIST_DIR}/Player.cpp
