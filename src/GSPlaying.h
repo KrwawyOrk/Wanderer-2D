@@ -43,7 +43,7 @@ public:
 	Map* GetMapByName( std::string mapName );
 	Map* GetCurrentMap( void ) { return m_map; }
 	bool MapExists( std::string mapName ) const;
-	void ChangeMap( std::string mapName );
+	void ChangeMap( const std::string& mapName );
 	void PlaceProtectionZone( Position& position );
 	int GetDay( void ) { return m_day; }
 	void PlayerLeaveMap( void );

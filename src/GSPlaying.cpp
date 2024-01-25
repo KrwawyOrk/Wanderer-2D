@@ -362,20 +362,22 @@ bool GSPlaying::MapExists( std::string mapName ) const
 	return false;
 }
 
-void GSPlaying::ChangeMap( std::string mapName )
+void GSPlaying::ChangeMap( const std::string& mapName )
 {
-	std::list<Map*>::const_iterator cit;
-	for( cit = m_mapList.begin() ; cit != m_mapList.end() ; ++cit )
+	for (const auto& map : m_mapList)
 	{
-		if( ( *cit )->GetMapName() == mapName )
+		if (map->GetMapName() == mapName)
 		{
-			m_map = *cit;
+			m_map = map;
 			Globals::currentMap = m_map;
 
-			std::cout << "// Zmiana mapy na " << ( *cit )->GetMapName() << std::endl;
+			std::cout << "// Zmiana mapy na " << map->GetMapName() << std::endl;
 			return;
 		}
 	}
+
+	// Dodano obs³ugê sytuacji, gdy mapa nie zosta³a znaleziona
+	std::cerr << "// B³¹d: Mapa o nazwie " << mapName << " nie znaleziona." << std::endl;
 }
 
 void GSPlaying::PlaceProtectionZone( Position& position )
