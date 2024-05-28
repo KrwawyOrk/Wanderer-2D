@@ -14,6 +14,7 @@
 #include "Tile.h"
 #include "Tools.h"
 #include "Item.h"
+#include "TextBox.h"
 
 #include <iostream>
 #include <sstream>
@@ -55,6 +56,13 @@ GSPlaying::GSPlaying( void )
 
 	m_openedContainer = NULL;
 	m_npc = NULL;
+
+	m_informationsConsole = new TextBox( 500, 750, 400, 300, "pliki/font.ttf", 13 );
+	m_informationsConsole->addLine( "Initial line 1: This is a very long line that will need to be wrapped to fit within the textbox width." );
+	m_informationsConsole->addLine( "Initial line 2" );
+	m_informationsConsole->addLine( "Initial line 3" );
+	m_informationsConsole->addLine( "Initial line 4" );
+	m_informationsConsole->addLine( "Initial line 5" );
 }
 
 GSPlaying::~GSPlaying( void )
@@ -64,6 +72,8 @@ GSPlaying::~GSPlaying( void )
 
 void GSPlaying::InputEvents( void )
 {
+	m_informationsConsole->handleEvent( Globals::event );
+
 	if( m_openedContainer )
 	{
 		m_openedContainer->InputEvents();
@@ -244,7 +254,7 @@ void GSPlaying::InputEvents( void )
 			break;
 			
 		case SDLK_F11:
-			Globals::game->FadeToBlack( 5000 );
+			Globals::game->fade_to_black( 10 );
 			break;
 
 		case SDLK_F12:
@@ -257,6 +267,14 @@ void GSPlaying::InputEvents( void )
 
 		case SDLK_h:
 			ShakeScreen( Globals::screen, 20, 10 );
+			break;
+
+		case SDLK_v:
+			std::cout << GetCurrentMap()->GetMapName() << std::endl;
+			break;
+
+		case SDLK_j:
+			m_informationsConsole->addLine( "Dodano nowy przedmiot!" );
 			break;
 
 		case SDLK_TAB:
@@ -336,6 +354,7 @@ void GSPlaying::Draw( void )
 	m_playerBelt.Draw();
 	DrawExitLocationMessage();
 	DrawOpenedContainer();
+	m_informationsConsole->render( Globals::screen );
 }
 
 Map* GSPlaying::GetMapByName( std::string mapName )

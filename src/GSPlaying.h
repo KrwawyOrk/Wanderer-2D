@@ -20,6 +20,7 @@ enum playingState_t
 class Container;
 class Item;
 class NPC;
+class TextBox;
 
 class GSPlaying : public GameState
 {
@@ -75,6 +76,8 @@ private:
 
 	Container* m_openedContainer;
 	NPC* m_npc;
+
+	TextBox* m_informationsConsole;
 };
 
 #endif
