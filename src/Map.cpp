@@ -12,9 +12,6 @@
 #include <cstdlib>
 #include <ctime>
 
-#include "nlohmann/json.hpp"
-using json = nlohmann::json;
-
 Map::Map( std::string mapName )
 {
 	m_mapName = mapName;
@@ -26,6 +23,7 @@ Map::Map( std::string mapName )
 	LoadMonsters();
 	LoadActionMapChange();
 	LoadStartExitPositions();
+	LoadMapActions();
 }
 
 Map::~Map()
@@ -416,6 +414,11 @@ void Map::LoadMapEvents( void )
 	//TODO...
 }
 
+void Map::LoadMapIntroBackground( void )
+{
+	//TODO...
+}
+
 bool Map::TileExistsAtPosition( int x, int y )
 {
 	for( std::vector<Tile*>::const_iterator cit = m_tiles.begin() ; cit != m_tiles.end() ; ++cit )
@@ -506,4 +509,22 @@ void Map::MoveAllMonsters( void )
 	{
 		( *cit )->RandomMovement();
 	}
+}
+
+void Map::LoadMapActions( void )
+{
+	std::string filepath = "pliki/mapy/" + m_mapName + "/actions.json";
+	std::ifstream file( filepath );
+
+	nlohmann::json actions;
+	file >> actions;
+
+	m_actions = actions;
+
+	std::cout << "Wczytano map actions." << std::endl;
+}
+
+void Map::PrintToConsoleMapName( void )
+{
+	std::cout << "Obecna mapa: " << m_mapName << std::endl;
 }

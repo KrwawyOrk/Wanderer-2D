@@ -8,6 +8,7 @@
 #include "Item.h"
 #include "ItemSlot.h"
 #include "Player.h"
+#include "ProgressBar.h"
 #include "SpriteManager.h"
 
 #include <iostream>
@@ -15,6 +16,7 @@
 
 PlayerBelt::PlayerBelt()
 {
+	Globals::spriteManager->GetSprite( m_bottomBelt, "bottom_belt_pixel" );
 	Globals::spriteManager->GetSprite( m_top, "gui_top" );
 	Globals::spriteManager->GetSprite( m_bottom, "inventory_background" );
 	Globals::spriteManager->GetSprite( m_left, "gui_left" );
@@ -32,7 +34,6 @@ PlayerBelt::PlayerBelt()
 	m_food = new Text( 14, WHITE, Position( 25, 650 ) );
 	//m_day = new Text( 14, WHITE, Position( 25, 680 ) );
 
-	m_healthPoints = new BitmapFont( FontStyle::FONT_WHITE_SMALL );
 	m_toolbox = new BitmapFont( FontStyle::FONT_WHITE_SMALL_OLD );
 	m_junk = new BitmapFont( FontStyle::FONT_WHITE_SMALL_OLD );
 	m_pistolAmmunition = new BitmapFont( FontStyle::FONT_WHITE_SMALL_OLD );
@@ -40,14 +41,17 @@ PlayerBelt::PlayerBelt()
 	m_damage = new BitmapFont( FontStyle::FONT_WHITE_SMALL );
 	m_monstersKilled = new BitmapFont( FontStyle::FONT_WHITE_SMALL );
 
+	m_healthPoints = new BitmapFont( FontStyle::FONT_WHITE_SMALL_OLD );
+	m_flashlightBattery = new BitmapFont( FontStyle::FONT_WHITE_SMALL_OLD );
+
 	m_inventoryButton = new Button( 1155, 390, "inventory_button", true );
 	m_quitButton = new Button( 1220, 390, "quit_button", true );
 
 	//Tworzymy sloty itemow, dwa rzedy po 10 slotow.
-	int draw_x_start = 90;
+	int draw_x_start = 15;
 	int draw_x = draw_x_start;
-	int draw_y = 130;
-	int itemSlotsInRow = 5;
+	int draw_y = 240;
+	int itemSlotsInRow = 2;
 
 	for( int i = 0 ; i < INVENTORY_LIMIT ; i++ )
 	{
@@ -78,6 +82,8 @@ PlayerBelt::PlayerBelt()
 	m_container->AddItem( new Item( Position( 5, 5 ), HEALTH_REGENERATION ) );
 
 	m_playerBeltState = playerBeltState_t::STATISTIC_STATE;
+
+	m_interactAction = new Button( 50, 200, "interact_action_icon", true );
 }
 
 PlayerBelt::~PlayerBelt()
@@ -108,6 +114,9 @@ PlayerBelt::~PlayerBelt()
 
 	delete m_quitButton;
 	m_quitButton = NULL;
+
+	delete m_flashlightBattery;
+	m_flashlightBattery = NULL;
 
 	for( std::vector<ItemSlot*>::iterator it = m_itemSlots.begin() ; it != m_itemSlots.end() ; ++it )
 	{
@@ -145,7 +154,9 @@ void PlayerBelt::Think( void )
 
 void PlayerBelt::Draw( void )
 {
-	m_gameplaygui.Draw( Globals::screen, 0, 0 );
+	//m_interactAction->DrawButton();
+
+	//m_gameplaygui.Draw( Globals::screen, 0, 0 );
 
 	//m_top.Draw( Globals::screen, 0, 0 );
 	
@@ -155,7 +166,7 @@ void PlayerBelt::Draw( void )
 
 	//m_gui_background.Draw( Globals::screen, 434, 698 );
 
-	m_food->DrawText( Globals::screen );
+	//m_food->DrawText( Globals::screen );
 
 	/*std::ostringstream sstoolbox;
 	sstoolbox << "Narzedzia " << m_player->GetToolBox();
@@ -165,12 +176,9 @@ void PlayerBelt::Draw( void )
 	ssjunk << "Zlom " << m_player->GetJunk();
 	m_junk->show_text( 25, 700, ssjunk.str(), Globals::screen );*/
 
-	std::ostringstream sspistolammunition;
-	sspistolammunition << m_player->GetPistolAmmunition();
-	m_pistolAmmunition->show_text( 315, 815, sspistolammunition.str(), Globals::screen );
-
 	DrawSelectedWeapon();
 	DrawBeltCards();
+	DrawStatsInformations();
 
 	//std::string testmsg = "Welcome! I think you\nwill ready to hack!\n";
 	//m_experiencePoints->show_text( 1155, 350, "Welcome! I think you\nwill ready to hack!\nUse your knowledge of\nprogramming to open doors.", Globals::screen );
@@ -179,14 +187,15 @@ void PlayerBelt::Draw( void )
 	//m_quitButton->DrawButton();
 
 	//m_inventoryBelt.Draw( Globals::screen, 522, 744 );
-	DrawPlayerHealthBar( 480, 100);
+	//DrawPlayerHealthBar(480, 100);
 
 	//m_bottom.Draw( Globals::screen, 1155, 435 );
 
 	//m_containerSlotTest->Draw();
 	//m_container->Draw();
 
-	DrawConditionAlerts();
+	//DrawConditionAlerts();
+	//m_bottomBelt.Draw( Globals::screen, 0, 639 );
 }
 
 void PlayerBelt::InsertItemToInventory( Item* item )
@@ -201,6 +210,12 @@ void PlayerBelt::InsertItemToInventory( Item* item )
 		}
 
 	}
+}
+
+void PlayerBelt::SortInventory( void )
+{
+	std::vector<Item*> &inventory = m_player->GetItems();
+	inventory.erase( std::remove( inventory.begin(), inventory.end(), nullptr ), inventory.end() );
 }
 
 void PlayerBelt::DrawPlayerHealthBar( int position_x, int position_y ) // x = 525, y = 715
@@ -234,18 +249,17 @@ void PlayerBelt::DrawConditionAlerts( void )
 
 void PlayerBelt::DrawStatsInformations( void )
 {
-	std::ostringstream ssmonsterskilled;
-	ssmonsterskilled << m_player->GetMonstersKilled();
-	m_monstersKilled->show_text( 110, 110, "MONSTERS KILLED " + ssmonsterskilled.str(), Globals::screen );
+	std::ostringstream sshealthpoints;
+	sshealthpoints << "HP: " << m_player->GetHealthPoints() << " / " << m_player->GetMaxHealthPoints();
+	m_healthPoints->show_text( 15, 15, sshealthpoints.str(), Globals::screen );
 
-	std::ostringstream ssexperiencepoints;
-	ssexperiencepoints << m_player->GetExperiencePoints();
-	m_experiencePoints->show_text( 110, 140, "EXPERIENCE POINTS " + ssexperiencepoints.str(), Globals::screen );
+	std::ostringstream sspistolammunition;
+	sspistolammunition << "AMMO: " << m_player->GetPistolAmmunition();
+	m_pistolAmmunition->show_text( 15, 65, sspistolammunition.str(), Globals::screen );
 
-	std::ostringstream ssdamage;
-	ssdamage << m_player->GetSkills().m_battle << " [" << m_player->GetWeaponDamage() << "]";
-
-	m_damage->show_text( 110, 170, "DAMAGE " + ssdamage.str(), Globals::screen );
+	std::ostringstream ssflashlightbattery;
+	ssflashlightbattery << "FLASH: " << static_cast<int>(m_player->GetFlashlightBattery() * 100) << "%";
+	m_flashlightBattery->show_text( 15, 115, ssflashlightbattery.str(), Globals::screen );
 }
 
 void PlayerBelt::DrawInventorySlots( void )
@@ -258,16 +272,18 @@ void PlayerBelt::DrawInventorySlots( void )
 
 void PlayerBelt::DrawBeltCards( void )
 {
-	switch (m_playerBeltState)
-	{
-	case playerBeltState_t::STATISTIC_STATE:
-		DrawStatsInformations();
-		break;
+	//switch (m_playerBeltState)
+	//{
+	//case playerBeltState_t::STATISTIC_STATE:
+	//	//DrawStatsInformations();
+	//	break;
 
-	case playerBeltState_t::INVENTORY_STATE:
-		DrawInventorySlots();
-		break;
-	}
+	//case playerBeltState_t::INVENTORY_STATE:
+	//	DrawInventorySlots();
+	//	break;
+	//}
+
+	DrawInventorySlots();
 }
 
 void PlayerBelt::DrawSelectedWeapon( void )

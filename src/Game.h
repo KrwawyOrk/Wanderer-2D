@@ -35,6 +35,7 @@ public:
 
 	void ToggleFullScreen( void );
 	void FadeToBlack( int duration );
+	void fade_to_black( int delay );
 
 private:
 	void LoadConfiguration( void );

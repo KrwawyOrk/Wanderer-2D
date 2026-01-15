@@ -8,6 +8,7 @@ class Map;
 class Player;
 class PlayerBelt;
 class SpriteManager;
+class TextBox;
 
 namespace Globals
 {
@@ -33,6 +34,8 @@ namespace Globals
 	extern int				resolution_y;
 
 	extern int				healthKitHeal;
+
+	extern TextBox*			messageLog;
 
 	extern void				AlertMessageToConsole( std::string message );
 };

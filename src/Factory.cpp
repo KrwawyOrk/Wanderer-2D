@@ -16,7 +16,7 @@ Monster* Factory::CreateMonster( std::string name, Position position, int health
 	m->SetPosition( position );
 	m->SetFloatX( static_cast<float>( position.x * Globals::tilesize ) );
 	m->SetFloatY( static_cast<float>( position.y * Globals::tilesize ) );
-	m->SetVelocity( 50.0f );
+	m->SetVelocity( 100.0f );
 	m->SetHealthPoints( healthPoints );
 	m->SetMaxHealthPoints( maxHealthPoints );
 	m->SetBaseDamage( baseDamage );
@@ -38,7 +38,7 @@ Monster* Factory::CreateMonsterRespawn( std::string name, Position position, int
 	m->SetPosition( position );
 	m->SetFloatX( static_cast<float>( position.x * Globals::tilesize ) );
 	m->SetFloatY( static_cast<float>( position.y * Globals::tilesize ) );
-	m->SetVelocity( 50.0f );
+	m->SetVelocity( 100.0f );
 	m->SetHealthPoints( 20 );
 	m->SetMaxHealthPoints( 20 );
 	m->SetBaseDamage( 10 );

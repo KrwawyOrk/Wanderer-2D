@@ -18,8 +18,8 @@ HealthBar::HealthBar(Creature* creature)
 	m_rect[1].w = (m_creature->GetHealthPoints() * 100 / m_creature->GetMaxHealthPoints() ) * m_surface->w / 100;
 	m_rect[1].h = m_surface->h / 2;
 
-	m_position.x = 250;
-	m_position.y = 10;
+	m_position.x = 340;
+	m_position.y = 100;
 
 	LoadFiles();
 }

@@ -1,4 +1,4 @@
-#include "GSPlaying.h"
+﻿#include "GSPlaying.h"
 
 #include "Camera.h"
 #include "Container.h"
@@ -9,6 +9,7 @@
 #include "ItemSlot.h"
 #include "Map.h"
 #include "MapEntitiesLoader.h"
+#include "Particle.h"
 #include "SpriteManager.h"
 #include "StaticMapItem.h"
 #include "Tile.h"
@@ -57,17 +58,28 @@ GSPlaying::GSPlaying( void )
 	m_openedContainer = NULL;
 	m_npc = NULL;
 
-	m_informationsConsole = new TextBox( 500, 750, 400, 300, "pliki/font.ttf", 13 );
-	m_informationsConsole->addLine( "Initial line 1: This is a very long line that will need to be wrapped to fit within the textbox width." );
-	m_informationsConsole->addLine( "Initial line 2" );
-	m_informationsConsole->addLine( "Initial line 3" );
-	m_informationsConsole->addLine( "Initial line 4" );
-	m_informationsConsole->addLine( "Initial line 5" );
+	m_informationsConsole = new TextBox( 15, 650, 300, 300, "pliki/font.ttf", 16 );
+	Globals::messageLog = m_informationsConsole;
+	
+	Globals::messageLog->addLine( "Hello message log! 1" );
+	Globals::messageLog->addLine( "Hello message log! 2" );
+	Globals::messageLog->addLine( "Hello message log! 3" );
+	Globals::messageLog->addLine( "Hello message log! 4" );
+	Globals::messageLog->addLine( "Hello message log! 5" );
+	Globals::messageLog->addLine( "Hello message log! 6" );
+
+	m_flashlightBattery = 1.0f;
+	m_flashlightMask = nullptr;
+	m_currentMaskRadius = -1;
 }
 
 GSPlaying::~GSPlaying( void )
 {
+	delete m_informationsConsole;
+	m_informationsConsole = NULL;
 
+	for (auto& p : m_particles) delete p;
+	m_particles.clear();
 }
 
 void GSPlaying::InputEvents( void )
@@ -85,8 +97,7 @@ void GSPlaying::InputEvents( void )
 		{
 			Position position; //pozycja wcisniecia przycisku myszki
 			position.x = ( Globals::event.button.x + Globals::camera->GetCameraX() ) / Globals::tilesize;
-			position.y = ( Globals::event.button.y + Globals::camera->GetCameraY() ) / Globals::tilesize;
-
+			position.y = ( Globals::event.button.y + Globals::camera->GetCameraY() ) / Globals::tilesize;			
 
 			std::vector<Item*> &items = Globals::currentMap->GetItemsVector();
 			std::vector<Item*>::iterator it;
@@ -202,10 +213,6 @@ void GSPlaying::InputEvents( void )
 			Globals::camera->Move( DOWN );
 			break;
 
-		case SDLK_b:
-
-			break;
-
 		case SDLK_c:
 			Globals::camera->SetPosition( 0, 0 );
 			break;
@@ -266,7 +273,8 @@ void GSPlaying::InputEvents( void )
 			break;
 
 		case SDLK_h:
-			ShakeScreen( Globals::screen, 20, 10 );
+			//ShakeScreen( Globals::screen, 20, 10 );
+			FadeToBlack( Globals::screen, 1000 );
 			break;
 
 		case SDLK_v:
@@ -315,6 +323,21 @@ void GSPlaying::Think( void )
 
 	CheckIfContainerIsOpened();
 	ThinkMovementInputButtonsHeld();
+
+	for (auto it = m_particles.begin(); it != m_particles.end(); )
+	{
+		(*it)->Update( Globals::deltaTime );   // <--- TU się dzieje magia
+
+		if ((*it)->IsDead())
+		{
+			delete* it;
+			it = m_particles.erase( it );
+		}
+		else
+		{
+			++it;
+		}
+	}
 }
 
 void GSPlaying::ThinkMovementInputButtonsHeld( void )
@@ -345,16 +368,112 @@ void GSPlaying::Update( float deltaTime )
 	m_map->Update( deltaTime );
 	m_player->Update( deltaTime );
 	Globals::camera->Update( deltaTime );
+
+	UpdateFlashlightBattery( deltaTime ); // ← używamy zewnętrznego deltaTime
 }
 
-void GSPlaying::Draw( void )
+void GSPlaying::Draw()
+{
+	// 1. Buforujemy scenę
+	SDL_Surface* sceneBuffer = SDL_CreateRGBSurface(
+		SDL_SWSURFACE,
+		Globals::screen->w, Globals::screen->h,
+		Globals::screen->format->BitsPerPixel,
+		Globals::screen->format->Rmask,
+		Globals::screen->format->Gmask,
+		Globals::screen->format->Bmask,
+		0
+	);
+
+	if (!sceneBuffer) {
+		DrawUI();
+		return;
+	}
+
+	// Rysuj scenę do bufora
+	SDL_Surface* temp = Globals::screen;
+	Globals::screen = sceneBuffer;
+	DrawScene();
+	Globals::screen = temp;
+
+	// 2. Czyszczenie ekranu
+	SDL_FillRect( Globals::screen, nullptr, SDL_MapRGB( Globals::screen->format, 0, 0, 0 ) );
+
+	// 3. Światło tylko jeśli bateria > 0
+	if (m_flashlightBattery > 0.01f) {
+		int R = GetFlashlightRadius();
+		EnsureFlashlightMask( R );
+
+		if (m_flashlightMask) {
+			int mx, my;
+			SDL_GetMouseState( &mx, &my );
+
+			int srcX = 0, srcY = 0;
+			int dstX = mx - R, dstY = my - R;
+			int w = R * 2, h = R * 2;
+
+			// Obsługa krawędzi
+			if (dstX < 0) { srcX = -dstX; w -= srcX; dstX = 0; }
+			if (dstY < 0) { srcY = -dstY; h -= srcY; dstY = 0; }
+			if (dstX + w > Globals::screen->w) w = Globals::screen->w - dstX;
+			if (dstY + h > Globals::screen->h) h = Globals::screen->h - dstY;
+
+			if (w > 0 && h > 0) {
+				SDL_LockSurface( Globals::screen );
+				SDL_LockSurface( sceneBuffer );
+				SDL_LockSurface( m_flashlightMask );
+
+				Uint32* screen = (Uint32*)Globals::screen->pixels;
+				Uint32* scene = (Uint32*)sceneBuffer->pixels;
+				Uint32* mask = (Uint32*)m_flashlightMask->pixels;
+
+				int sp = Globals::screen->pitch / sizeof( Uint32 );
+				int bp = sceneBuffer->pitch / sizeof( Uint32 );
+				int mp = m_flashlightMask->pitch / sizeof( Uint32 );
+
+				for (int y = 0; y < h; ++y) {
+					for (int x = 0; x < w; ++x) {
+						Uint32 scenePixel = scene[(dstY + y) * bp + (dstX + x)];
+						Uint32 maskPixel = mask[(srcY + y) * mp + (srcX + x)];
+
+						Uint8 sr, sg, sb;
+						SDL_GetRGB( scenePixel, sceneBuffer->format, &sr, &sg, &sb );
+
+						Uint8 intensity;
+						SDL_GetRGB( maskPixel, m_flashlightMask->format, &intensity, &intensity, &intensity );
+
+						sr = (sr * intensity) / 255;
+						sg = (sg * intensity) / 255;
+						sb = (sb * intensity) / 255;
+
+						screen[(dstY + y) * sp + (dstX + x)] = SDL_MapRGB( Globals::screen->format, sr, sg, sb );
+					}
+				}
+
+				SDL_UnlockSurface( m_flashlightMask );
+				SDL_UnlockSurface( sceneBuffer );
+				SDL_UnlockSurface( Globals::screen );
+			}
+		}
+	}
+
+	SDL_FreeSurface( sceneBuffer );
+	DrawUI();
+}
+
+void GSPlaying::DrawScene( void )
 {
 	m_map->Draw();
-	m_player->Draw();
-	m_playerBelt.Draw();
+	m_player->Draw();;
+	DrawParticles();
+}
+
+void GSPlaying::DrawUI( void )
+{
 	DrawExitLocationMessage();
 	DrawOpenedContainer();
 	m_informationsConsole->render( Globals::screen );
+	m_playerBelt.Draw();
 }
 
 Map* GSPlaying::GetMapByName( std::string mapName )
@@ -383,6 +502,8 @@ bool GSPlaying::MapExists( std::string mapName ) const
 
 void GSPlaying::ChangeMap( const std::string& mapName )
 {
+	FadeToBlack( Globals::screen, 1000 );
+
 	for (const auto& map : m_mapList)
 	{
 		if (map->GetMapName() == mapName)
@@ -395,8 +516,8 @@ void GSPlaying::ChangeMap( const std::string& mapName )
 		}
 	}
 
-	// Dodano obs�ug� sytuacji, gdy mapa nie zosta�a znaleziona
-	std::cerr << "// B��d: Mapa o nazwie " << mapName << " nie znaleziona." << std::endl;
+	// Dodano obsługę sytuacji, gdy mapa nie została znaleziona
+	std::cerr << "// Błąd: Mapa o nazwie " << mapName << " nie znaleziona." << std::endl;
 }
 
 void GSPlaying::PlaceProtectionZone( Position& position )
@@ -416,6 +537,7 @@ void GSPlaying::PlayerLeaveMap( void )
 	if( m_player->GetPosition().x == map->GetExitPosition().x && m_player->GetPosition().y == map->GetExitPosition().y )
 	{
 		std::cout << "Opuszczamy mape" << std::endl;
+		FadeToBlack( Globals::screen, 1000 );
 		Globals::game->SetGameState( "World map" );
 
 
@@ -550,4 +672,154 @@ void GSPlaying::ShakeScreen( SDL_Surface* screen, int shake_count, int shake_int
 		SDL_UpdateRect( screen, 0, 0, 0, 0 );
 		SDL_Delay( 50 );
 	}
+}
+
+void GSPlaying::HandleMouseClickMapActions( int mouse_x, int mouse_y, std::vector<json>& actions )
+{
+	//todo
+}
+
+void GSPlaying::FadeToBlack( SDL_Surface* screen, int fadeTimeMs ) {
+	// Create a temporary surface for the fade effect
+	SDL_Surface* fadeSurface = SDL_CreateRGBSurface( SDL_SWSURFACE, screen->w, screen->h, 32,
+		screen->format->Rmask,
+		screen->format->Gmask,
+		screen->format->Bmask,
+		screen->format->Amask );
+
+	if (!fadeSurface) {
+		return; // Error handling
+	}
+
+	// Fill the fade surface with black
+	SDL_FillRect( fadeSurface, NULL, SDL_MapRGB( fadeSurface->format, 0, 0, 0 ) );
+
+	// Calculate steps for fade
+	const int steps = 30; // Number of fade steps
+	const int delay = fadeTimeMs / steps;
+
+	// Set initial alpha to fully transparent
+	SDL_SetAlpha( fadeSurface, SDL_SRCALPHA, 0 );
+
+	// Fade loop
+	for (int alpha = 0; alpha <= 255; alpha += (255 / steps)) {
+		// Update alpha value
+		SDL_SetAlpha( fadeSurface, SDL_SRCALPHA, alpha );
+
+		// Draw the current screen content
+		SDL_BlitSurface( screen, NULL, screen, NULL );
+
+		// Draw fade surface over screen
+		SDL_BlitSurface( fadeSurface, NULL, screen, NULL );
+
+		// Update display
+		SDL_Flip( screen );
+
+		// Delay to control fade speed
+		SDL_Delay( delay );
+	}
+
+	// Ensure final state is fully black
+	SDL_FillRect( screen, NULL, SDL_MapRGB( screen->format, 0, 0, 0 ) );
+	SDL_Flip( screen );
+
+	// Clean up
+	SDL_FreeSurface( fadeSurface );
+}
+
+void GSPlaying::EmitParticles( float worldX, float worldY, ParticleType type, int count )
+{
+	for (int i = 0; i < count; ++i)
+	{
+		m_particles.push_back( new Particle( worldX, worldY, type ) );
+	}
+}
+
+void GSPlaying::DrawParticles( void )
+{
+	SDL_LockSurface( Globals::screen );
+	for (auto* p : m_particles)
+	{
+		p->Draw( Globals::screen,
+			Globals::camera->GetCameraX(),
+			Globals::camera->GetCameraY() );
+	}
+	SDL_UnlockSurface( Globals::screen );
+}
+
+void GSPlaying::UpdateFlashlightBattery( float deltaTime )
+{
+	if (!IsFlashlightOn()) return;
+
+	const float DRAIN_RATE = 1.0f / 600.0f; // 10 minut
+	float current = Globals::player->GetFlashlightBattery();
+	m_player->SetFlashlightBattery( current - DRAIN_RATE * deltaTime );
+}
+
+bool GSPlaying::IsFlashlightOn() const
+{
+	// Możesz tu dodać warunek: np. czy gracz trzyma latarkę
+	return true; // albo np.: return m_playerHasFlashlight;
+}
+
+int GSPlaying::GetFlashlightRadius() const
+{
+	const int MIN_RADIUS = 20;
+	const int MAX_RADIUS = 130;
+	float battery = m_player->GetFlashlightBattery();
+	return MIN_RADIUS + (int)((MAX_RADIUS - MIN_RADIUS) * battery);
+}
+
+void GSPlaying::EnsureFlashlightMask( int radius )
+{
+	if (m_currentMaskRadius == radius && m_flashlightMask)
+		return; // już mamy odpowiednią maskę
+
+	ReleaseFlashlightMask();
+	m_flashlightMask = CreateFlashlightMask( radius );
+	m_currentMaskRadius = radius;
+}
+
+void GSPlaying::ReleaseFlashlightMask()
+{
+	if (m_flashlightMask) {
+		SDL_FreeSurface( m_flashlightMask );
+		m_flashlightMask = nullptr;
+		m_currentMaskRadius = -1;
+	}
+}
+
+SDL_Surface* GSPlaying::CreateFlashlightMask( int radius ) const
+{
+	if (radius <= 0) return nullptr;
+
+	int size = radius * 2;
+	SDL_Surface* mask = SDL_CreateRGBSurface( SDL_SWSURFACE, size, size, 32,
+		0x000000FF, 0x0000FF00, 0x00FF0000, 0 );
+
+	if (!mask) return nullptr;
+
+	Uint32* pixels = (Uint32*)mask->pixels;
+	int pitch = mask->pitch / sizeof( Uint32 );
+
+	for (int y = 0; y < size; ++y) {
+		for (int x = 0; x < size; ++x) {
+			int dx = x - radius;
+			int dy = y - radius;
+			int distSq = dx * dx + dy * dy;
+			if (distSq <= radius * radius) {
+				float dist = sqrtf( (float)distSq );
+				float t = 1.0f - (dist / (float)radius);
+				if (t < 0) t = 0;
+				t = powf( t, 1.8f ); // miękki zanik
+				Uint8 intensity = (Uint8)(t * 255);
+				pixels[y * pitch + x] = SDL_MapRGB( mask->format, intensity, intensity, intensity );
+			}
+			else {
+				pixels[y * pitch + x] = SDL_MapRGB( mask->format, 0, 0, 0 );
+			}
+		}
+	}
+
+	return mask;
 }

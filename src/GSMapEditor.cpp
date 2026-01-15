@@ -26,30 +26,15 @@ nie zostaly wykorzystane w programie. No coz pozwole zarzucic cytatem, ktory zna
 
 GSMapEditor::GSMapEditor()
 {
-	std::vector<std::string> mapeditorSprites;
-	mapeditorSprites.push_back( "trawa" );
-	mapeditorSprites.push_back( "trawa2" );
-	mapeditorSprites.push_back( "gravel" );
-	mapeditorSprites.push_back( "ziemiatest" );
-	mapeditorSprites.push_back( "podloga_kratka" );
-	mapeditorSprites.push_back( "floor1" );
-	mapeditorSprites.push_back( "chair01" );
-	mapeditorSprites.push_back( "chair02" );
-	mapeditorSprites.push_back( "chair03" );
-	mapeditorSprites.push_back( "chair04" );
-	mapeditorSprites.push_back( "chair05" );
-	mapeditorSprites.push_back( "chair06" );
-	mapeditorSprites.push_back( "pctable01" );
-	mapeditorSprites.push_back( "pctable02" );
-	mapeditorSprites.push_back( "pctable03" );
-	mapeditorSprites.push_back( "pctable04" );
-	mapeditorSprites.push_back( "labtestwall" );
-	mapeditorSprites.push_back( "labtestwalldirt" );
-	mapeditorSprites.push_back( "labtestwalldirt2" );
-	mapeditorSprites.push_back( "labwall_fusebox" );
-	mapeditorSprites.push_back( "labwallbase" );
-	mapeditorSprites.push_back( "szafkatest" );
-	mapeditorSprites.push_back( "health_info" );
+	const std::vector<std::string> mapeditorSprites = {
+		"trawa", "trawa2", "gravel", "ziemiatest", "podloga_kratka", "floor1",
+		"chair01", "chair02", "chair03", "chair04", "chair05", "chair06",
+		"pctable01", "pctable02", "pctable03", "pctable04",
+		"labtestwall", "labtestwall2", "labtestwall3", "labtestwall4",
+		"labtestwalldirt", "labtestwalldirt2", "labwall_alive_left",
+		"labwall_alive_right", "labwall_fusebox", "labwallbase", "labwallbase2",
+		"szafkatest", "health_info", "floor_base_1", "floor_base_2"
+	};
 
 	m_selectedSpriteName = "trawa";
 	Globals::spriteManager->GetSprite( m_selectedSprite, m_selectedSpriteName );

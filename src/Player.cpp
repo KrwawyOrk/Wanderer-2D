@@ -9,9 +9,11 @@
 #include "Item.h"
 #include "Map.h"
 #include "Monster.h"
+#include "Particle.h"
 #include "SpriteManager.h"
 #include "StaticMapItem.h"
 #include "Item.h"
+#include "TextBox.h"
 #include "Tools.h"
 
 #include <math.h>
@@ -22,7 +24,9 @@
 #include "rapidxml/rapidxml_print.hpp"
 #include "nlohmann/json.hpp"
 
+//using enum ParticleType;
 using namespace rapidxml;
+
 
 Player::Player()
 {
@@ -53,13 +57,15 @@ Player::Player()
 	GetSkillOfType( skillTypes::INCREASED_SPEED ).SetLearnedSkill( true );
 	GetSkillOfType( skillTypes::INCREASED_VISIBILITY ).SetLearnedSkill( true );
 
-	set_clips();
+	SetClips();
 	//Initialize movement variables
     offSet = 0;
  
     //Initialize animation variables
     frame = 0;
     status = FOO_RIGHT;
+
+	m_flashlightBattery = 1.0f;
 
 	Globals::spriteManager->GetSprite( m_animationSprite, "foo" );
 }
@@ -253,6 +259,7 @@ void Player::Move( direction_t direction )
 	if (canMove)
 	{
 		SetPosition( nextMovePosition );
+		CheckPlayerActionEventsPosition( GetPosition().x, GetPosition().y, Globals::currentMap->GetMapActions() );
 	}
 }
 
@@ -333,7 +340,17 @@ void Player::AttackMonsterWithMaleeWeapon( Monster* monster )
 	if( IsCooldownReadyToAttack() && IsEnemyInAttackDistance( MALEE_ATTACK_RANGE, monster ) )
 	{
 		monster->SetHealthPoints( monster->GetHealthPoints() - GetWeaponDamage() );
+		Globals::camera->StartShake( 6.0f, 0.30f );
 		SetTimeToNextAttack( ATTACK_DELAY_MALEE );
+
+		float hitX = (monster->GetPosition().x * Globals::tilesize) + Globals::tilesize / 2.0f;
+		float hitY = (monster->GetPosition().y * Globals::tilesize) + Globals::tilesize / 2.0f;
+
+		GSPlaying* gsPlaying = dynamic_cast<GSPlaying*>(Globals::game->GetGameState( "Play" ));
+		if (gsPlaying)
+		{
+			gsPlaying->EmitParticles( hitX, hitY, ParticleType::GREEN_BLOOD, 25 );
+		}
 	}
 }
 
@@ -343,6 +360,17 @@ void Player::AttackMonsterWithDistanceWeapon( Monster* monster )
 	{
 		monster->SetHealthPoints( monster->GetHealthPoints() - GetWeaponDamage() );
 		RemovePistolAmmunition();
+		
+		float hitX = (monster->GetPosition().x * Globals::tilesize) + Globals::tilesize / 2.0f;
+		float hitY = (monster->GetPosition().y * Globals::tilesize) + Globals::tilesize / 2.0f;
+
+		GSPlaying* gsPlaying = dynamic_cast<GSPlaying*>(Globals::game->GetGameState( "Play" ));
+		if (gsPlaying)
+		{
+			gsPlaying->EmitParticles( hitX, hitY, ParticleType::GREEN_BLOOD, 25 );
+		}
+
+		Globals::camera->StartShake( 4.5f, 0.18f );
 		SetTimeToNextAttack( ATTACK_DELAY_GUN );
 	}
 }
@@ -404,70 +432,77 @@ void Player::GiveExperiencePoints( int points )
 	if (currentLevel > previousLevel)
 	{
 		std::cout << "Level advanced!!" << std::endl;
+		Globals::messageLog->addLine( "Congratulations! You have advanced to next level!" );
 	}
 }
 
-
-void Player::set_clips()
+void Player::CheckPlayerActionEventsPosition( int player_x, int player_y, std::vector<json>& actions )
 {
-	//Clip the sprites
-    clipsLeft[ 0 ].x = 0;
-    clipsLeft[ 0 ].y = 100;
-    clipsLeft[ 0 ].w = FOO_WIDTH;
-    clipsLeft[ 0 ].h = FOO_HEIGHT;
+	for( auto& action : actions )
+	{
+		if( action["action_type"] == "step_on_tile" )
+		{
+			int tile_x = action["x"];
+			int tile_y = action["y"];
 
-    clipsLeft[ 1 ].x = FOO_WIDTH;
-    clipsLeft[ 1 ].y = 100;
-    clipsLeft[ 1 ].w = FOO_WIDTH;
-    clipsLeft[ 1 ].h = FOO_HEIGHT;
+			if( player_x == tile_x && player_y == tile_y )
+			{
+				std::string event_type = action["trigger_event"];
 
-    clipsLeft[ 2 ].x = FOO_WIDTH * 2;
-    clipsLeft[ 2 ].y = 100;
-    clipsLeft[ 2 ].w = FOO_WIDTH;
-    clipsLeft[ 2 ].h = FOO_HEIGHT;
+				if( event_type == "message_log" && !action["visited"] )
+				{
+					Globals::messageLog->addLine( action["text"] );
+					action["visited"] = true;
+				}
 
-    clipsRight[ 0 ].x = 0;
-    clipsRight[ 0 ].y = 200;
-    clipsRight[ 0 ].w = FOO_WIDTH;
-    clipsRight[ 0 ].h = FOO_HEIGHT;
+				else if( event_type == "remove_static_item" && !action["visited"] )
+				{
+					Globals::currentMap->RemoveStaticMapItem( action["remove_x"], action["remove_y"] );
+					action["visited"] = true;
+				}
+			}
+		}
+	}
+}
 
-    clipsRight[ 1 ].x = FOO_WIDTH;
-    clipsRight[ 1 ].y = 200;
-    clipsRight[ 1 ].w = FOO_WIDTH;
-    clipsRight[ 1 ].h = FOO_HEIGHT;
+void Player::SetClips()
+{
+	for (int i = 0; i < 3; ++i)
+	{
+		Sint16 x = static_cast<Sint16>(FOO_WIDTH * i);
 
-    clipsRight[ 2 ].x = FOO_WIDTH * 2;
-    clipsRight[ 2 ].y = 200;
-    clipsRight[ 2 ].w = FOO_WIDTH;
-    clipsRight[ 2 ].h = FOO_HEIGHT;
+		clipsDown[i] = { x, 0,   FOO_WIDTH, FOO_HEIGHT };
+		clipsLeft[i] = { x, 100, FOO_WIDTH, FOO_HEIGHT };
+		clipsRight[i] = { x, 200, FOO_WIDTH, FOO_HEIGHT };
+		clipsUp[i] = { x, 300, FOO_WIDTH, FOO_HEIGHT };
+	}
+}
 
-	clipsDown[ 0 ].x = 0;
-    clipsDown[ 0 ].y = 0;
-    clipsDown[ 0 ].w = FOO_WIDTH;
-    clipsDown[ 0 ].h = FOO_HEIGHT;
+void Player::SetFlashlightBattery( float level )
+{
+	m_flashlightBattery = level;
+	if (m_flashlightBattery < 0.0f) m_flashlightBattery = 0.0f;
+	if (m_flashlightBattery > 1.0f) m_flashlightBattery = 1.0f;
+}
 
-    clipsDown[ 1 ].x = FOO_WIDTH;
-    clipsDown[ 1 ].y = 0;
-    clipsDown[ 1 ].w = FOO_WIDTH;
-    clipsDown[ 1 ].h = FOO_HEIGHT;
+void Player::RechargeFlashlight( float amount )
+{
+	SetFlashlightBattery( m_flashlightBattery + amount );
+}
 
-    clipsDown[ 2 ].x = FOO_WIDTH * 2;
-    clipsDown[ 2 ].y = 0;
-    clipsDown[ 2 ].w = FOO_WIDTH;
-    clipsDown[ 2 ].h = FOO_HEIGHT;
+void Player::DrainFlashlight( float amount )
+{
+	SetFlashlightBattery( m_flashlightBattery - amount );
+}
 
-	clipsUp[ 0 ].x = 0;
-    clipsUp[ 0 ].y = 300;
-    clipsUp[ 0 ].w = FOO_WIDTH;
-    clipsUp[ 0 ].h = FOO_HEIGHT;
+void Player::GenerateBloodParticlesOnBeingHit( void )
+{
+	float hitX = ( GetPosition().x * Globals::tilesize ) + Globals::tilesize / 2.0f;
+	float hitY = ( GetPosition().y * Globals::tilesize ) + Globals::tilesize / 2.0f;
 
-    clipsUp[ 1 ].x = FOO_WIDTH;
-    clipsUp[ 1 ].y = 300;
-    clipsUp[ 1 ].w = FOO_WIDTH;
-    clipsUp[ 1 ].h = FOO_HEIGHT;
-
-    clipsUp[ 2 ].x = FOO_WIDTH * 2;
-    clipsUp[ 2 ].y = 300;
-    clipsUp[ 2 ].w = FOO_WIDTH;
-    clipsUp[ 2 ].h = FOO_HEIGHT;
+	GSPlaying* gsPlaying = dynamic_cast<GSPlaying*>( Globals::game->GetGameState( "Play" ) );
+	if( gsPlaying )
+	{
+		gsPlaying->EmitParticles( hitX, hitY, ParticleType::BLOOD, 25 );
+	}
 }

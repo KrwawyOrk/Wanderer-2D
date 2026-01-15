@@ -6,6 +6,8 @@
 #include "Map.h"
 #include "Player.h"
 #include "SpriteManager.h"
+#include "Text.h"
+#include "TextBox.h"
 
 namespace Globals
 {
@@ -26,9 +28,10 @@ namespace Globals
 	PlayerBelt*		playerBelt;
 	int				spriteAnimationSpeed = 400;
 	int				tilesize = 50;
-	int				resolution_x = 1440;
-	int				resolution_y = 900;
+	int				resolution_x = 1024;
+	int				resolution_y = 768;
 	int				healthKitHeal = 30;
+	TextBox*		messageLog;
 
 	void AlertMessageToConsole( std::string message )
 	{

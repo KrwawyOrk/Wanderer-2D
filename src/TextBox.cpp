@@ -3,7 +3,7 @@
 #include <sstream>
 
 TextBox::TextBox( int x, int y, int width, int height, const std::string& fontPath, int fontSize )
-    : x( x ), y( y ), width( width ), height( height ), scrollIndex( 0 ), font( NULL ), textColor( { 0, 255, 0 } ) {
+    : x( x ), y( y ), width( width ), height( height ), scrollIndex( 0 ), font( NULL ), textColor( { 255, 255, 255 } ) {
     loadFont( fontPath, fontSize );
 }
 

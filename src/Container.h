@@ -55,6 +55,7 @@ private:
 	bool m_locked;
 	bool m_windowVisible;
 	Button* m_exitButton;
+	Button* m_takeAllButton; //Take all items to inventory button :O
 	Sprite m_background;
 };
 

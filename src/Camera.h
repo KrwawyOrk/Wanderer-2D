@@ -56,15 +56,27 @@ public:
 	void Think( void );
 	void Update( float deltaTime );
 
+	void StartShake( float strength = 6.0f, float duration = 0.35f );
+
 	int velocity_x;
 	int velocity_y;
 	const int cameraVelocity;
 
 private:
+	float Lerp( float a, float b, float t ) const 
+	{
+		return a + (b - a) * t;  // Prosty lerp
+	}
+
 	int cam_x;
 	int cam_y;
 
 	bool m_followPlayer;
+
+	float   shakeTimer = 0.0f;
+	float   shakeDuration = 0.0f;
+	float   shakeStrength = 0.0f;
+	float   shakeDecay = 0.95f;   // ile si³y zostaje co klatkê (0.9–0.98)
 };
 
 #endif

@@ -11,6 +11,7 @@ Container::Container()
 	m_windowVisible = true;
 	Globals::spriteManager->GetSprite(m_background, "opened_container");
 	m_exitButton = new Button( 585, 335, "close_button", true );
+	m_takeAllButton = new Button( 644, 335, "take_all_button", true );
 
 	int draw_x = 595;
 	int draw_y = 405;
@@ -39,6 +40,7 @@ Container::Container()
 Container::~Container()
 {
 	delete m_exitButton;
+	delete m_takeAllButton;
 }
 
 void Container::InputEvents( void )
@@ -73,6 +75,7 @@ void Container::Draw( void )
 		}
 
 		m_exitButton->DrawButton();
+		m_takeAllButton->DrawButton();
 	}
 }
 

@@ -14,6 +14,9 @@
 #include <string>
 #include <vector>
 
+#include "nlohmann/json.hpp"
+using json = nlohmann::json;
+
 const int DISTANCE_FROM_PLAYER_TO_RENDER = 3;
 
 class CollisionTile
@@ -41,6 +44,7 @@ public:
 	void Update( float deltaTime );
 	void Draw( void );
 
+	void LoadMapActions( void );
 	std::string GetMapName( void ) const { return m_mapName; }
 	bool TileExistsAtPosition( int x, int y);
 	bool StaticItemExistsAtPosition( int x, int y );
@@ -51,6 +55,7 @@ public:
 
 	void TestRandomNumbers( void );
 	void MoveAllMonsters( void );
+	void PrintToConsoleMapName( void );
 
 	std::vector<Tile*>& GetTilesVector( void ) { return m_tiles; }
 	std::vector<Monster*>& GetMonstersVector( void ) { return m_monsters; }
@@ -58,6 +63,7 @@ public:
 	std::vector<Box*>& GetBoxes( void ) { return m_boxes; } 
 	std::vector<Item*>& GetItemsVector( void ) { return m_Items; }
 	std::list<ActionMapChange*>& GetActionMapChangeList( void ) { return m_actionMapChangeList; }
+	std::vector<json>& GetMapActions( void ) { return m_actions; }
 
 	Position GetStartPosition( void )
 	{
@@ -105,6 +111,7 @@ private:
 	void LoadMonsters( void );
 	void LoadStartExitPositions( void );
 	void LoadMapEvents( void );
+	void LoadMapIntroBackground( void );
 
 	std::vector<Tile*> m_tiles;
 	std::vector<StaticMapItem*> m_staticItems;
@@ -120,6 +127,8 @@ private:
 	Position m_startPosition;
 	Position m_exitPosition;
 	Sprite m_exitSprite;
+
+	std::vector<json> m_actions;
 };
 
 #endif

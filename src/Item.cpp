@@ -4,6 +4,7 @@
 #include "Globals.h"
 #include "Player.h"
 #include "SpriteManager.h"
+#include "TextBox.h"
 
 Item::Item( Position position, itemType_t itemType )
 {
@@ -43,14 +44,17 @@ void Item::OnUse( Player* player )
 	{
 	case HEALTH_REGENERATION:
 		player->Heal( player->GetSkills().m_medicine * 10 );
+		Globals::messageLog->addLine( "Przywrocono 10 punktow zycia." );
 		break;
 
 	case EXPERIENCE_BOOK:
-		player->GiveExperiencePoints( 200 );
+		player->GiveExperiencePoints( 10 );
+		Globals::messageLog->addLine( "Otrzymales 10 punktow doswiadczenia." );
 		break;
 
 	case AMMO_PACK:
 		player->GiveAmmunition( 5 );
+		Globals::messageLog->addLine( "Dodano 5 szt amunicji." );
 		break;
 	}
 }

@@ -5,8 +5,11 @@
 #include "Monster.h"
 #include "Skill.h"
 
-#include "SDL.h"
 #include <vector>
+
+#include "SDL.h"
+#include "nlohmann/json.hpp"
+using json = nlohmann::json;
 
 const int CROWBAR_DAMAGE = 2;
 const int PISTOL_DAMAGE = 5;
@@ -15,11 +18,11 @@ const int MALEE_ATTACK_RANGE = 1;
 const int PISTOL_ATTACK_RANGE = 4;
 
 const float ATTACK_DELAY_MALEE = 0.3f;
-const float ATTACK_DELAY_GUN = 1.5f;
+const float ATTACK_DELAY_GUN = 1.0f;
 
 const int MAX_ATTACK_DISTANCE = PISTOL_ATTACK_RANGE;
 const float BASE_VELOCITY = 140.0f;
-const int INVENTORY_LIMIT = 40;
+const int INVENTORY_LIMIT = 12;
 
 class Item;
 class Monster;
@@ -92,7 +95,7 @@ public:
 	void SetTimeToNextAttack( float time );
 
 	//animation
-	void set_clips();
+	void SetClips();
 	int GetFrame( int animationSpeed );
 	int GetAnimationSpeedBasedOnPlayerVelocity();
 	//endanimation
@@ -109,6 +112,12 @@ public:
 	void CheckReductionInSpeedAtLowHealthPoints( void );
 	void PrintLevelAdvanceInformations( void );
 	void GiveExperiencePoints( int points );
+	void CheckPlayerActionEventsPosition( int player_x, int player_y, std::vector<json>& actions );
+	float GetFlashlightBattery() const { return m_flashlightBattery; }
+	void SetFlashlightBattery( float level );
+	void RechargeFlashlight( float amount );
+	void DrainFlashlight( float amount );
+	void GenerateBloodParticlesOnBeingHit( void );
 
 private:
 	bool m_selected;
@@ -142,6 +151,8 @@ private:
 	Sprite m_animationSprite;
 
 	PlayerAdvanceLevel m_playerAdvanceLevel;
+
+	float m_flashlightBattery;
 };
 
 #endif

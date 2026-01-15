@@ -115,6 +115,8 @@ public:
 	bool IsCooldownReadyToAttack( void );
 	bool IsPlayerInAttackDistance( int distance, Player* player );
 	void MoveTowardsPlayer( void );
+	void SendDamageToMessageLog( int damage );
+	void SendDeadInformationToMessageLog( int experiencePoints );
 
 private:
 	int m_baseDamage;

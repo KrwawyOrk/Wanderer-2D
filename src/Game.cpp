@@ -1,4 +1,4 @@
-#include "Game.h"
+ï»¿#include "Game.h"
 
 #include "Camera.h"
 #include "Factory.h"
@@ -13,6 +13,8 @@
 #include "GSPlaying.h"
 #include "GSMapEditor.h"
 #include "GSMap.h"
+
+#include "ProgressBar.h"
 
 #include <fstream>
 #include <iostream>
@@ -160,12 +162,22 @@ void Game::SetScreenMode( void )
 {
 	if( Globals::fullScreen == true )
 	{
-		Globals::screen = SDL_SetVideoMode( Globals::resolution_x, Globals::resolution_y, 32, SDL_HWSURFACE | SDL_FULLSCREEN );
+		Globals::screen = SDL_SetVideoMode(
+			Globals::resolution_x,
+			Globals::resolution_y,
+			32,
+			SDL_FULLSCREEN | SDL_HWSURFACE | SDL_DOUBLEBUF   // â† tylko to! (bez SDL_SRCALPHA!)
+		);
 	}
 
 	else
 	{
-		Globals::screen = SDL_SetVideoMode( Globals::resolution_x, Globals::resolution_y, 32, SDL_HWSURFACE );
+		Globals::screen = SDL_SetVideoMode(
+			Globals::resolution_x,
+			Globals::resolution_y,
+			32,
+			SDL_HWSURFACE | SDL_DOUBLEBUF   // â† tylko to! (bez SDL_SRCALPHA!)
+		);
 	}
 }
 
@@ -195,20 +207,39 @@ void Game::ToggleFullScreen( void )
 void Game::FadeToBlack( int duration )
 {
 	SDL_Surface* screen = Globals::screen;
-	int fadeSteps = 50; // Liczba kroków do powolnego przyciemniania ekranu
-	int fadeDelay = duration / fadeSteps; // Czas oczekiwania miêdzy krokami
+	int fadeSteps = 50; // Liczba krokÃ³w do powolnego przyciemniania ekranu
+	int fadeDelay = duration / fadeSteps; // Czas oczekiwania miÄ™dzy krokami
 
-	Uint8 alpha = 255; // Pocz¹tkowa wartoœæ alpha (pe³na widocznoœæ)
-	Uint32 fadeColor = SDL_MapRGBA( screen->format, 0, 0, 0, alpha ); // Kolor czarny z wartoœci¹ alpha
+	Uint8 alpha = 255; // PoczÄ…tkowa wartoÅ›Ä‡ alpha (peÅ‚na widocznoÅ›Ä‡)
+	Uint32 fadeColor = SDL_MapRGBA( screen->format, 0, 0, 0, alpha ); // Kolor czarny z wartoÅ›ciÄ… alpha
 
 	for (int i = 0; i < fadeSteps; i++) {
-		alpha -= 255 / fadeSteps; // Zmniejszenie wartoœci alpha o 1/50 wartoœci
-		fadeColor = SDL_MapRGBA( screen->format, 0, 0, 0, alpha ); // Aktualizacja koloru z now¹ wartoœci¹ alpha
+		alpha -= 255 / fadeSteps; // Zmniejszenie wartoÅ›ci alpha o 1/50 wartoÅ›ci
+		fadeColor = SDL_MapRGBA( screen->format, 0, 0, 0, alpha ); // Aktualizacja koloru z nowÄ… wartoÅ›ciÄ… alpha
 
-		SDL_FillRect( screen, NULL, fadeColor ); // Wype³nienie ca³ego ekranu nowym kolorem
-		SDL_Flip( screen ); // Odœwie¿enie ekranu
+		SDL_FillRect( screen, NULL, fadeColor ); // WypeÅ‚nienie caÅ‚ego ekranu nowym kolorem
+		SDL_Flip( screen ); // OdÅ›wieÅ¼enie ekranu
 
 		SDL_Delay( fadeDelay ); // Oczekiwanie na kolejny krok
+	}
+}
+
+void Game::fade_to_black( int delay )
+{
+	Uint32 color = SDL_MapRGB( Globals::screen->format, 0, 0, 0 );
+	Uint8 alpha = 0;
+
+	while (alpha < 255)
+	{
+		SDL_FillRect( Globals::screen, NULL, color );
+		SDL_WM_SetCaption( "Fading to black...", NULL );
+		SDL_Flip( Globals::screen );
+
+		alpha += 1;
+		color = SDL_MapRGB( Globals::screen->format, 0, 0, 0 );
+		color = SDL_MapRGBA( Globals::screen->format, 0, 0, 0, alpha );
+
+		SDL_Delay( delay );
 	}
 }
 
@@ -231,6 +262,9 @@ int main( int argc, char* argv[] )
 	//The frame rate regulator
     Timer fps;
 
+	//ProgressBar progressBar( Globals::screen, 150, 10 );
+	//progressBar.startAnimation( 5000 );
+
 	if( Globals::spriteManager->SpritesLoadedSuccessfully() )	// Glowna petla gry rozpocznie prace tylko wtedy jezeli nie bylo problemow z zaladowaniem spritow.
 	{
 		while( Globals::game->GameIsRunning() )
@@ -247,14 +281,22 @@ int main( int argc, char* argv[] )
 			Globals::game->InputEvents();
 			Globals::game->Think();
 			Globals::game->Update( ftime );
+			//progressBar.update();
+
+			/*if (progressBar.isFinished())
+			{
+				std::cout << "Bron zostala naladowana..." << std::endl;
+				progressBar.startAnimation( 5000 );
+			}*/
 
 			SDL_FillRect( Globals::screen, &Globals::screen->clip_rect, SDL_MapRGB( Globals::screen->format, 0, 0, 0 ) );
 			Globals::game->Draw();
+			//progressBar.draw( static_cast<int>( Globals::player->GetFloatX() - Globals::camera->GetCameraX()), static_cast<int>(Globals::player->GetFloatY() - Globals::camera->GetCameraY() - 60 ) );
 
 			SDL_Flip( Globals::screen );
 		}
 
-		SDL_Delay( 1 );
+		SDL_Delay( 10 );
 	}
 
 	delete game;

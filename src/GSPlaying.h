@@ -3,6 +3,7 @@
 
 #include "GameState.h"
 #include "BitmapFont.h"
+#include "Particle.h"
 #include "Player.h"
 #include "PlayerBelt.h"
 #include "Map.h"
@@ -10,6 +11,9 @@
 
 #include <list>
 #include <string>
+
+#include "nlohmann/json.hpp"
+using json = nlohmann::json;
 
 enum playingState_t
 {
@@ -20,6 +24,7 @@ enum playingState_t
 class Container;
 class Item;
 class NPC;
+class Particle;
 class TextBox;
 
 class GSPlaying : public GameState
@@ -56,6 +61,12 @@ public:
 	void PrintInformationsInConsole( void );
 	void MoveCameraOnMouseMotion( void );
 	void ShakeScreen( SDL_Surface* screen, int shake_count, int shake_intensity );
+	void HandleMouseClickMapActions( int mouse_x, int mouse_y, std::vector<json>& actions );
+	void FadeToBlack( SDL_Surface* screen, int fadeTimeMs );
+	void EmitParticles( float worldX, float worldY, ParticleType type, int count = 18 );
+	void DrawParticles( void );
+	void DrawScene( void );
+	void DrawUI( void );
 
 private:
 	bool m_keysHeld[323];
@@ -78,6 +89,27 @@ private:
 	NPC* m_npc;
 
 	TextBox* m_informationsConsole;
+
+	std::vector<Particle*> m_particles;
+
+private:
+	// --- Bateria latarki ---
+	float m_flashlightBattery;      // 0.0f – 1.0f
+
+	// --- Maski œwiat³a ---
+	SDL_Surface* m_flashlightMask;
+	int m_currentMaskRadius;
+
+	// --- Funkcje zarz¹dzania bateri¹ ---
+	void UpdateFlashlightBattery( float deltaTime );
+	bool IsFlashlightOn() const;
+	float GetFlashlightBatteryLevel() const { return m_flashlightBattery; }
+	int GetFlashlightRadius() const;
+
+	// --- Funkcje zarz¹dzania mask¹ ---
+	void EnsureFlashlightMask( int radius );
+	void ReleaseFlashlightMask();
+	SDL_Surface* CreateFlashlightMask( int radius ) const;
 };
 
 #endif

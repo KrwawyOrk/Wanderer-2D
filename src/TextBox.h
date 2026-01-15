@@ -1,3 +1,6 @@
+#ifndef TEXTBOX_H
+#define TEXTBOX_H
+
 #include "SDL.h"
 #include "SDL_ttf.h"
 #include <vector>
@@ -30,3 +33,5 @@ private:
     bool loadFont( const std::string& fontPath, int fontSize );
     SDL_Surface* renderText( const std::string& text );
 };
+
+#endif // !TEXTBOX_H

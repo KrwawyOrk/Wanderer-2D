@@ -6,12 +6,14 @@
 #include "BitmapFont.h"
 
 #include <vector>
+#include <algorithm>
 
 class Button;
 class Container;
 class Item;
 class ItemSlot;
 class Player;
+class ProgressBar;
 
 enum class playerBeltState_t
 {
@@ -41,6 +43,7 @@ public:
 	void SetPlayerBeltState( playerBeltState_t playerBeltState );
 
 	void InsertItemToInventory( Item* item );
+	void SortInventory( void );
 	void DrawPlayerHealthBar( int position_x, int position_y );
 	void DrawConditionAlerts( void );
 	void DrawStatsInformations( void );
@@ -53,6 +56,8 @@ public:
 private:
 	Player* m_player;
 	playerBeltState_t m_playerBeltState;
+
+	Sprite m_bottomBelt;
 
 	Sprite m_background;
 	Sprite m_healthPotion;
@@ -81,6 +86,7 @@ private:
 	BitmapFont* m_experiencePoints;
 	BitmapFont* m_damage;
 	BitmapFont* m_monstersKilled;
+	BitmapFont* m_flashlightBattery;
 
 	Button* m_inventoryButton;
 	Button* m_quitButton;
@@ -92,6 +98,8 @@ private:
 	Container* m_container;
 
 	Sprite m_gameplaygui;
+
+	Button* m_interactAction;
 };
 
 #endif
