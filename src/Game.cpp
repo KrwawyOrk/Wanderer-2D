@@ -13,6 +13,7 @@
 #include "GSPlaying.h"
 #include "GSMapEditor.h"
 #include "GSMap.h"
+#include "GSMyHome.h"
 
 #include "ProgressBar.h"
 
@@ -119,6 +120,8 @@ void Game::Draw( void )
 
 bool Game::SetGameState( std::string gameStateTitle )
 {
+	ReleaseStuckKeys();
+
 	std::map<std::string, GameState*>::iterator it = m_gameStateMap.find( gameStateTitle );
 
 	if( it != m_gameStateMap.end() )
@@ -154,6 +157,8 @@ void Game::InitGameStates( void )
 	m_gameStateMap["Play"] = new GSPlaying;
 	m_gameStateMap["Map editor"] = new GSMapEditor;
 	m_gameStateMap["World map"] = new GSMap;
+
+	m_gameStateMap["My home"] = new GSMyHome;
 
 	SetGameState( "Play" );
 }
@@ -204,42 +209,74 @@ void Game::ToggleFullScreen( void )
 	Globals::fullScreen = SDL_SetVideoMode( Globals::resolution_x, Globals::resolution_y, 32, flags );
 }
 
-void Game::FadeToBlack( int duration )
-{
-	SDL_Surface* screen = Globals::screen;
-	int fadeSteps = 50; // Liczba kroków do powolnego przyciemniania ekranu
-	int fadeDelay = duration / fadeSteps; // Czas oczekiwania między krokami
+void Game::FadeToBlack( SDL_Surface* screen, int fadeTimeMs ) {
+	// Create a temporary surface for the fade effect
+	SDL_Surface* fadeSurface = SDL_CreateRGBSurface( SDL_SWSURFACE, screen->w, screen->h, 32,
+		screen->format->Rmask,
+		screen->format->Gmask,
+		screen->format->Bmask,
+		screen->format->Amask );
 
-	Uint8 alpha = 255; // Początkowa wartość alpha (pełna widoczność)
-	Uint32 fadeColor = SDL_MapRGBA( screen->format, 0, 0, 0, alpha ); // Kolor czarny z wartością alpha
-
-	for (int i = 0; i < fadeSteps; i++) {
-		alpha -= 255 / fadeSteps; // Zmniejszenie wartości alpha o 1/50 wartości
-		fadeColor = SDL_MapRGBA( screen->format, 0, 0, 0, alpha ); // Aktualizacja koloru z nową wartością alpha
-
-		SDL_FillRect( screen, NULL, fadeColor ); // Wypełnienie całego ekranu nowym kolorem
-		SDL_Flip( screen ); // Odświeżenie ekranu
-
-		SDL_Delay( fadeDelay ); // Oczekiwanie na kolejny krok
+	if (!fadeSurface) {
+		return; // Error handling
 	}
+
+	// Fill the fade surface with black
+	SDL_FillRect( fadeSurface, NULL, SDL_MapRGB( fadeSurface->format, 0, 0, 0 ) );
+
+	// Calculate steps for fade
+	const int steps = 30; // Number of fade steps
+	const int delay = fadeTimeMs / steps;
+
+	// Set initial alpha to fully transparent
+	SDL_SetAlpha( fadeSurface, SDL_SRCALPHA, 0 );
+
+	// Fade loop
+	for (int alpha = 0; alpha <= 255; alpha += (255 / steps)) {
+		// Update alpha value
+		SDL_SetAlpha( fadeSurface, SDL_SRCALPHA, alpha );
+
+		// Draw the current screen content
+		SDL_BlitSurface( screen, NULL, screen, NULL );
+
+		// Draw fade surface over screen
+		SDL_BlitSurface( fadeSurface, NULL, screen, NULL );
+
+		// Update display
+		SDL_Flip( screen );
+
+		// Delay to control fade speed
+		SDL_Delay( delay );
+	}
+
+	// Ensure final state is fully black
+	SDL_FillRect( screen, NULL, SDL_MapRGB( screen->format, 0, 0, 0 ) );
+	SDL_Flip( screen );
+
+	// Clean up
+	SDL_FreeSurface( fadeSurface );
 }
 
-void Game::fade_to_black( int delay )
+void Game::ReleaseStuckKeys( void )
 {
-	Uint32 color = SDL_MapRGB( Globals::screen->format, 0, 0, 0 );
-	Uint8 alpha = 0;
-
-	while (alpha < 255)
+	// Resetuje wszystkie klawisze, które mogły "zostać" wciśnięte
+	// po powrocie z innego stanu gry (np. GSMyRoom)
+	for (int i = 0; i < 323; i++)
 	{
-		SDL_FillRect( Globals::screen, NULL, color );
-		SDL_WM_SetCaption( "Fading to black...", NULL );
-		SDL_Flip( Globals::screen );
+		( *Globals::keysHeld )[i] = false;
+	}
 
-		alpha += 1;
-		color = SDL_MapRGB( Globals::screen->format, 0, 0, 0 );
-		color = SDL_MapRGBA( Globals::screen->format, 0, 0, 0, alpha );
+	// Opcjonalnie: zresetuj również stany myszy jeśli używasz
+	// m_mouseButtons[3] = { false, false, false };
 
-		SDL_Delay( delay );
+	// Dodatkowo: wymuś aktualizację stanu SDL
+	SDL_PumpEvents();
+
+	// Opcjonalnie: wyczyść kolejkę zdarzeń (jeśli potrzeba)
+	SDL_Event event;
+	while (SDL_PollEvent( &event ))
+	{
+		// opróżniamy kolejkę
 	}
 }
 
@@ -296,7 +333,14 @@ int main( int argc, char* argv[] )
 			SDL_Flip( Globals::screen );
 		}
 
-		SDL_Delay( 10 );
+		int frameTicks = fps.get_ticks();
+
+		if (frameTicks < 1000 / FRAMES_PER_SECOND)
+		{
+			SDL_Delay(
+				(1000 / FRAMES_PER_SECOND) - frameTicks
+			);
+		}
 	}
 
 	delete game;

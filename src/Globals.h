@@ -37,5 +37,7 @@ namespace Globals
 
 	extern TextBox*			messageLog;
 
+	extern bool				( *keysHeld )[323];
+
 	extern void				AlertMessageToConsole( std::string message );
 };

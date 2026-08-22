@@ -3,10 +3,12 @@
 
 #include "GameState.h"
 #include "BitmapFont.h"
+#include "Globals.h"
 #include "Particle.h"
 #include "Player.h"
 #include "PlayerBelt.h"
 #include "Map.h"
+#include "MapLighting.h"
 #include "Sprite.h"
 
 #include <list>
@@ -62,14 +64,13 @@ public:
 	void MoveCameraOnMouseMotion( void );
 	void ShakeScreen( SDL_Surface* screen, int shake_count, int shake_intensity );
 	void HandleMouseClickMapActions( int mouse_x, int mouse_y, std::vector<json>& actions );
-	void FadeToBlack( SDL_Surface* screen, int fadeTimeMs );
 	void EmitParticles( float worldX, float worldY, ParticleType type, int count = 18 );
 	void DrawParticles( void );
 	void DrawScene( void );
 	void DrawUI( void );
 
 private:
-	bool m_keysHeld[323];
+	bool m_isCursorVisible;
     playingState_t m_playingState;
 	PlayerBelt m_playerBelt;
 
@@ -91,6 +92,9 @@ private:
 	TextBox* m_informationsConsole;
 
 	std::vector<Particle*> m_particles;
+	MapLighting m_mapLighting;
+
+	bool m_keysHeld[323];
 
 private:
 	// --- Bateria latarki ---

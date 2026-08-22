@@ -33,7 +33,14 @@ GSMapEditor::GSMapEditor()
 		"labtestwall", "labtestwall2", "labtestwall3", "labtestwall4",
 		"labtestwalldirt", "labtestwalldirt2", "labwall_alive_left",
 		"labwall_alive_right", "labwall_fusebox", "labwallbase", "labwallbase2",
-		"szafkatest", "health_info", "floor_base_1", "floor_base_2"
+		"szafkatest", "health_info", "floor_base_1", "floor_base_2",
+		"lab_door_left", "lab_door_right", "lab_homedoor_left", "lab_homedoor_right",
+		"lab_techwall_left", "lab_techwall_right", "lab_techwall_left2", "lab_techwall_right2",
+		"lab_techwall_left3", "lab_techwall_right3", "lab_techwall_left4", "lab_techwall_right4",
+		"lab_techwall_left5", "lab_techwall_right5", "lab_techfloor1", "lab_techfloor2",
+		"lab_techfloor3", "lab_techfloor4", "lab_techfloor5", "lab_techfloor6",
+		"lab_techfloor7", "lab_techfloor8", "lab_techwall_left6", "lab_techwall_right6",
+		"lab_techwall_left7", "lab_techwall_right7"
 	};
 
 	m_selectedSpriteName = "trawa";

@@ -21,7 +21,7 @@ double Tools::CalculateDistance( double x1, double y1, double x2, double y2 )
 
 int Tools::GenerateRandomNumber( int number )
 {
-	srand( ( int )time( 0 ) );
+	//srand( ( int )time( 0 ) );
 	return (rand() % number) + 1;
 }
 

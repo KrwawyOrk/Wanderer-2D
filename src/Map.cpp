@@ -165,6 +165,7 @@ void Map::Draw( void )
 	}
 
 	m_exitSprite.Draw( Globals::screen, m_exitPosition );
+	DrawChangeGameStateTiles();
 
 	for( std::vector<StaticMapItem*>::iterator it = m_staticItems.begin() ; it != m_staticItems.end() ; ++it )
 	{
@@ -270,6 +271,18 @@ void Map::Draw( void )
 		if( Globals::camera->InCameraView( tile ) )
 		{
 			//tile->GetFogOfWar().Draw();
+		}
+	}
+}
+
+void Map::DrawChangeGameStateTiles( void )
+{
+	for( auto& action : m_actions )
+	{
+		if( action["action_type"] == "step_on_tile" && action["trigger_event"] == "change_game_state" )
+		{
+			Position tilePosition( action["x"], action["y"] );
+			m_exitSprite.Draw( Globals::screen, tilePosition );
 		}
 	}
 }

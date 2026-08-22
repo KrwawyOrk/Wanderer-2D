@@ -30,6 +30,8 @@ GSPlaying::GSPlaying( void )
 		m_keysHeld[i] = false;
 	}
 
+	Globals::keysHeld = &m_keysHeld;
+
 	m_mapList.push_back( new Map( "lasek" ) );
 	m_mapList.push_back( new Map( "lasek2" ) );
 
@@ -58,7 +60,7 @@ GSPlaying::GSPlaying( void )
 	m_openedContainer = NULL;
 	m_npc = NULL;
 
-	m_informationsConsole = new TextBox( 15, 650, 300, 300, "pliki/font.ttf", 16 );
+	m_informationsConsole = new TextBox( 15, 650, 600, 300, "pliki/font.ttf", 14 );
 	Globals::messageLog = m_informationsConsole;
 	
 	Globals::messageLog->addLine( "Hello message log! 1" );
@@ -71,6 +73,13 @@ GSPlaying::GSPlaying( void )
 	m_flashlightBattery = 1.0f;
 	m_flashlightMask = nullptr;
 	m_currentMaskRadius = -1;
+
+	m_isCursorVisible = true;
+	SDL_ShowCursor( m_isCursorVisible ? SDL_ENABLE : SDL_DISABLE );
+
+	/*m_mapLighting.AddLight( Light( 5 * 50, 5 * 50, 120, 255, 50, 50 ) );
+	m_mapLighting.AddLight( Light( 15 * 50, 15 * 50, 120, 255, 50, 50 ) );
+	m_mapLighting.AddLight( Light( 8 * 50, 10 * 50, 120, 255, 50, 50 ) );*/
 }
 
 GSPlaying::~GSPlaying( void )
@@ -261,7 +270,7 @@ void GSPlaying::InputEvents( void )
 			break;
 			
 		case SDLK_F11:
-			Globals::game->fade_to_black( 10 );
+			//Nothing... :(
 			break;
 
 		case SDLK_F12:
@@ -274,7 +283,7 @@ void GSPlaying::InputEvents( void )
 
 		case SDLK_h:
 			//ShakeScreen( Globals::screen, 20, 10 );
-			FadeToBlack( Globals::screen, 1000 );
+			Globals::game->FadeToBlack( Globals::screen, 1000 );
 			break;
 
 		case SDLK_v:
@@ -399,6 +408,8 @@ void GSPlaying::Draw()
 	// 2. Czyszczenie ekranu
 	SDL_FillRect( Globals::screen, nullptr, SDL_MapRGB( Globals::screen->format, 0, 0, 0 ) );
 
+	m_mapLighting.Render( sceneBuffer, Globals::screen );
+
 	// 3. Światło tylko jeśli bateria > 0
 	if (m_flashlightBattery > 0.01f) {
 		int R = GetFlashlightRadius();
@@ -502,7 +513,7 @@ bool GSPlaying::MapExists( std::string mapName ) const
 
 void GSPlaying::ChangeMap( const std::string& mapName )
 {
-	FadeToBlack( Globals::screen, 1000 );
+	Globals::game->FadeToBlack( Globals::screen, 1000 );
 
 	for (const auto& map : m_mapList)
 	{
@@ -537,7 +548,7 @@ void GSPlaying::PlayerLeaveMap( void )
 	if( m_player->GetPosition().x == map->GetExitPosition().x && m_player->GetPosition().y == map->GetExitPosition().y )
 	{
 		std::cout << "Opuszczamy mape" << std::endl;
-		FadeToBlack( Globals::screen, 1000 );
+		Globals::game->FadeToBlack( Globals::screen, 1000 );
 		Globals::game->SetGameState( "World map" );
 
 
@@ -557,7 +568,7 @@ void GSPlaying::DrawExitLocationMessage( void )
 {
 	if( m_player->GetPosition().x == m_map->GetExitPosition().x && m_player->GetPosition().y == m_map->GetExitPosition().y )
 	{
-		m_exitLocationMessage->show_text( 1280 / 2, 720 / 2, "Press ENTER to exit.", Globals::screen );
+		m_exitLocationMessage->show_text( Globals::resolution_x / 2, Globals::resolution_y / 2, "Press ENTER to exit.", Globals::screen );
 	}
 }
 
@@ -679,54 +690,6 @@ void GSPlaying::HandleMouseClickMapActions( int mouse_x, int mouse_y, std::vecto
 	//todo
 }
 
-void GSPlaying::FadeToBlack( SDL_Surface* screen, int fadeTimeMs ) {
-	// Create a temporary surface for the fade effect
-	SDL_Surface* fadeSurface = SDL_CreateRGBSurface( SDL_SWSURFACE, screen->w, screen->h, 32,
-		screen->format->Rmask,
-		screen->format->Gmask,
-		screen->format->Bmask,
-		screen->format->Amask );
-
-	if (!fadeSurface) {
-		return; // Error handling
-	}
-
-	// Fill the fade surface with black
-	SDL_FillRect( fadeSurface, NULL, SDL_MapRGB( fadeSurface->format, 0, 0, 0 ) );
-
-	// Calculate steps for fade
-	const int steps = 30; // Number of fade steps
-	const int delay = fadeTimeMs / steps;
-
-	// Set initial alpha to fully transparent
-	SDL_SetAlpha( fadeSurface, SDL_SRCALPHA, 0 );
-
-	// Fade loop
-	for (int alpha = 0; alpha <= 255; alpha += (255 / steps)) {
-		// Update alpha value
-		SDL_SetAlpha( fadeSurface, SDL_SRCALPHA, alpha );
-
-		// Draw the current screen content
-		SDL_BlitSurface( screen, NULL, screen, NULL );
-
-		// Draw fade surface over screen
-		SDL_BlitSurface( fadeSurface, NULL, screen, NULL );
-
-		// Update display
-		SDL_Flip( screen );
-
-		// Delay to control fade speed
-		SDL_Delay( delay );
-	}
-
-	// Ensure final state is fully black
-	SDL_FillRect( screen, NULL, SDL_MapRGB( screen->format, 0, 0, 0 ) );
-	SDL_Flip( screen );
-
-	// Clean up
-	SDL_FreeSurface( fadeSurface );
-}
-
 void GSPlaying::EmitParticles( float worldX, float worldY, ParticleType type, int count )
 {
 	for (int i = 0; i < count; ++i)
@@ -764,8 +727,8 @@ bool GSPlaying::IsFlashlightOn() const
 
 int GSPlaying::GetFlashlightRadius() const
 {
-	const int MIN_RADIUS = 20;
-	const int MAX_RADIUS = 130;
+	const int MIN_RADIUS = 50;
+	const int MAX_RADIUS = 200;
 	float battery = m_player->GetFlashlightBattery();
 	return MIN_RADIUS + (int)((MAX_RADIUS - MIN_RADIUS) * battery);
 }

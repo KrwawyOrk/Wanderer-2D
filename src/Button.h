@@ -12,7 +12,7 @@ public:
 	Button( int pos_x, int pos_y, std::string spriteName, bool hoverEffect = false );
 
 	bool ButtonClicked( void );
-	bool ButtonHover( void );
+	bool ButtonHover( void ); //Check if mouse cursor is over the button
 	void DrawButton( void );
 
 	//Function used only in sprite browser of map editor. Other drawing functions cut the width of the picture to 50 px.

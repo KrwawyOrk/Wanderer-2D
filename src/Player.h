@@ -70,6 +70,9 @@ public:
 
 	int GetMonstersKilled( void ) const { return m_monstersKilled; }
 
+	int GetScrap( void ) const { return m_scrap; }
+	void SetScrap( int value ) { m_scrap = value; }
+
 	int GetBaseDamage( void ) { return m_damage; }
 	void SetBaseDamage( int damage ) { m_damage = damage; }
 
@@ -127,6 +130,7 @@ private:
 	int m_damage;
 	int m_experiencePoints;
 	int m_monstersKilled;
+	int m_scrap;
 
 	float m_nextAttack;
 	float m_attackSpeed; //tylko liczby int

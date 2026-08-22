@@ -41,6 +41,16 @@ Container::~Container()
 {
 	delete m_exitButton;
 	delete m_takeAllButton;
+
+	for (std::vector<ItemSlot*>::iterator it =
+		m_itemSlots.begin();
+		it != m_itemSlots.end();
+		++it)
+	{
+		delete* it;
+	}
+
+	m_itemSlots.clear();
 }
 
 void Container::InputEvents( void )

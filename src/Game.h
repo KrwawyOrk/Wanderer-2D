@@ -4,6 +4,8 @@
 #include <map>
 #include <string>
 
+#include "SDL.h"
+
 class GameCursor;
 class GameState;
 class Timer;
@@ -34,8 +36,8 @@ public:
 	gamestate_t GetGameStateEnum( void ) const { return m_gamestateEnum; }
 
 	void ToggleFullScreen( void );
-	void FadeToBlack( int duration );
-	void fade_to_black( int delay );
+	void FadeToBlack( SDL_Surface* screen, int fadeTimeMs );
+	void ReleaseStuckKeys( void );
 
 private:
 	void LoadConfiguration( void );

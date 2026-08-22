@@ -43,6 +43,7 @@ PlayerBelt::PlayerBelt()
 
 	m_healthPoints = new BitmapFont( FontStyle::FONT_WHITE_SMALL_OLD );
 	m_flashlightBattery = new BitmapFont( FontStyle::FONT_WHITE_SMALL_OLD );
+	m_scrap = new BitmapFont( FontStyle::FONT_WHITE_SMALL_OLD );
 
 	m_inventoryButton = new Button( 1155, 390, "inventory_button", true );
 	m_quitButton = new Button( 1220, 390, "quit_button", true );
@@ -100,9 +101,6 @@ PlayerBelt::~PlayerBelt()
 	delete m_junk;
 	m_junk = NULL;
 
-	delete m_healthPoints;
-	m_healthPoints = NULL;
-
 	delete m_pistolAmmunition;
 	m_pistolAmmunition = NULL;
 
@@ -117,6 +115,9 @@ PlayerBelt::~PlayerBelt()
 
 	delete m_flashlightBattery;
 	m_flashlightBattery = NULL;
+
+	delete m_scrap;
+	m_scrap = NULL;
 
 	for( std::vector<ItemSlot*>::iterator it = m_itemSlots.begin() ; it != m_itemSlots.end() ; ++it )
 	{
@@ -260,6 +261,10 @@ void PlayerBelt::DrawStatsInformations( void )
 	std::ostringstream ssflashlightbattery;
 	ssflashlightbattery << "FLASH: " << static_cast<int>(m_player->GetFlashlightBattery() * 100) << "%";
 	m_flashlightBattery->show_text( 15, 115, ssflashlightbattery.str(), Globals::screen );
+
+	std::ostringstream ssscrap;
+	ssscrap << "SCRAP: " << static_cast<int>( m_player->GetScrap() );
+	m_scrap->show_text( 15, 165, ssscrap.str(), Globals::screen );
 }
 
 void PlayerBelt::DrawInventorySlots( void )

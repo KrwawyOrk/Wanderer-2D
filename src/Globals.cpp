@@ -33,6 +33,8 @@ namespace Globals
 	int				healthKitHeal = 30;
 	TextBox*		messageLog;
 
+	bool			( *keysHeld )[323];
+
 	void AlertMessageToConsole( std::string message )
 	{
 		std::cout << message << std::endl;

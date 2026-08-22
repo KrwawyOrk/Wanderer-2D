@@ -116,7 +116,7 @@ public:
 	bool IsPlayerInAttackDistance( int distance, Player* player );
 	void MoveTowardsPlayer( void );
 	void SendDamageToMessageLog( int damage );
-	void SendDeadInformationToMessageLog( int experiencePoints );
+	void SendDeadInformationToMessageLog( int experiencePoints, int scrapCount );
 
 private:
 	int m_baseDamage;

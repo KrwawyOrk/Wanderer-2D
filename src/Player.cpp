@@ -80,6 +80,7 @@ void Player::LoadPlayerDataFromJSON( void )
 	m_maxHealthPoints = player["maxHealth"];
 	m_experiencePoints = player["experiencePoints"];
 	m_monstersKilled = player["monstersKilled"];
+	m_scrap = player["scrap"];
 	m_pistolAmmunition = player["pistolAmmunition"];
 	m_damage = player["damage"];
 	m_position.x = player["position_x"];
@@ -370,7 +371,7 @@ void Player::AttackMonsterWithDistanceWeapon( Monster* monster )
 			gsPlaying->EmitParticles( hitX, hitY, ParticleType::GREEN_BLOOD, 25 );
 		}
 
-		Globals::camera->StartShake( 4.5f, 0.18f );
+		Globals::camera->StartShake( 8.0f, 0.18f );
 		SetTimeToNextAttack( ATTACK_DELAY_GUN );
 	}
 }
@@ -459,6 +460,17 @@ void Player::CheckPlayerActionEventsPosition( int player_x, int player_y, std::v
 				{
 					Globals::currentMap->RemoveStaticMapItem( action["remove_x"], action["remove_y"] );
 					action["visited"] = true;
+				}
+
+				else if( event_type == "change_game_state" )
+				{
+					std::string gameStateTitle = action["game_state_title"];
+
+					if (gameStateTitle == "My home")
+					{
+						Globals::game->SetGameState( "My home" );
+						Globals::game->FadeToBlack( Globals::screen, 1500 );
+					}
 				}
 			}
 		}

@@ -63,7 +63,10 @@ void Monster::Die( void )
 {
 	Player* player = Globals::player;
 	player->GiveExperiencePoints( 20 );
-	SendDeadInformationToMessageLog( 20 );
+
+	int scrapCount = Tools::GenerateRandomNumber( 5 );
+	player->SetScrap( player->GetScrap() + scrapCount );
+	SendDeadInformationToMessageLog( 20, scrapCount );
 }
 
 bool Monster::CanRandomMovement( void )
@@ -250,7 +253,8 @@ void Monster::SendDamageToMessageLog( int damage )
 	Globals::messageLog->addLine( "You are attacked by monster " + std::to_string( damage ) + " damage!" );
 }
 
-void Monster::SendDeadInformationToMessageLog( int experiencePoints )
+void Monster::SendDeadInformationToMessageLog( int experiencePoints, int scrapCount )
 {
 	Globals::messageLog->addLine( "You have killed monster getting " + std::to_string( experiencePoints ) + " exp points!" );
+	Globals::messageLog->addLine( "Otrzymales " + std::to_string( scrapCount ) + " zlom." );
 }

@@ -44,6 +44,8 @@ public:
 	void Update( float deltaTime );
 	void Draw( void );
 
+	void DrawChangeGameStateTiles( void );
+
 	void LoadMapActions( void );
 	std::string GetMapName( void ) const { return m_mapName; }
 	bool TileExistsAtPosition( int x, int y);

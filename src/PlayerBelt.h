@@ -87,6 +87,7 @@ private:
 	BitmapFont* m_damage;
 	BitmapFont* m_monstersKilled;
 	BitmapFont* m_flashlightBattery;
+	BitmapFont* m_scrap;
 
 	Button* m_inventoryButton;
 	Button* m_quitButton;
